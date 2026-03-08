@@ -101,6 +101,20 @@ export const PLAN_LIMITS = {
   },
 } as const;
 
+// Countries
+export const COUNTRIES = [
+  { value: "Colombia", label: "Colombia" },
+  { value: "México", label: "México" },
+  { value: "Argentina", label: "Argentina" },
+  { value: "Chile", label: "Chile" },
+  { value: "Perú", label: "Perú" },
+  { value: "Ecuador", label: "Ecuador" },
+  { value: "Venezuela", label: "Venezuela" },
+  { value: "República Dominicana", label: "República Dominicana" },
+  { value: "Panamá", label: "Panamá" },
+  { value: "Costa Rica", label: "Costa Rica" },
+] as const;
+
 // Duration options for classes (in minutes)
 export const DURATIONS = [
   { value: 30, label: "30 minutos" },

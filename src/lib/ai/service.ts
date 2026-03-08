@@ -102,7 +102,7 @@ async function trackGeneration(
   }
 }
 
-// Generate guide with Gemini AI
+// Generate guide with AI
 export async function generateGuide(
   userId: string,
   params: {
@@ -113,6 +113,8 @@ export async function generateGuide(
     methodology: string;
     bloomLevel: string;
     country?: string;
+    additionalContext?: string;
+    documentContent?: string;
   }
 ): Promise<{ success: boolean; data?: any; error?: string; cached: boolean }> {
   try {

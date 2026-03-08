@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { subject, grade, topic, duration, methodology, bloomLevel } = body;
+    const { subject, grade, topic, duration, methodology, bloomLevel, country, additionalContext, documentContent } = body;
 
     if (!subject || !grade || !topic) {
       return NextResponse.json(
@@ -30,7 +30,9 @@ export async function POST(request: NextRequest) {
       duration: parseInt(duration) || 60,
       methodology: methodology || "TRADITIONAL",
       bloomLevel: bloomLevel || "UNDERSTAND",
-      country: "Colombia",
+      country: country || "Colombia",
+      additionalContext: additionalContext || "",
+      documentContent: documentContent || "",
     });
 
     return NextResponse.json(result);
