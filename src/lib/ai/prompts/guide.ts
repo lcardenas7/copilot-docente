@@ -69,6 +69,22 @@ ESTRUCTURA REQUERIDA (responde SOLO en JSON válido):
         "Pregunta 1 que el docente hace a los estudiantes",
         "Pregunta 2 para generar discusión"
       ],
+      "conceptualContent": {
+        "keyConcepts": [
+          {"term": "Concepto clave 1", "definition": "Definición clara y concisa que el docente debe dominar"},
+          {"term": "Concepto clave 2", "definition": "Definición clara"}
+        ],
+        "deepExplanation": "Explicación profunda del tema para que el docente entienda completamente el contenido antes de enseñarlo. Incluye el contexto histórico, la importancia del tema, y conexiones con otros conceptos.",
+        "commonMisconceptions": [
+          {"misconception": "Error común 1 que los estudiantes suelen cometer", "correction": "Cómo corregirlo"},
+          {"misconception": "Error común 2", "correction": "Cómo corregirlo"}
+        ],
+        "realWorldExamples": [
+          "Ejemplo del mundo real 1 que conecta el concepto con la vida cotidiana",
+          "Ejemplo del mundo real 2"
+        ],
+        "curiosities": "Dato curioso o interesante sobre el tema que puede motivar a los estudiantes"
+      },
       "tips": "Consejo práctico para el docente en este momento"
     },
     {
@@ -91,6 +107,24 @@ ESTRUCTURA REQUERIDA (responde SOLO en JSON válido):
         "Ejemplo concreto 2 con datos reales"
       ],
       "guidingQuestions": ["Pregunta orientadora 1", "Pregunta orientadora 2"],
+      "conceptualContent": {
+        "keyConcepts": [
+          {"term": "Concepto de esta fase", "definition": "Definición clara"}
+        ],
+        "stepByStepExample": {
+          "problem": "Problema o ejercicio modelo",
+          "steps": [
+            {"step": 1, "action": "Primer paso de la solución", "explanation": "Por qué hacemos esto"},
+            {"step": 2, "action": "Segundo paso", "explanation": "Explicación"},
+            {"step": 3, "action": "Tercer paso", "explanation": "Explicación"}
+          ],
+          "solution": "Respuesta final"
+        },
+        "commonMisconceptions": [
+          {"misconception": "Error común en este punto", "correction": "Cómo corregirlo"}
+        ],
+        "visualRepresentation": "Descripción de un diagrama, gráfico o representación visual que ayudaría a explicar el concepto"
+      },
       "tips": "Consejo para manejar esta fase"
     },
     {
@@ -116,6 +150,27 @@ ESTRUCTURA REQUERIDA (responde SOLO en JSON válido):
           "Ejercicio 3 de mayor complejidad"
         ]
       },
+      "conceptualContent": {
+        "solvedExercises": [
+          {
+            "problem": "Ejercicio resuelto 1 - similar a los que harán los estudiantes",
+            "steps": ["Paso 1 de la solución", "Paso 2", "Paso 3"],
+            "answer": "Respuesta correcta",
+            "explanation": "Por qué esta es la respuesta"
+          },
+          {
+            "problem": "Ejercicio resuelto 2 - de mayor dificultad",
+            "steps": ["Paso 1", "Paso 2", "Paso 3"],
+            "answer": "Respuesta",
+            "explanation": "Explicación"
+          }
+        ],
+        "commonErrors": [
+          {"error": "Error típico que cometen los estudiantes en este ejercicio", "howToFix": "Cómo identificarlo y corregirlo"},
+          {"error": "Otro error común", "howToFix": "Corrección"}
+        ],
+        "differentiationTips": "Cómo adaptar los ejercicios para estudiantes que terminan rápido vs los que necesitan más apoyo"
+      },
       "tips": "Cómo ayudar a estudiantes con dificultades"
     },
     {
@@ -130,6 +185,16 @@ ESTRUCTURA REQUERIDA (responde SOLO en JSON válido):
       ],
       "studentActions": ["Actividad de cierre del estudiante"],
       "exitTicket": "Pregunta o actividad rápida para verificar comprensión antes de salir",
+      "conceptualContent": {
+        "keySummary": "Resumen de los puntos más importantes que los estudiantes deben recordar de esta clase",
+        "connectionToNextClass": "Cómo este tema se conecta con lo que verán en la próxima clase",
+        "reviewQuestions": [
+          "Pregunta de repaso 1 que el docente puede usar para verificar comprensión",
+          "Pregunta de repaso 2",
+          "Pregunta de repaso 3"
+        ],
+        "takeaways": ["Idea clave 1 que el estudiante debe llevarse", "Idea clave 2", "Idea clave 3"]
+      },
       "tips": "Cómo cerrar efectivamente"
     }
   ],

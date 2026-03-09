@@ -18,7 +18,8 @@ import {
   Loader2, Sparkles, ArrowLeft, Rocket, Search, PenLine, CheckCircle2,
   Target, BookOpen, Users, GraduationCap, Clock, Lightbulb, FileText,
   Upload, X, ChevronDown, ChevronUp, MessageSquare, Home, Star,
-  AlertTriangle, Globe, ClipboardList
+  AlertTriangle, Globe, ClipboardList, BookMarked, AlertCircle, Zap,
+  HelpCircle, ArrowRight, CheckCheck
 } from "lucide-react";
 import Link from "next/link";
 
@@ -42,6 +43,262 @@ const PHASE_BADGE_COLORS = [
   "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
   "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
 ];
+
+// Componente para mostrar contenido conceptual expandible
+function ConceptualContentSection({ content, phase }: { content: any; phase: string }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  if (!content) return null;
+
+  return (
+    <div className="border-t border-dashed pt-4 mt-4">
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="w-full flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30 hover:from-indigo-100 hover:to-purple-100 dark:hover:from-indigo-950/50 dark:hover:to-purple-950/50 transition-colors"
+      >
+        <span className="flex items-center gap-2 font-semibold text-indigo-700 dark:text-indigo-300">
+          <BookMarked className="h-5 w-5" />
+          📚 Contenido para el Docente
+        </span>
+        {isExpanded ? (
+          <ChevronUp className="h-5 w-5 text-indigo-500" />
+        ) : (
+          <ChevronDown className="h-5 w-5 text-indigo-500" />
+        )}
+      </button>
+
+      {isExpanded && (
+        <div className="mt-4 space-y-4 animate-in slide-in-from-top-2 duration-200">
+          {/* Key Concepts */}
+          {content.keyConcepts && content.keyConcepts.length > 0 && (
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-indigo-200 dark:border-indigo-800">
+              <h4 className="font-semibold text-sm flex items-center gap-2 mb-3 text-indigo-700 dark:text-indigo-300">
+                <BookOpen className="h-4 w-4" />
+                Conceptos Clave
+              </h4>
+              <div className="space-y-3">
+                {content.keyConcepts.map((concept: any, i: number) => (
+                  <div key={i} className="bg-indigo-50 dark:bg-indigo-950/30 rounded-lg p-3">
+                    <p className="font-bold text-indigo-800 dark:text-indigo-200">{concept.term}</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">{concept.definition}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Deep Explanation */}
+          {content.deepExplanation && (
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+              <h4 className="font-semibold text-sm flex items-center gap-2 mb-2 text-blue-700 dark:text-blue-300">
+                <HelpCircle className="h-4 w-4" />
+                Explicación Profunda
+              </h4>
+              <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{content.deepExplanation}</p>
+            </div>
+          )}
+
+          {/* Step by Step Example */}
+          {content.stepByStepExample && (
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-green-200 dark:border-green-800">
+              <h4 className="font-semibold text-sm flex items-center gap-2 mb-3 text-green-700 dark:text-green-300">
+                <CheckCheck className="h-4 w-4" />
+                Ejemplo Paso a Paso
+              </h4>
+              <div className="bg-green-50 dark:bg-green-950/30 rounded-lg p-3 mb-3">
+                <p className="font-medium text-sm text-green-800 dark:text-green-200">Problema:</p>
+                <p className="text-sm">{content.stepByStepExample.problem}</p>
+              </div>
+              <div className="space-y-2">
+                {content.stepByStepExample.steps?.map((step: any, i: number) => (
+                  <div key={i} className="flex items-start gap-3 bg-gray-50 dark:bg-gray-800 rounded-lg p-2">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-500 text-white text-xs font-bold">
+                      {step.step || i + 1}
+                    </span>
+                    <div>
+                      <p className="text-sm font-medium">{step.action}</p>
+                      {step.explanation && (
+                        <p className="text-xs text-muted-foreground mt-1">{step.explanation}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {content.stepByStepExample.solution && (
+                <div className="mt-3 bg-green-100 dark:bg-green-900/30 rounded-lg p-3">
+                  <p className="font-medium text-sm text-green-800 dark:text-green-200">Respuesta: {content.stepByStepExample.solution}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Solved Exercises */}
+          {content.solvedExercises && content.solvedExercises.length > 0 && (
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-teal-200 dark:border-teal-800">
+              <h4 className="font-semibold text-sm flex items-center gap-2 mb-3 text-teal-700 dark:text-teal-300">
+                <CheckCheck className="h-4 w-4" />
+                Ejercicios Resueltos
+              </h4>
+              <div className="space-y-4">
+                {content.solvedExercises.map((ex: any, i: number) => (
+                  <div key={i} className="bg-teal-50 dark:bg-teal-950/30 rounded-lg p-3">
+                    <p className="font-medium text-sm text-teal-800 dark:text-teal-200 mb-2">{ex.problem}</p>
+                    <div className="space-y-1 mb-2">
+                      {ex.steps?.map((step: string, j: number) => (
+                        <p key={j} className="text-sm flex items-start gap-2">
+                          <ArrowRight className="h-4 w-4 text-teal-500 shrink-0 mt-0.5" />
+                          {step}
+                        </p>
+                      ))}
+                    </div>
+                    <div className="bg-teal-100 dark:bg-teal-900/50 rounded p-2">
+                      <p className="text-sm font-bold text-teal-800 dark:text-teal-200">Respuesta: {ex.answer}</p>
+                      {ex.explanation && (
+                        <p className="text-xs text-teal-700 dark:text-teal-300 mt-1">{ex.explanation}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Common Misconceptions / Errors */}
+          {(content.commonMisconceptions || content.commonErrors) && (
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-red-200 dark:border-red-800">
+              <h4 className="font-semibold text-sm flex items-center gap-2 mb-3 text-red-700 dark:text-red-300">
+                <AlertCircle className="h-4 w-4" />
+                Errores Comunes a Evitar
+              </h4>
+              <div className="space-y-3">
+                {(content.commonMisconceptions || content.commonErrors)?.map((item: any, i: number) => (
+                  <div key={i} className="bg-red-50 dark:bg-red-950/30 rounded-lg p-3">
+                    <p className="text-sm font-medium text-red-800 dark:text-red-200 flex items-start gap-2">
+                      <X className="h-4 w-4 shrink-0 mt-0.5" />
+                      {item.misconception || item.error}
+                    </p>
+                    <p className="text-sm text-green-700 dark:text-green-300 mt-2 flex items-start gap-2 pl-6">
+                      <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5" />
+                      {item.correction || item.howToFix}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Real World Examples */}
+          {content.realWorldExamples && content.realWorldExamples.length > 0 && (
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-orange-200 dark:border-orange-800">
+              <h4 className="font-semibold text-sm flex items-center gap-2 mb-3 text-orange-700 dark:text-orange-300">
+                <Globe className="h-4 w-4" />
+                Ejemplos del Mundo Real
+              </h4>
+              <div className="space-y-2">
+                {content.realWorldExamples.map((ex: string, i: number) => (
+                  <div key={i} className="flex items-start gap-2 text-sm bg-orange-50 dark:bg-orange-950/30 rounded-lg p-2">
+                    <Zap className="h-4 w-4 text-orange-500 shrink-0 mt-0.5" />
+                    {ex}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Curiosities */}
+          {content.curiosities && (
+            <div className="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-950/30 dark:to-amber-950/30 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
+              <h4 className="font-semibold text-sm flex items-center gap-2 mb-2 text-yellow-700 dark:text-yellow-300">
+                <Lightbulb className="h-4 w-4" />
+                ¿Sabías que...?
+              </h4>
+              <p className="text-sm text-yellow-800 dark:text-yellow-200">{content.curiosities}</p>
+            </div>
+          )}
+
+          {/* Key Summary */}
+          {content.keySummary && (
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-purple-200 dark:border-purple-800">
+              <h4 className="font-semibold text-sm flex items-center gap-2 mb-2 text-purple-700 dark:text-purple-300">
+                <Star className="h-4 w-4" />
+                Resumen Clave
+              </h4>
+              <p className="text-sm text-gray-700 dark:text-gray-300">{content.keySummary}</p>
+            </div>
+          )}
+
+          {/* Takeaways */}
+          {content.takeaways && content.takeaways.length > 0 && (
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800">
+              <h4 className="font-semibold text-sm flex items-center gap-2 mb-3 text-emerald-700 dark:text-emerald-300">
+                <CheckCheck className="h-4 w-4" />
+                Ideas Clave para Recordar
+              </h4>
+              <div className="space-y-2">
+                {content.takeaways.map((t: string, i: number) => (
+                  <div key={i} className="flex items-start gap-2 text-sm">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                    {t}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Review Questions */}
+          {content.reviewQuestions && content.reviewQuestions.length > 0 && (
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-cyan-200 dark:border-cyan-800">
+              <h4 className="font-semibold text-sm flex items-center gap-2 mb-3 text-cyan-700 dark:text-cyan-300">
+                <HelpCircle className="h-4 w-4" />
+                Preguntas de Repaso
+              </h4>
+              <div className="space-y-2">
+                {content.reviewQuestions.map((q: string, i: number) => (
+                  <p key={i} className="text-sm italic bg-cyan-50 dark:bg-cyan-950/30 rounded-lg p-2">
+                    {i + 1}. {q}
+                  </p>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Connection to Next Class */}
+          {content.connectionToNextClass && (
+            <div className="bg-gradient-to-r from-violet-50 to-fuchsia-50 dark:from-violet-950/30 dark:to-fuchsia-950/30 rounded-lg p-4 border border-violet-200 dark:border-violet-800">
+              <h4 className="font-semibold text-sm flex items-center gap-2 mb-2 text-violet-700 dark:text-violet-300">
+                <ArrowRight className="h-4 w-4" />
+                Conexión con la Próxima Clase
+              </h4>
+              <p className="text-sm text-violet-800 dark:text-violet-200">{content.connectionToNextClass}</p>
+            </div>
+          )}
+
+          {/* Visual Representation */}
+          {content.visualRepresentation && (
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-pink-200 dark:border-pink-800">
+              <h4 className="font-semibold text-sm flex items-center gap-2 mb-2 text-pink-700 dark:text-pink-300">
+                <FileText className="h-4 w-4" />
+                Representación Visual Sugerida
+              </h4>
+              <p className="text-sm text-gray-700 dark:text-gray-300 italic">{content.visualRepresentation}</p>
+            </div>
+          )}
+
+          {/* Differentiation Tips */}
+          {content.differentiationTips && (
+            <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-amber-200 dark:border-amber-800">
+              <h4 className="font-semibold text-sm flex items-center gap-2 mb-2 text-amber-700 dark:text-amber-300">
+                <Users className="h-4 w-4" />
+                Diferenciación
+              </h4>
+              <p className="text-sm text-gray-700 dark:text-gray-300">{content.differentiationTips}</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function NewGuidePage() {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -359,6 +616,11 @@ export default function NewGuidePage() {
                               <Lightbulb className="h-4 w-4 text-yellow-500 shrink-0 mt-0.5" />
                               <p><strong>Tip:</strong> {activity.tips}</p>
                             </div>
+                          )}
+
+                          {/* Conceptual Content - Expandable */}
+                          {activity.conceptualContent && (
+                            <ConceptualContentSection content={activity.conceptualContent} phase={activity.phase} />
                           )}
                         </div>
                       )}
