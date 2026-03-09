@@ -143,9 +143,9 @@ ESTRUCTURA REQUERIDA (responde SOLO en JSON válido):
     "formativeAssessment": "Cómo evaluar DURANTE la clase (no solo al final)"
   },
   "resources": {
-    "videos": [{"title": "Título del video", "url": "URL real de YouTube", "duration": "duración"}],
-    "links": [{"title": "Nombre del recurso", "url": "URL real", "description": "Para qué sirve"}],
-    "bibliography": ["Referencia bibliográfica real y verificable"]
+    "videos": [{"title": "Nombre descriptivo del video a buscar", "searchTerm": "Término de búsqueda para YouTube", "channel": "Canal sugerido si conoces uno confiable", "duration": "duración aproximada"}],
+    "links": [{"title": "Nombre del recurso", "platform": "Plataforma (Khan Academy, PhET, GeoGebra, etc)", "searchTerm": "Qué buscar", "description": "Para qué sirve"}],
+    "bibliography": ["Libro o autor real y verificable - solo menciona libros que EXISTEN"]
   },
   "adaptations": {
     "advanced": ["Actividad extra para estudiantes avanzados 1", "Actividad extra 2"],

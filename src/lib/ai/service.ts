@@ -150,7 +150,7 @@ export async function generateGuide(
   }
 }
 
-// Generate exam with Gemini AI
+// Generate exam with AI
 export async function generateExam(
   userId: string,
   params: {
@@ -160,6 +160,7 @@ export async function generateExam(
     questionCount: number;
     difficulty: string;
     questionTypes: string[];
+    additionalInstructions?: string;
   }
 ): Promise<{ success: boolean; data?: any; error?: string; cached: boolean }> {
   try {

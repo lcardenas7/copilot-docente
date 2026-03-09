@@ -595,13 +595,25 @@ export default function NewGuidePage() {
                 <CardContent className="space-y-3">
                   {guide.resources.videos && guide.resources.videos.length > 0 && (
                     <div>
-                      <p className="text-xs font-semibold text-muted-foreground mb-1">VIDEOS</p>
+                      <p className="text-xs font-semibold text-muted-foreground mb-1">VIDEOS SUGERIDOS</p>
                       {guide.resources.videos.map((v: any, i: number) => (
-                        <div key={i} className="text-sm mb-1">
+                        <div key={i} className="text-sm mb-2 bg-muted/50 rounded p-2">
                           {typeof v === "string" ? v : (
-                            <a href={v.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                              {v.title} {v.duration && `(${v.duration})`}
-                            </a>
+                            <>
+                              <p className="font-medium">{v.title}</p>
+                              {v.channel && <p className="text-xs text-muted-foreground">Canal: {v.channel}</p>}
+                              {v.searchTerm && (
+                                <a 
+                                  href={`https://www.youtube.com/results?search_query=${encodeURIComponent(v.searchTerm)}`}
+                                  target="_blank" 
+                                  rel="noopener noreferrer" 
+                                  className="text-xs text-primary hover:underline flex items-center gap-1 mt-1"
+                                >
+                                  Buscar en YouTube: &quot;{v.searchTerm}&quot;
+                                </a>
+                              )}
+                              {v.duration && <p className="text-xs text-muted-foreground">{v.duration}</p>}
+                            </>
                           )}
                         </div>
                       ))}
@@ -609,13 +621,16 @@ export default function NewGuidePage() {
                   )}
                   {guide.resources.links && guide.resources.links.length > 0 && (
                     <div>
-                      <p className="text-xs font-semibold text-muted-foreground mb-1">ENLACES</p>
+                      <p className="text-xs font-semibold text-muted-foreground mb-1">RECURSOS DIGITALES</p>
                       {guide.resources.links.map((l: any, i: number) => (
-                        <div key={i} className="text-sm mb-1">
+                        <div key={i} className="text-sm mb-2 bg-muted/50 rounded p-2">
                           {typeof l === "string" ? l : (
-                            <a href={l.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                              {l.title}
-                            </a>
+                            <>
+                              <p className="font-medium">{l.title}</p>
+                              {l.platform && <p className="text-xs text-primary">{l.platform}</p>}
+                              {l.searchTerm && <p className="text-xs text-muted-foreground">Buscar: &quot;{l.searchTerm}&quot;</p>}
+                              {l.description && <p className="text-xs text-muted-foreground">{l.description}</p>}
+                            </>
                           )}
                         </div>
                       ))}

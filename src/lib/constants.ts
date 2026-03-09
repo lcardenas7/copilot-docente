@@ -61,10 +61,14 @@ export const DIFFICULTIES = [
 
 // Question types
 export const QUESTION_TYPES = [
-  { value: "MULTIPLE_CHOICE", label: "Selección múltiple", description: "4 opciones, 1 correcta" },
-  { value: "TRUE_FALSE", label: "Verdadero/Falso", description: "Afirmación a validar" },
-  { value: "OPEN", label: "Respuesta abierta", description: "Respuesta libre" },
-  { value: "FILL_BLANK", label: "Completar espacios", description: "Llenar espacios en blanco" },
+  { value: "MULTIPLE_CHOICE", label: "Selección múltiple", description: "4 opciones, 1 correcta", icon: "circle-dot" },
+  { value: "MULTIPLE_ANSWER", label: "Respuesta múltiple", description: "Varias opciones correctas", icon: "check-square" },
+  { value: "TRUE_FALSE", label: "Verdadero/Falso", description: "Afirmación a validar", icon: "toggle-left" },
+  { value: "FILL_BLANK", label: "Completar espacios", description: "Llenar espacios en blanco", icon: "text-cursor" },
+  { value: "MATCHING", label: "Relacionar columnas", description: "Emparejar conceptos", icon: "git-merge" },
+  { value: "ORDERING", label: "Ordenar secuencia", description: "Ordenar pasos o elementos", icon: "list-ordered" },
+  { value: "SHORT_ANSWER", label: "Respuesta corta", description: "1-3 oraciones", icon: "message-square" },
+  { value: "OPEN", label: "Desarrollo", description: "Respuesta extensa con rúbrica", icon: "file-text" },
 ] as const;
 
 // Plan limits

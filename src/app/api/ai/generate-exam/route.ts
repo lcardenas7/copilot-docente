@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { subject, grade, topic, questionCount, difficulty, questionTypes } = body;
+    const { subject, grade, topic, questionCount, difficulty, questionTypes, additionalInstructions } = body;
 
     if (!subject || !grade || !topic) {
       return NextResponse.json(
@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
       questionCount: parseInt(questionCount) || 10,
       difficulty: difficulty || "MEDIUM",
       questionTypes: questionTypes || ["MULTIPLE_CHOICE"],
+      additionalInstructions: additionalInstructions || "",
     });
 
     return NextResponse.json(result);
