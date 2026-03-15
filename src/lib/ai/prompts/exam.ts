@@ -1,3 +1,5 @@
+import { AIContext, buildContextBlock } from "../context";
+
 export function buildExamPrompt(params: {
   subject: string;
   grade: string;
@@ -8,7 +10,11 @@ export function buildExamPrompt(params: {
   includeAnswerKey?: boolean;
   shuffleOptions?: boolean;
   additionalInstructions?: string;
+  pedagogicalContext?: AIContext;
 }): string {
+  const pedagogicalBlock = params.pedagogicalContext 
+    ? buildContextBlock(params.pedagogicalContext)
+    : "";
   const questionTypeExamples: Record<string, string> = {
     MULTIPLE_CHOICE: `{
       "number": 1,
@@ -124,7 +130,7 @@ PARÁMETROS:
 - Dificultad: ${params.difficulty}
 - Tipos de preguntas a incluir: ${params.questionTypes.join(", ")}
 - Incluir clave de respuestas: ${params.includeAnswerKey !== false ? "Sí" : "No"}
-${additionalBlock}
+${pedagogicalBlock}${additionalBlock}
 ESTRUCTURA REQUERIDA (responde SOLO en JSON válido):
 {
   "title": "Título descriptivo del examen",

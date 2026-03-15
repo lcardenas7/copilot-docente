@@ -2,6 +2,7 @@ import { generateWithGroq, AI_MODEL } from "./groq";
 import { buildGuidePrompt, GUIDE_SYSTEM_PROMPT } from "./prompts/guide";
 import { buildExamPrompt, EXAM_SYSTEM_PROMPT } from "./prompts/exam";
 import { ExamSchema, GuideSchema } from "./schemas";
+import { AIContext, getAIContext } from "./context";
 import { db } from "@/lib/db";
 import crypto from "crypto";
 
@@ -116,9 +117,21 @@ export async function generateGuide(
     country?: string;
     additionalContext?: string;
     documentContent?: string;
+    topicId?: string;
+    classroomId?: string;
   }
 ): Promise<{ success: boolean; data?: any; error?: string; cached: boolean }> {
   try {
+    // Get pedagogical context if topicId or classroomId is provided
+    let pedagogicalContext: AIContext | null = null;
+    if (params.topicId || params.classroomId) {
+      pedagogicalContext = await getAIContext({
+        topicId: params.topicId,
+        classroomId: params.classroomId,
+        teacherId: userId,
+      });
+    }
+
     const cacheKey = generateCacheKey("guide", params);
 
     // Check cache first
@@ -129,7 +142,10 @@ export async function generateGuide(
     }
 
     // Generate with Groq
-    const prompt = buildGuidePrompt(params);
+    const prompt = buildGuidePrompt({
+      ...params,
+      pedagogicalContext: pedagogicalContext || undefined,
+    });
     const content = await generateWithGroq(GUIDE_SYSTEM_PROMPT, prompt);
 
     if (!content) {
@@ -171,9 +187,21 @@ export async function generateExam(
     difficulty: string;
     questionTypes: string[];
     additionalInstructions?: string;
+    topicId?: string;
+    classroomId?: string;
   }
 ): Promise<{ success: boolean; data?: any; error?: string; cached: boolean }> {
   try {
+    // Get pedagogical context if topicId or classroomId is provided
+    let pedagogicalContext: AIContext | null = null;
+    if (params.topicId || params.classroomId) {
+      pedagogicalContext = await getAIContext({
+        topicId: params.topicId,
+        classroomId: params.classroomId,
+        teacherId: userId,
+      });
+    }
+
     const cacheKey = generateCacheKey("exam", params);
 
     // Check cache first
@@ -184,7 +212,10 @@ export async function generateExam(
     }
 
     // Generate with Groq
-    const prompt = buildExamPrompt(params);
+    const prompt = buildExamPrompt({
+      ...params,
+      pedagogicalContext: pedagogicalContext || undefined,
+    });
     const content = await generateWithGroq(EXAM_SYSTEM_PROMPT, prompt);
 
     if (!content) {

@@ -1,3 +1,5 @@
+import { AIContext, buildContextBlock } from "../context";
+
 export function buildGuidePrompt(params: {
   subject: string;
   grade: string;
@@ -8,7 +10,13 @@ export function buildGuidePrompt(params: {
   country?: string;
   additionalContext?: string;
   documentContent?: string;
+  pedagogicalContext?: AIContext;
 }): string {
+  // Build pedagogical context block if available
+  const pedagogicalBlock = params.pedagogicalContext 
+    ? buildContextBlock(params.pedagogicalContext)
+    : "";
+
   const contextBlock = params.additionalContext 
     ? `\nCONTEXTO ADICIONAL DEL DOCENTE:\n${params.additionalContext}\n` 
     : "";
@@ -28,7 +36,7 @@ PARÁMETROS:
 - Metodología: ${params.methodology}
 - Nivel de Bloom: ${params.bloomLevel}
 - País: ${params.country || "Colombia"}
-${contextBlock}${documentBlock}
+${pedagogicalBlock}${contextBlock}${documentBlock}
 ESTRUCTURA REQUERIDA (responde SOLO en JSON válido):
 {
   "title": "Título creativo y descriptivo de la clase",

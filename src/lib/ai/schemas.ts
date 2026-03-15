@@ -153,3 +153,61 @@ export const GuideSchema = z.object({
     inclusive: z.string()
   })
 });
+
+// Schema para situación problema
+export const ProblemSchema = z.object({
+  title: z.string().min(1),
+  context: z.string().min(1), // La situación real/contexto
+  challenge: z.string().min(1), // El desafío o pregunta principal
+  questions: z.array(z.object({
+    question: z.string().min(1),
+    hint: z.string().optional(),
+    solution: z.string().optional(),
+  })).min(1),
+  difficulty: z.enum(["básico", "medio", "avanzado"]),
+  realWorldConnection: z.string().min(1),
+  estimatedTime: z.string().optional(),
+  materials: z.array(z.string()).optional(),
+  extensions: z.array(z.string()).optional(),
+});
+
+// Schema para actividad/dinámica
+export const ActivitySchema = z.object({
+  title: z.string().min(1),
+  objective: z.string().min(1),
+  duration: z.string().min(1),
+  groupSize: z.string().optional(), // "individual", "parejas", "grupos de 4"
+  steps: z.array(z.string()).min(1),
+  materials: z.array(z.string()),
+  evaluation: z.string().min(1),
+  variations: z.array(z.string()).optional(),
+  tips: z.string().optional(),
+});
+
+// Schema discriminado para respuestas del Copilot
+export const CopilotResponseSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("text"),
+    content: z.string().min(1), // Markdown libre
+  }),
+  z.object({
+    type: z.literal("guide"),
+    data: GuideSchema,
+  }),
+  z.object({
+    type: z.literal("exam"),
+    data: ExamSchema,
+  }),
+  z.object({
+    type: z.literal("problem"),
+    data: ProblemSchema,
+  }),
+  z.object({
+    type: z.literal("activity"),
+    data: ActivitySchema,
+  }),
+]);
+
+export type CopilotResponse = z.infer<typeof CopilotResponseSchema>;
+export type Problem = z.infer<typeof ProblemSchema>;
+export type Activity = z.infer<typeof ActivitySchema>;
