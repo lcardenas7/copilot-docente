@@ -1,6 +1,7 @@
 import { generateWithGroq, AI_MODEL } from "./groq";
 import { buildGuidePrompt, GUIDE_SYSTEM_PROMPT } from "./prompts/guide";
 import { buildExamPrompt, EXAM_SYSTEM_PROMPT } from "./prompts/exam";
+import { ExamSchema, GuideSchema } from "./schemas";
 import { db } from "@/lib/db";
 import crypto from "crypto";
 
@@ -135,7 +136,16 @@ export async function generateGuide(
       return { success: false, error: "No response from AI", cached: false };
     }
 
-    const parsed = JSON.parse(content);
+    // Parse and validate with Zod
+    let parsed;
+    try {
+      const rawParsed = JSON.parse(content);
+      parsed = GuideSchema.parse(rawParsed);
+    } catch (error) {
+      console.error("JSON parsing or validation error:", error);
+      console.error("Raw content:", content);
+      return { success: false, error: "Invalid AI response format", cached: false };
+    }
 
     // Save to cache
     await saveToCache(cacheKey, parsed);
@@ -181,7 +191,16 @@ export async function generateExam(
       return { success: false, error: "No response from AI", cached: false };
     }
 
-    const parsed = JSON.parse(content);
+    // Parse and validate with Zod
+    let parsed;
+    try {
+      const rawParsed = JSON.parse(content);
+      parsed = ExamSchema.parse(rawParsed);
+    } catch (error) {
+      console.error("JSON parsing or validation error:", error);
+      console.error("Raw content:", content);
+      return { success: false, error: "Invalid AI response format", cached: false };
+    }
 
     // Save to cache
     await saveToCache(cacheKey, parsed);

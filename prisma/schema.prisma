@@ -40,9 +40,13 @@ enum Difficulty {
 
 enum QuestionType {
   MULTIPLE_CHOICE
+  MULTIPLE_ANSWER
   TRUE_FALSE
-  OPEN
   FILL_BLANK
+  MATCHING
+  ORDERING
+  SHORT_ANSWER
+  OPEN
 }
 
 enum Methodology {
@@ -58,6 +62,29 @@ enum SubscriptionStatus {
   CANCELED
   PAST_DUE
   TRIALING
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+enum EventType {
+  EXAM
+  PERIOD_END
+  BIRTHDAY
+  EVENT
+  PERSONAL
+  HOLIDAY
+}
+
+enum SubmissionStatus {
+  PENDING
+  AUTO_GRADED
+  NEEDS_REVIEW
+  GRADED
 }
 
 enum AIGenerationType {
@@ -121,6 +148,7 @@ model User {
   role          Role      @default(TEACHER)
   plan          Plan      @default(FREE)
   schoolId      String?   @map("school_id")
+  birthDate     DateTime? @map("birth_date")
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
@@ -139,6 +167,17 @@ model User {
   usageLimits    UsageLimit[]
   aiGenerations  AIGeneration[]
   templates      Template[]
+  
+  // New relations for Fase 1
+  academicPeriods AcademicPeriod[]
+  schoolProfile  SchoolProfile?
+  gradeBooks     GradeBook[]
+  attendanceRecords Attendance[]
+  calendarEvents CalendarEvent[]
+  teacherLogs    TeacherLog[] @relation("TeacherLogs")
+  studentLogs    TeacherLog[] @relation("StudentLogs")
+  recaudos       Recaudo[]
+  recaudoResponses RecaudoResponse[]
 
   @@map("users")
 }
@@ -161,10 +200,12 @@ model School {
 model Guide {
   id          String      @id @default(cuid())
   teacherId   String      @map("teacher_id")
+  classroomId String?     @map("classroom_id")
+  topicId     String?     @map("topic_id")
   title       String
   subject     String
   grade       String
-  topic       String
+  topicName   String      @map("topic_name") // Legacy field for topic name
   duration    Int         @default(60) // minutes
   methodology Methodology @default(TRADITIONAL)
   bloomLevel  BloomLevel  @default(UNDERSTAND)
@@ -177,27 +218,39 @@ model Guide {
   updatedAt   DateTime    @updatedAt @map("updated_at")
 
   teacher     User         @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  classroom   Classroom?   @relation(fields: [classroomId], references: [id])
+  topic       Topic?       @relation(fields: [topicId], references: [id])
   assignments Assignment[]
 
   @@map("guides")
 }
 
 model Exam {
-  id         String     @id @default(cuid())
-  teacherId  String     @map("teacher_id")
-  title      String
-  subject    String
-  grade      String
-  topic      String?
-  difficulty Difficulty @default(MEDIUM)
-  timeLimit  Int?       // minutes
-  questions  Json       // Array of questions with answers
-  isPublic   Boolean    @default(false) @map("is_public")
-  createdAt  DateTime   @default(now()) @map("created_at")
-  updatedAt  DateTime   @updatedAt @map("updated_at")
+  id          String     @id @default(cuid())
+  teacherId   String     @map("teacher_id")
+  classroomId String?    @map("classroom_id")
+  topicId     String?    @map("topic_id")
+  title       String
+  subject     String
+  grade       String
+  topicName   String?    @map("topic_name") // Legacy field for topic name
+  difficulty  Difficulty @default(MEDIUM)
+  timeLimit   Int?       // minutes
+  questions   Json       // Array of questions with answers
+  isPublic    Boolean    @default(false) @map("is_public")
+  isPublished Boolean    @default(false) @map("is_published")
+  publishedAt DateTime?  @map("published_at")
+  deadline    DateTime?
+  accessCode  String?    @unique @map("access_code") // For student access
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
 
   teacher     User         @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  classroom   Classroom?   @relation(fields: [classroomId], references: [id])
+  topic       Topic?       @relation(fields: [topicId], references: [id])
   assignments Assignment[]
+  gradeBooks  GradeBook[]
+  calendarEvents CalendarEvent[]
 
   @@map("exams")
 }
@@ -249,23 +302,75 @@ model Classroom {
   name        String
   subject     String
   grade       String
-  code        String   @unique // Join code like "M8A2451"
+  group       String?  // "A", "B", etc.
+  shift       String?  // "mañana", "tarde", "noche"
+  academicYear String  @map("academic_year") // "2024"
+  code        String   @unique // Join code like "MAT8A-4521"
+  color       String   @default("#3B82F6") // Hex color for UI
   description String?
   isActive    Boolean  @default(true) @map("is_active")
   createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   teacher     User         @relation(fields: [teacherId], references: [id], onDelete: Cascade)
   enrollments Enrollment[]
   assignments Assignment[]
   schedules   Schedule[]
+  units       Unit[]
+  guides      Guide[]
+  exams       Exam[]
+  
+  // New relations for Fase 1
+  gradeBooks  GradeBook[]
+  attendanceRecords Attendance[]
+  calendarEvents CalendarEvent[]
+  teacherLogs TeacherLog[]
+  recaudos    Recaudo[]
 
   @@map("classrooms")
+}
+
+// ==================== PEDAGOGICAL STRUCTURE ====================
+
+model Unit {
+  id          String   @id @default(cuid())
+  classroomId String   @map("classroom_id")
+  periodId    String?  @map("period_id")
+  name        String   // "Unidad 1: Fracciones"
+  description String?  @db.Text
+  order       Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  classroom   Classroom       @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  period      AcademicPeriod? @relation(fields: [periodId], references: [id])
+  topics      Topic[]
+
+  @@map("units")
+}
+
+model Topic {
+  id          String   @id @default(cuid())
+  unitId      String   @map("unit_id")
+  name        String   // "Suma de fracciones"
+  description String?  @db.Text
+  order       Int      @default(0)
+  hours       Int      @default(2) // Horas estimadas
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  unit        Unit     @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  guides      Guide[]
+  exams       Exam[]
+
+  @@map("topics")
 }
 
 model Enrollment {
   id          String   @id @default(cuid())
   classroomId String   @map("classroom_id")
   studentId   String   @map("student_id")
+  roles       Json?    // Array of roles: ["monitor", "delegado"]
   joinedAt    DateTime @default(now()) @map("joined_at")
 
   classroom Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
@@ -409,4 +514,148 @@ model AICache {
   expiresAt DateTime @map("expires_at")
 
   @@map("ai_cache")
+}
+
+// ==================== FASE 1 - GESTIÓN ACADÉMICA ====================
+
+model AcademicPeriod {
+  id          String   @id @default(cuid())
+  teacherId   String   @map("teacher_id")
+  name        String   // "Período 1", "Bimestre 2"
+  startDate   DateTime @map("start_date")
+  endDate     DateTime @map("end_date")
+  isActive    Boolean  @default(false) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  teacher     User     @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  gradeBooks  GradeBook[]
+  units       Unit[]
+
+  @@map("academic_periods")
+}
+
+model SchoolProfile {
+  id            String @id @default(cuid())
+  teacherId     String @unique @map("teacher_id")
+  schoolName    String? @map("school_name")
+  logoUrl       String? @map("logo_url")
+  gradingSystem String @default("0-5") @map("grading_system") // "0-5", "0-10", "letters"
+  periods       Int    @default(4)
+  country       String @default("CO")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  teacher User @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@map("school_profiles")
+}
+
+model GradeBook {
+  id            String   @id @default(cuid())
+  studentId     String   @map("student_id")
+  classroomId   String   @map("classroom_id")
+  academicPeriodId String? @map("academic_period_id")
+  examId        String?  @map("exam_id")
+  score         Float?
+  maxScore      Float    @map("max_score")
+  period        String   // "Q1", "Q2", "Final"
+  category      String   // "exam", "participation", "homework", "project"
+  notes         String?  @db.Text
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  student       User           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  classroom     Classroom      @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  academicPeriod AcademicPeriod? @relation(fields: [academicPeriodId], references: [id])
+  exam          Exam?          @relation(fields: [examId], references: [id])
+
+  @@map("grade_books")
+}
+
+model Attendance {
+  id          String           @id @default(cuid())
+  studentId   String           @map("student_id")
+  classroomId String           @map("classroom_id")
+  date        DateTime         @db.Date
+  status      AttendanceStatus
+  note        String?          @db.Text
+  createdAt   DateTime         @default(now()) @map("created_at")
+
+  student     User      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, classroomId, date])
+  @@map("attendance")
+}
+
+model CalendarEvent {
+  id          String   @id @default(cuid())
+  teacherId   String   @map("teacher_id")
+  classroomId String?  @map("classroom_id")
+  examId      String?  @map("exam_id")
+  title       String
+  date        DateTime @db.Date
+  endDate     DateTime? @map("end_date") @db.Date
+  type        EventType
+  color       String   @default("#3B82F6")
+  allDay      Boolean  @default(false) @map("all_day")
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  teacher     User       @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  classroom   Classroom? @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  exam        Exam?      @relation(fields: [examId], references: [id])
+
+  @@map("calendar_events")
+}
+
+model TeacherLog {
+  id          String   @id @default(cuid())
+  teacherId   String   @map("teacher_id")
+  classroomId String?  @map("classroom_id")
+  studentId   String?  @map("student_id")
+  title       String?
+  content     String   @db.Text
+  tags        Json?    // Array of strings
+  isPrivate   Boolean  @default(true) @map("is_private")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  teacher     User       @relation("TeacherLogs", fields: [teacherId], references: [id], onDelete: Cascade)
+  classroom   Classroom? @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  student     User?      @relation("StudentLogs", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("teacher_logs")
+}
+
+model Recaudo {
+  id          String   @id @default(cuid())
+  teacherId   String   @map("teacher_id")
+  classroomId String   @map("classroom_id")
+  title       String
+  description String?  @db.Text
+  fields      Json     // Array of field definitions
+  deadline    DateTime @map("deadline")
+  status      String   @default("active") // active, closed, draft
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  teacher     User         @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  classroom   Classroom    @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+  responses   RecaudoResponse[]
+
+  @@map("recaudos")
+}
+
+model RecaudoResponse {
+  id           String   @id @default(cuid())
+  recaudoId    String   @map("recaudo_id")
+  studentId    String   @map("student_id")
+  responses    Json     // Field responses
+  submittedAt  DateTime @default(now()) @map("submitted_at")
+
+  recaudo      Recaudo @relation(fields: [recaudoId], references: [id], onDelete: Cascade)
+  student      User    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([recaudoId, studentId])
+  @@map("recaudo_responses")
 }

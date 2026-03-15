@@ -14,6 +14,11 @@ import {
   FolderOpen,
   BarChart3,
   Calendar,
+  Users,
+  GraduationCap,
+  Notebook,
+  Clock,
+  PenTool,
 } from "lucide-react";
 
 const sidebarItems = [
@@ -33,6 +38,41 @@ const sidebarItems = [
     icon: FileText,
   },
   {
+    title: "Cursos",
+    href: "/dashboard/cursos",
+    icon: GraduationCap,
+  },
+  {
+    title: "Aula Virtual",
+    href: "/dashboard/classrooms",
+    icon: School,
+  },
+  {
+    title: "Libro de Notas",
+    href: "/dashboard/notas",
+    icon: Notebook,
+  },
+  {
+    title: "Asistencia",
+    href: "/dashboard/asistencia",
+    icon: Users,
+  },
+  {
+    title: "Horario",
+    href: "/dashboard/horario",
+    icon: Clock,
+  },
+  {
+    title: "Calendario",
+    href: "/dashboard/calendario",
+    icon: Calendar,
+  },
+  {
+    title: "Bitácora",
+    href: "/dashboard/bitacora",
+    icon: PenTool,
+  },
+  {
     title: "Banco de Preguntas",
     href: "/dashboard/questions",
     icon: HelpCircle,
@@ -46,16 +86,6 @@ const sidebarItems = [
     title: "Mis Plantillas",
     href: "/dashboard/templates",
     icon: FolderOpen,
-  },
-  {
-    title: "Aulas Virtuales",
-    href: "/dashboard/classrooms",
-    icon: School,
-  },
-  {
-    title: "Horario",
-    href: "/dashboard/schedule",
-    icon: Calendar,
   },
   {
     title: "Analítica",

@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogOut, Settings, User } from "lucide-react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { Toaster } from "sonner";
 
 export default async function DashboardLayout({
   children,
@@ -88,6 +89,7 @@ export default async function DashboardLayout({
         <Sidebar />
         <main className="flex-1 overflow-auto p-6">{children}</main>
       </div>
+      <Toaster />
     </div>
   );
 }
