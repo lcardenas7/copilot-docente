@@ -51,6 +51,40 @@ async function saveToCache(cacheKey: string, result: any): Promise<void> {
   }
 }
 
+// Validate exam integrity before caching
+function validateExamIntegrity(exam: any): string[] {
+  const errors: string[] = [];
+  
+  if (!exam.questions || exam.questions.length === 0) {
+    errors.push("El examen no tiene preguntas");
+  }
+  
+  if (!exam.situation) {
+    errors.push("Falta la situación problema");
+  }
+  
+  const totalPoints = exam.questions?.reduce(
+    (sum: number, q: any) => sum + (q.points || 0), 0
+  );
+  if (totalPoints !== 100) {
+    errors.push(`Los puntos suman ${totalPoints}, deben ser 100`);
+  }
+  
+  exam.questions?.forEach((q: any, i: number) => {
+    if (!q.question || q.question.trim() === "") {
+      errors.push(`Pregunta ${i+1} tiene texto vacío`);
+    }
+    if (!q.explanation) {
+      errors.push(`Pregunta ${i+1} no tiene explicación`);
+    }
+    if (q.type === "MULTIPLE_CHOICE" && (!q.options || q.options.length < 2)) {
+      errors.push(`Pregunta ${i+1} no tiene opciones válidas`);
+    }
+  });
+  
+  return errors;
+}
+
 // Track AI generation for analytics
 async function trackGeneration(
   userId: string,
@@ -231,20 +265,36 @@ export async function generateExam(
       if (validation.success) {
         parsed = validation.data;
       } else {
-        console.error("Zod validation errors:", JSON.stringify(validation.error.errors, null, 2));
+        console.error("Zod validation errors:", JSON.stringify(validation.error.issues, null, 2));
         console.error("Raw content sample:", content.substring(0, 500));
         // Use raw parsed if basic structure is valid
         if (rawParsed.title && rawParsed.questions && Array.isArray(rawParsed.questions)) {
           console.log("Using raw parsed data despite validation errors");
           parsed = rawParsed;
         } else {
-          return { success: false, error: "Invalid AI response format: " + validation.error.errors[0]?.message, cached: false };
+          return { success: false, error: "Invalid AI response format: " + validation.error.issues[0]?.message, cached: false };
         }
       }
     } catch (error: any) {
       console.error("JSON parsing error:", error?.message);
       console.error("Raw content sample:", content?.substring(0, 500));
       return { success: false, error: "Invalid JSON from AI", cached: false };
+    }
+
+    // Validate exam integrity
+    const integrityErrors = validateExamIntegrity(parsed);
+    if (integrityErrors.length > 0) {
+      console.error("Exam integrity errors:", integrityErrors);
+      // Log warnings but don't fail - allow exam to be used with warnings
+      console.warn("Exam generated with warnings:", integrityErrors.join(", "));
+      // Only fail if critical errors (no questions)
+      if (!parsed.questions || parsed.questions.length === 0) {
+        return { 
+          success: false, 
+          error: `Contenido inválido: ${integrityErrors[0]}`,
+          cached: false 
+        };
+      }
     }
 
     // Save to cache

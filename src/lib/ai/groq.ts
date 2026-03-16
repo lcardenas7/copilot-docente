@@ -23,7 +23,7 @@ export async function generateWithGroq(
         { role: "user", content: userPrompt },
       ],
       model: AI_MODEL,
-      temperature: 0.7,
+      temperature: 0.35,
       max_tokens: 8000,
       response_format: { type: "json_object" },
     });
