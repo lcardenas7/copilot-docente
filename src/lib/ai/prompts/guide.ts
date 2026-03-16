@@ -243,38 +243,106 @@ REGLAS CRÍTICAS:
 8. Responde ÚNICAMENTE con el JSON, sin texto adicional
 9. Todos los campos de duration deben ser números (no strings)
 
-REGLAS PARA CAMPO VISUAL (opcional por actividad):
-Puedes agregar un campo "visual" a cualquier actividad para incluir una visualización que el docente puede mostrar. Elige el engine apropiado:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VISUALIZACIONES — CAMPO "visual" EN ACTIVIDADES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+INCLUYE el campo "visual" en las actividades cuando el contenido lo requiera.
+NO es decorativo — es PEDAGÓGICO. Úsalo cuando mejore la enseñanza.
 
-1. svg_dynamic - Para representaciones matemáticas/científicas:
-   - fraction_circle: {"engine":"svg_dynamic","type":"fraction_circle","data":{"total":8,"shaded":3,"style":"pizza"},"caption":"Fracción 3/8"}
-   - fraction_rect: {"engine":"svg_dynamic","type":"fraction_rect","data":{"total":5,"shaded":2,"orientation":"horizontal"}}
-   - number_line: {"engine":"svg_dynamic","type":"number_line","data":{"min":0,"max":10,"marked":[3,7],"step":1}}
-   - bar_chart: {"engine":"svg_dynamic","type":"bar_chart","data":{"labels":["Lunes","Martes","Miércoles"],"values":[10,25,15],"title":"Ventas"}}
-   - geometric_shape: {"engine":"svg_dynamic","type":"geometric_shape","data":{"shape":"triangle","dimensions":{"base":6,"height":4},"showLabels":true}}
-   - timeline: {"engine":"svg_dynamic","type":"timeline","data":{"events":[{"year":"1492","label":"Descubrimiento"},{"year":"1810","label":"Independencia"}],"direction":"horizontal"}}
-   - force_diagram: {"engine":"svg_dynamic","type":"force_diagram","data":{"object":"Caja","forces":[{"direction":"up","label":"Normal"},{"direction":"down","label":"Peso"}]}}
+✅ INCLUIR visual cuando:
+- El concepto se entiende mejor con una imagen que con texto
+- Hay datos numéricos que comparar (gráficas)
+- Hay procesos o secuencias (diagramas de flujo)
+- Hay fracciones, geometría o líneas numéricas
+- Quieres enganchar con una situación motivadora (comic)
+- Necesitas mostrar algo real (ciencias, geografía)
 
-2. mermaid - Para diagramas de flujo, mapas mentales, secuencias:
-   {"engine":"mermaid","type":"flowchart","code":"graph TD\\n    A[Fotosíntesis] --> B[Luz solar]\\n    A --> C[Agua]\\n    A --> D[CO2]","caption":"Proceso de fotosíntesis"}
-   {"engine":"mermaid","type":"mindmap","code":"mindmap\\n  root((Tema))\\n    Subtema 1\\n    Subtema 2","caption":"Mapa mental"}
+EJEMPLOS POR MOMENTO PEDAGÓGICO:
 
-3. comic - Para situaciones problema con personajes (máx 4 paneles):
-   {"engine":"comic","panels":[{"character":"maestra","text":"Hoy aprenderemos sobre fracciones","expression":"happy"},{"character":"niño","text":"¿Para qué sirven?","expression":"confused"}],"caption":"Introducción al tema"}
-   Personajes: niño, niña, maestro, maestra, adulto
-   Expresiones: neutral, happy, confused, surprised, thinking, sad
+Momento 1 — Activación (enganchar con situación motivadora):
+{
+  "phase": "Momento 1: Activación y Enganche",
+  "visual": {
+    "engine": "comic",
+    "panels": [
+      { "character": "niña", "text": "¿Por qué si como la mitad de dos pizzas diferentes no es lo mismo?", "expression": "confused" },
+      { "character": "maestro", "text": "¡Excelente pregunta! Hoy vamos a descubrirlo.", "expression": "happy" }
+    ],
+    "caption": "Situación que genera la pregunta del día"
+  }
+}
 
-4. image_search - Para imágenes reales de ciencias, geografía, historia:
-   {"engine":"image_search","query":"célula animal microscopio","source":"wikimedia","caption":"Estructura de la célula animal"}
-   {"engine":"image_search","query":"volcán en erupción","source":"unsplash","caption":"Volcán activo"}
+Momento 2 — Exploración (explicar el concepto visualmente):
+{
+  "phase": "Momento 2: Exploración y Construcción",
+  "visual": {
+    "engine": "svg_dynamic",
+    "type": "fraction_circle",
+    "data": { "total": 4, "shaded": 1, "style": "circle" },
+    "caption": "1/4 representa una parte de las 4 partes iguales"
+  }
+}
 
-CUÁNDO USAR VISUALES EN GUÍAS:
-- Momento de Activación: comic para situación motivadora, image_search para contexto real
-- Momento de Exploración: svg_dynamic para conceptos matemáticos, mermaid para procesos
-- Momento de Práctica: svg_dynamic con ejemplos que los estudiantes deben resolver
-- Momento de Cierre: mermaid mindmap para resumen visual
+Momento 2 — Exploración (proceso con diagrama):
+{
+  "phase": "Momento 2: Exploración y Construcción",
+  "visual": {
+    "engine": "mermaid",
+    "type": "flowchart",
+    "code": "flowchart TD\\n  A[Fotosíntesis] --> B[Luz solar]\\n  A --> C[Agua]\\n  A --> D[CO2]\\n  B & C & D --> E[Glucosa + O2]",
+    "caption": "Proceso de fotosíntesis"
+  }
+}
 
-CRÍTICO: Los visuales deben ser PEDAGÓGICAMENTE relevantes y coincidir con el contenido de la actividad.`;
+Momento 3 — Práctica (ejercicio visual):
+{
+  "phase": "Momento 3: Práctica y Aplicación",
+  "visual": {
+    "engine": "svg_dynamic",
+    "type": "bar_chart",
+    "data": {
+      "labels": ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"],
+      "values": [12, 8, 15, 10, 20],
+      "title": "Libros leídos por día"
+    },
+    "caption": "Datos para resolver los ejercicios"
+  }
+}
+
+Momento 4 — Cierre (resumen visual):
+{
+  "phase": "Momento 4: Cierre y Reflexión",
+  "visual": {
+    "engine": "mermaid",
+    "type": "mindmap",
+    "code": "mindmap\\n  root((Fracciones))\\n    Partes iguales\\n    Numerador\\n    Denominador\\n    Equivalentes",
+    "caption": "Resumen de lo aprendido hoy"
+  }
+}
+
+Momento 4 — Cierre (metacognición):
+{
+  "phase": "Momento 4: Cierre y Reflexión",
+  "visual": {
+    "engine": "svg_dynamic",
+    "type": "bar_chart",
+    "data": {
+      "labels": ["Lo sabía", "Lo aprendí hoy", "Aún tengo dudas"],
+      "values": [3, 8, 2],
+      "title": "¿Cómo me fue hoy?"
+    },
+    "caption": "Metacognición del grupo"
+  }
+}
+
+ENGINES DISPONIBLES:
+1. svg_dynamic: fraction_circle, fraction_rect, number_line, bar_chart, geometric_shape, timeline, force_diagram
+2. mermaid: flowchart, mindmap, sequence
+3. comic: panels con character (niño/niña/maestro/maestra/adulto), text, expression (happy/confused/thinking/surprised/sad/neutral)
+4. image_search: query + source (wikimedia/unsplash) + caption
+
+REGLA DE CONSISTENCIA: Los datos del visual DEBEN coincidir con el contenido de la actividad.
+NUNCA generes coordenadas SVG. Solo parámetros semánticos.`;
 }
 
 export const GUIDE_SYSTEM_PROMPT = `Eres el mejor diseñador curricular y pedagogo de Latinoamérica. 

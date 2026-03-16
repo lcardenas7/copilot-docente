@@ -89,6 +89,15 @@ export const ExamQuestionSchema = z.object({
   visual: VisualSchema.optional(),
 });
 
+// Schema para situación problema (contexto narrativo)
+export const SituationSchema = z.object({
+  title: z.string().optional(),
+  context: z.string().min(1),
+  characters: z.array(z.string()).optional(),
+  setting: z.string().optional(),
+  data: z.array(z.string()).optional(),
+}).optional();
+
 // Schema para validar la respuesta del examen - MÁS FLEXIBLE
 export const ExamSchema = z.object({
   title: z.string().min(1),
@@ -99,6 +108,8 @@ export const ExamSchema = z.object({
   estimatedTime: z.union([z.number(), z.string()]).optional(),
   totalPoints: z.number().min(1),
   passingScore: z.number().optional(),
+  // Situación problema principal (opcional pero recomendada)
+  situation: SituationSchema,
   questions: z.array(ExamQuestionSchema).min(1),
   // Campos opcionales
   sections: z.array(z.any()).optional(),
