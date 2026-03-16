@@ -48,7 +48,7 @@ export default function SmartVisual({ visual, className = "" }: SmartVisualProps
         return <MermaidRenderer code={visual.code} type={visual.type} />;
       
       case "comic":
-        return <ComicRenderer panels={visual.panels} />;
+        return <ComicRenderer panels={visual.panels as any} />;
       
       case "image_search":
         return <ImageSearchRenderer query={visual.query} source={visual.source} />;
