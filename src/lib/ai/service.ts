@@ -260,27 +260,41 @@ export async function generateExam(
       return { success: false, error: "No response from AI", cached: false };
     }
 
+    // Log raw content from Groq BEFORE any processing
+    console.log("=== GROQ RAW RESPONSE ===");
+    console.log("Full content length:", content.length);
+    console.log("Raw JSON from Groq:", content);
+    console.log("=== END RAW RESPONSE ===");
+
     // Parse and validate with Zod
     let parsed;
     try {
       const rawParsed = JSON.parse(content);
+      console.log("=== PARSED JSON ===");
+      console.log("Parsed structure keys:", Object.keys(rawParsed));
+      console.log("Questions count:", rawParsed.questions?.length || 0);
+      console.log("Has situation:", !!rawParsed.situation);
+      console.log("Total points:", rawParsed.totalPoints);
+      console.log("=== END PARSED ===");
+      
       // Try validation but use raw if it fails (more flexible)
       const validation = ExamSchema.safeParse(rawParsed);
       if (validation.success) {
+        console.log("✅ Zod validation PASSED");
         parsed = validation.data;
       } else {
-        console.error("Zod validation errors:", JSON.stringify(validation.error.issues, null, 2));
+        console.error("❌ Zod validation errors:", JSON.stringify(validation.error.issues, null, 2));
         console.error("Raw content sample:", content.substring(0, 500));
         // Use raw parsed if basic structure is valid
         if (rawParsed.title && rawParsed.questions && Array.isArray(rawParsed.questions)) {
-          console.log("Using raw parsed data despite validation errors");
+          console.log("⚠️ Using raw parsed data despite validation errors");
           parsed = rawParsed;
         } else {
           return { success: false, error: "Invalid AI response format: " + validation.error.issues[0]?.message, cached: false };
         }
       }
     } catch (error: any) {
-      console.error("JSON parsing error:", error?.message);
+      console.error("❌ JSON parsing error:", error?.message);
       console.error("Raw content sample:", content?.substring(0, 500));
       return { success: false, error: "Invalid JSON from AI", cached: false };
     }
