@@ -49,8 +49,71 @@ export type Visual = z.infer<typeof VisualSchema>;
 
 // ==================== QUESTION SCHEMA CON VISUAL ====================
 
+export const ExamQuestionSchema = z.object({
+  number: z.number().optional(),
+  id: z.string().optional(),
+  type: z.enum([
+    "MULTIPLE_CHOICE",
+    "MULTIPLE_ANSWER", 
+    "TRUE_FALSE",
+    "FILL_BLANK",
+    "MATCHING",
+    "ORDERING",
+    "SHORT_ANSWER",
+    "OPEN"
+  ]),
+  question: z.string().min(1),
+  points: z.number().min(1),
+  bloomLevel: z.string().optional(),
+  explanation: z.string().optional(),
+  // MULTIPLE_CHOICE / MULTIPLE_ANSWER
+  options: z.array(z.any()).optional(),
+  correctAnswer: z.any().optional(),
+  // FILL_BLANK
+  blanks: z.array(z.string()).optional(),
+  // MATCHING
+  columnA: z.array(z.string()).optional(),
+  columnB: z.array(z.string()).optional(),
+  correctMatches: z.record(z.string(), z.string()).optional(),
+  // ORDERING
+  items: z.array(z.string()).optional(),
+  correctOrder: z.array(z.number()).optional(),
+  // SHORT_ANSWER
+  acceptableAnswers: z.array(z.string()).optional(),
+  keywords: z.array(z.string()).optional(),
+  // OPEN
+  rubric: z.array(z.any()).optional(),
+  sampleAnswer: z.string().optional(),
+  minWords: z.number().optional(),
+  // Visual
+  visual: VisualSchema.optional(),
+});
+
+// Schema para validar la respuesta del examen - MÁS FLEXIBLE
+export const ExamSchema = z.object({
+  title: z.string().min(1),
+  subtitle: z.string().optional(),
+  instructions: z.string().min(1),
+  // Acepta duration o estimatedTime
+  duration: z.number().optional(),
+  estimatedTime: z.union([z.number(), z.string()]).optional(),
+  totalPoints: z.number().min(1),
+  passingScore: z.number().optional(),
+  questions: z.array(ExamQuestionSchema).min(1),
+  // Campos opcionales
+  sections: z.array(z.any()).optional(),
+  answerKey: z.record(z.string(), z.any()).optional(),
+  gradingNotes: z.string().optional(),
+  evaluation: z.object({
+    criteria: z.array(z.any()).optional(),
+    indicators: z.array(z.string()).optional(),
+    instruments: z.array(z.string()).optional()
+  }).optional()
+});
+
+// Legacy QuestionSchema for guides (keep for backward compatibility)
 export const QuestionSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   type: z.enum([
     "MULTIPLE_CHOICE",
     "MULTIPLE_ANSWER", 
@@ -66,34 +129,13 @@ export const QuestionSchema = z.object({
   correctAnswer: z.any().optional(),
   points: z.number().min(1),
   explanation: z.string().optional(),
-  visual: VisualSchema.optional(), // 🎨 Visualización inteligente
+  visual: VisualSchema.optional(),
   rubric: z.object({
     criteria: z.array(z.string()),
     excellent: z.string(),
     good: z.string(),
     needsWork: z.string()
   }).optional()
-});
-
-// Schema para validar la respuesta del examen
-export const ExamSchema = z.object({
-  title: z.string().min(1),
-  subtitle: z.string().optional(),
-  instructions: z.string().min(1),
-  duration: z.number().min(1),
-  totalPoints: z.number().min(1),
-  passingScore: z.number().min(0),
-  questions: z.array(QuestionSchema).min(1),
-  evaluation: z.object({
-    criteria: z.array(z.object({
-      criterion: z.string(),
-      excellent: z.string(),
-      good: z.string(),
-      needsWork: z.string()
-    })),
-    indicators: z.array(z.string()),
-    instruments: z.array(z.string())
-  })
 });
 
 // Schema para validar la respuesta de la guía
