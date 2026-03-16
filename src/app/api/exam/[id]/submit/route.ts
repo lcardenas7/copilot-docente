@@ -9,9 +9,10 @@ interface QuestionAnswer {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user?.id) {
@@ -25,7 +26,7 @@ export async function POST(
     const { answers } = body as { answers: Record<string, any> };
 
     const exam = await db.exam.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         classroom: {
           include: {

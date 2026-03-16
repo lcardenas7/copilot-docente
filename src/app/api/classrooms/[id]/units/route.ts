@@ -4,9 +4,10 @@ import { db } from "@/lib/db";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user?.id) {
@@ -18,7 +19,7 @@ export async function GET(
 
     const units = await db.unit.findMany({
       where: {
-        classroomId: params.id,
+        classroomId: id,
         classroom: {
           teacherId: session.user.id,
         },
@@ -46,9 +47,10 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user?.id) {
@@ -61,7 +63,7 @@ export async function POST(
     // Verify classroom belongs to teacher
     const classroom = await db.classroom.findUnique({
       where: {
-        id: params.id,
+        id,
         teacherId: session.user.id,
       },
     });
@@ -85,13 +87,13 @@ export async function POST(
 
     // Get max order
     const maxOrder = await db.unit.aggregate({
-      where: { classroomId: params.id },
+      where: { classroomId: id },
       _max: { order: true },
     });
 
     const unit = await db.unit.create({
       data: {
-        classroomId: params.id,
+        classroomId: id,
         name,
         description,
         periodId,

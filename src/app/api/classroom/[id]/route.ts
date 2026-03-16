@@ -4,9 +4,10 @@ import { db } from "@/lib/db";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user?.id) {
@@ -20,7 +21,7 @@ export async function GET(
     const enrollment = await db.enrollment.findUnique({
       where: {
         classroomId_studentId: {
-          classroomId: params.id,
+          classroomId: id,
           studentId: session.user.id,
         },
       },
@@ -35,7 +36,7 @@ export async function GET(
 
     // Fetch classroom with content
     const classroom = await db.classroom.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         teacher: {
           select: { name: true },
@@ -78,7 +79,7 @@ export async function GET(
       where: {
         studentId: session.user.id,
         assignment: {
-          classroomId: params.id,
+          classroomId: id,
         },
       },
       include: {

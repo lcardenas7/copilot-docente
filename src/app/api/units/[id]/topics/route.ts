@@ -4,9 +4,10 @@ import { db } from "@/lib/db";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user?.id) {
@@ -18,7 +19,7 @@ export async function GET(
 
     const topics = await db.topic.findMany({
       where: {
-        unitId: params.id,
+        unitId: id,
         unit: {
           classroom: {
             teacherId: session.user.id,
@@ -51,9 +52,10 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user?.id) {
@@ -66,7 +68,7 @@ export async function POST(
     // Verify unit belongs to teacher's classroom
     const unit = await db.unit.findUnique({
       where: {
-        id: params.id,
+        id,
       },
       include: {
         classroom: true,
@@ -92,13 +94,13 @@ export async function POST(
 
     // Get max order
     const maxOrder = await db.topic.aggregate({
-      where: { unitId: params.id },
+      where: { unitId: id },
       _max: { order: true },
     });
 
     const topic = await db.topic.create({
       data: {
-        unitId: params.id,
+        unitId: id,
         name,
         description,
         hours: hours || 2,

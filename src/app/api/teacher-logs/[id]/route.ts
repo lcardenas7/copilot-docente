@@ -5,9 +5,10 @@ import { db } from "@/lib/db";
 // DELETE: Delete a teacher log
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user?.id) {
@@ -20,7 +21,7 @@ export async function DELETE(
     // Verify log belongs to teacher
     const log = await db.teacherLog.findUnique({
       where: {
-        id: params.id,
+        id,
         teacherId: session.user.id,
       },
     });
@@ -33,7 +34,7 @@ export async function DELETE(
     }
 
     await db.teacherLog.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({
@@ -51,9 +52,10 @@ export async function DELETE(
 // PATCH: Update a teacher log
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user?.id) {
@@ -66,7 +68,7 @@ export async function PATCH(
     // Verify log belongs to teacher
     const existingLog = await db.teacherLog.findUnique({
       where: {
-        id: params.id,
+        id,
         teacherId: session.user.id,
       },
     });
@@ -82,7 +84,7 @@ export async function PATCH(
     const { title, content, tags, isPrivate } = body;
 
     const log = await db.teacherLog.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...(title !== undefined && { title }),
         ...(content !== undefined && { content }),

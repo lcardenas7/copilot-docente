@@ -5,11 +5,12 @@ import { db } from "@/lib/db";
 // GET: Get classroom info by code
 export async function GET(
   request: NextRequest,
-  { params }: { params: { code: string } }
+  { params }: { params: Promise<{ code: string }> }
 ) {
   try {
+    const { code: codeParam } = await params;
     const session = await auth();
-    const code = params.code.toUpperCase();
+    const code = codeParam.toUpperCase();
 
     const classroom = await db.classroom.findUnique({
       where: { code },
@@ -62,9 +63,10 @@ export async function GET(
 // POST: Join classroom
 export async function POST(
   request: NextRequest,
-  { params }: { params: { code: string } }
+  { params }: { params: Promise<{ code: string }> }
 ) {
   try {
+    const { code: codeParam } = await params;
     const session = await auth();
 
     if (!session?.user?.id) {
@@ -74,7 +76,7 @@ export async function POST(
       );
     }
 
-    const code = params.code.toUpperCase();
+    const code = codeParam.toUpperCase();
 
     const classroom = await db.classroom.findUnique({
       where: { code },

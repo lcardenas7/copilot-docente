@@ -27,9 +27,10 @@ interface GeneratedPlan {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
 
     if (!session?.user?.id) {
@@ -42,7 +43,7 @@ export async function POST(
     // Verify classroom belongs to teacher
     const classroom = await db.classroom.findUnique({
       where: {
-        id: params.id,
+        id,
         teacherId: session.user.id,
       },
     });
@@ -70,14 +71,14 @@ export async function POST(
       await tx.topic.deleteMany({
         where: {
           unit: {
-            classroomId: params.id,
+            classroomId: id,
           },
         },
       });
       
       await tx.unit.deleteMany({
         where: {
-          classroomId: params.id,
+          classroomId: id,
         },
       });
 
@@ -87,7 +88,7 @@ export async function POST(
 
         const unit = await tx.unit.create({
           data: {
-            classroomId: params.id,
+            classroomId: id,
             name: planUnit.name,
             description: planUnit.description,
             order: unitIndex + 1,
