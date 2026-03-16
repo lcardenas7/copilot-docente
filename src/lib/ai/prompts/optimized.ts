@@ -1,5 +1,11 @@
 // Optimized prompts for token efficiency
-export const COMPACT_EXAM_PROMPT = `Eres experto en educación LATAM. Genera JSON válido.
+export function getCompactExamPrompt(params: {
+  subject: string;
+  grade: string;
+  topic: string;
+  questionCount: string;
+}) {
+  return `Eres experto en educación LATAM. Genera JSON válido.
 
 ÁREA: ${params.subject}
 GRADO: ${params.grade}
@@ -44,6 +50,7 @@ FORMATO EXACTO:
 
 PUNTOS: Deben sumar 100. Si no, ajusta proporcionalmente.
 JSON ÚNICAMENTE. Sin markdown.`;
+}
 
 // Token usage tracking
 export function estimateTokens(prompt: string): number {
