@@ -1,5 +1,80 @@
 import { z } from "zod";
 
+// ==================== VISUAL SCHEMA ====================
+// Sistema de visualizaciones inteligentes - La IA genera parámetros, el frontend renderiza
+
+export const VisualSchema = z.discriminatedUnion("engine", [
+  // SVG Dinámico - plantillas matemáticas y científicas
+  z.object({
+    engine: z.literal("svg_dynamic"),
+    type: z.enum([
+      "fraction_circle", "fraction_rect", "number_line",
+      "bar_chart", "pie_chart", "coordinate_plane",
+      "geometric_shape", "venn_diagram",
+      "cell_animal", "cell_plant", "atom_structure",
+      "circuit_simple", "force_diagram", "vector_diagram",
+      "timeline", "body_system"
+    ]),
+    data: z.record(z.string(), z.any()),
+    caption: z.string().optional(),
+  }),
+  // Mermaid - diagramas de flujo, mapas mentales
+  z.object({
+    engine: z.literal("mermaid"),
+    type: z.enum(["flowchart", "mindmap", "sequence", "classDiagram"]),
+    code: z.string(),
+    caption: z.string().optional(),
+  }),
+  // Comic - viñetas con personajes y diálogos
+  z.object({
+    engine: z.literal("comic"),
+    panels: z.array(z.object({
+      character: z.enum(["niño", "niña", "maestro", "maestra", "adulto"]),
+      text: z.string(),
+      expression: z.enum(["neutral", "happy", "confused", "surprised", "thinking", "sad"]),
+      setting: z.string().optional(),
+    })),
+    caption: z.string().optional(),
+  }),
+  // Búsqueda de imágenes
+  z.object({
+    engine: z.literal("image_search"),
+    query: z.string(),
+    source: z.enum(["unsplash", "wikimedia"]),
+    caption: z.string(),
+  }),
+]);
+
+export type Visual = z.infer<typeof VisualSchema>;
+
+// ==================== QUESTION SCHEMA CON VISUAL ====================
+
+export const QuestionSchema = z.object({
+  id: z.string(),
+  type: z.enum([
+    "MULTIPLE_CHOICE",
+    "MULTIPLE_ANSWER", 
+    "TRUE_FALSE",
+    "FILL_BLANK",
+    "MATCHING",
+    "ORDERING",
+    "SHORT_ANSWER",
+    "OPEN"
+  ]),
+  question: z.string().min(1),
+  options: z.array(z.string()).optional(),
+  correctAnswer: z.any().optional(),
+  points: z.number().min(1),
+  explanation: z.string().optional(),
+  visual: VisualSchema.optional(), // 🎨 Visualización inteligente
+  rubric: z.object({
+    criteria: z.array(z.string()),
+    excellent: z.string(),
+    good: z.string(),
+    needsWork: z.string()
+  }).optional()
+});
+
 // Schema para validar la respuesta del examen
 export const ExamSchema = z.object({
   title: z.string().min(1),
@@ -8,32 +83,7 @@ export const ExamSchema = z.object({
   duration: z.number().min(1),
   totalPoints: z.number().min(1),
   passingScore: z.number().min(0),
-  questions: z.array(
-    z.object({
-      id: z.string(),
-      type: z.enum([
-        "MULTIPLE_CHOICE",
-        "MULTIPLE_ANSWER", 
-        "TRUE_FALSE",
-        "FILL_BLANK",
-        "MATCHING",
-        "ORDERING",
-        "SHORT_ANSWER",
-        "OPEN"
-      ]),
-      question: z.string().min(1),
-      options: z.array(z.string()).optional(),
-      correctAnswer: z.any().optional(),
-      points: z.number().min(1),
-      explanation: z.string().optional(),
-      rubric: z.object({
-        criteria: z.array(z.string()),
-        excellent: z.string(),
-        good: z.string(),
-        needsWork: z.string()
-      }).optional()
-    })
-  ).min(1),
+  questions: z.array(QuestionSchema).min(1),
   evaluation: z.object({
     criteria: z.array(z.object({
       criterion: z.string(),
@@ -118,7 +168,8 @@ export const GuideSchema = z.object({
         exercises: z.array(z.string())
       }).optional(),
       exitTicket: z.string().optional(),
-      tips: z.string().optional()
+      tips: z.string().optional(),
+      visual: VisualSchema.optional(), // 🎨 Visualización inteligente para la actividad
     })
   ).min(1),
   evaluation: z.object({

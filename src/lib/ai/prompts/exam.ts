@@ -178,7 +178,41 @@ REGLAS CRÍTICAS:
 8. Las preguntas deben ser claras, sin ambigüedades, y apropiadas para ${params.grade}
 9. Incluye explicaciones pedagógicas para CADA pregunta
 10. El examen debe ser coherente y progresivo en dificultad
-11. Responde ÚNICAMENTE con el JSON, sin texto adicional`;
+11. Responde ÚNICAMENTE con el JSON, sin texto adicional
+
+REGLAS PARA CAMPO VISUAL (opcional por pregunta):
+Puedes agregar un campo "visual" a cualquier pregunta para incluir una visualización. Elige el engine apropiado:
+
+1. svg_dynamic - Para representaciones matemáticas/científicas:
+   - fraction_circle: {"engine":"svg_dynamic","type":"fraction_circle","data":{"total":8,"shaded":3,"style":"pizza"}}
+   - fraction_rect: {"engine":"svg_dynamic","type":"fraction_rect","data":{"total":5,"shaded":2,"orientation":"horizontal"}}
+   - number_line: {"engine":"svg_dynamic","type":"number_line","data":{"min":0,"max":10,"marked":[3,7],"step":1}}
+   - bar_chart: {"engine":"svg_dynamic","type":"bar_chart","data":{"labels":["A","B","C"],"values":[10,25,15],"title":"Datos"}}
+   - geometric_shape: {"engine":"svg_dynamic","type":"geometric_shape","data":{"shape":"rectangle","dimensions":{"width":8,"height":5},"showLabels":true}}
+   - timeline: {"engine":"svg_dynamic","type":"timeline","data":{"events":[{"year":1810,"label":"Independencia"}],"direction":"horizontal"}}
+   - force_diagram: {"engine":"svg_dynamic","type":"force_diagram","data":{"object":"Caja","forces":[{"direction":"up","label":"N"},{"direction":"down","label":"W"}]}}
+
+2. mermaid - Para diagramas de flujo y mapas mentales:
+   {"engine":"mermaid","type":"flowchart","code":"graph TD\\n    A[Inicio] --> B{Decisión}\\n    B -->|Sí| C[Acción]","caption":"Diagrama de proceso"}
+
+3. comic - Para situaciones con personajes (máx 4 paneles):
+   {"engine":"comic","panels":[{"character":"niño","text":"¿Cuánto es 3+5?","expression":"thinking"}],"caption":"Situación problema"}
+
+4. image_search - Para imágenes reales:
+   {"engine":"image_search","query":"célula animal microscopio","source":"wikimedia","caption":"Célula animal"}
+
+CUÁNDO USAR VISUALES:
+- Fracciones → fraction_circle o fraction_rect
+- Geometría → geometric_shape
+- Estadística → bar_chart o pie_chart  
+- Línea numérica → number_line
+- Historia/secuencias → timeline
+- Física/fuerzas → force_diagram
+- Procesos/algoritmos → mermaid flowchart
+- Situaciones cotidianas → comic
+- Ciencias naturales → image_search (wikimedia)
+
+CRÍTICO: Los datos del visual DEBEN coincidir con la pregunta. Si preguntas "¿Qué fracción está sombreada?" y la respuesta es 3/8, el visual debe tener total:8, shaded:3.`;
 }
 
 export const EXAM_SYSTEM_PROMPT = `Eres el mejor experto en evaluación educativa y diseño de exámenes de Latinoamérica.

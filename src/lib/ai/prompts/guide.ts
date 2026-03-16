@@ -241,7 +241,40 @@ REGLAS CRÍTICAS:
 6. Los estándares y competencias deben ser OFICIALES de ${params.country || "Colombia"}
 7. Si hay contenido de referencia del docente, BASA la guía en ese contenido específico
 8. Responde ÚNICAMENTE con el JSON, sin texto adicional
-9. Todos los campos de duration deben ser números (no strings)`;
+9. Todos los campos de duration deben ser números (no strings)
+
+REGLAS PARA CAMPO VISUAL (opcional por actividad):
+Puedes agregar un campo "visual" a cualquier actividad para incluir una visualización que el docente puede mostrar. Elige el engine apropiado:
+
+1. svg_dynamic - Para representaciones matemáticas/científicas:
+   - fraction_circle: {"engine":"svg_dynamic","type":"fraction_circle","data":{"total":8,"shaded":3,"style":"pizza"},"caption":"Fracción 3/8"}
+   - fraction_rect: {"engine":"svg_dynamic","type":"fraction_rect","data":{"total":5,"shaded":2,"orientation":"horizontal"}}
+   - number_line: {"engine":"svg_dynamic","type":"number_line","data":{"min":0,"max":10,"marked":[3,7],"step":1}}
+   - bar_chart: {"engine":"svg_dynamic","type":"bar_chart","data":{"labels":["Lunes","Martes","Miércoles"],"values":[10,25,15],"title":"Ventas"}}
+   - geometric_shape: {"engine":"svg_dynamic","type":"geometric_shape","data":{"shape":"triangle","dimensions":{"base":6,"height":4},"showLabels":true}}
+   - timeline: {"engine":"svg_dynamic","type":"timeline","data":{"events":[{"year":"1492","label":"Descubrimiento"},{"year":"1810","label":"Independencia"}],"direction":"horizontal"}}
+   - force_diagram: {"engine":"svg_dynamic","type":"force_diagram","data":{"object":"Caja","forces":[{"direction":"up","label":"Normal"},{"direction":"down","label":"Peso"}]}}
+
+2. mermaid - Para diagramas de flujo, mapas mentales, secuencias:
+   {"engine":"mermaid","type":"flowchart","code":"graph TD\\n    A[Fotosíntesis] --> B[Luz solar]\\n    A --> C[Agua]\\n    A --> D[CO2]","caption":"Proceso de fotosíntesis"}
+   {"engine":"mermaid","type":"mindmap","code":"mindmap\\n  root((Tema))\\n    Subtema 1\\n    Subtema 2","caption":"Mapa mental"}
+
+3. comic - Para situaciones problema con personajes (máx 4 paneles):
+   {"engine":"comic","panels":[{"character":"maestra","text":"Hoy aprenderemos sobre fracciones","expression":"happy"},{"character":"niño","text":"¿Para qué sirven?","expression":"confused"}],"caption":"Introducción al tema"}
+   Personajes: niño, niña, maestro, maestra, adulto
+   Expresiones: neutral, happy, confused, surprised, thinking, sad
+
+4. image_search - Para imágenes reales de ciencias, geografía, historia:
+   {"engine":"image_search","query":"célula animal microscopio","source":"wikimedia","caption":"Estructura de la célula animal"}
+   {"engine":"image_search","query":"volcán en erupción","source":"unsplash","caption":"Volcán activo"}
+
+CUÁNDO USAR VISUALES EN GUÍAS:
+- Momento de Activación: comic para situación motivadora, image_search para contexto real
+- Momento de Exploración: svg_dynamic para conceptos matemáticos, mermaid para procesos
+- Momento de Práctica: svg_dynamic con ejemplos que los estudiantes deben resolver
+- Momento de Cierre: mermaid mindmap para resumen visual
+
+CRÍTICO: Los visuales deben ser PEDAGÓGICAMENTE relevantes y coincidir con el contenido de la actividad.`;
 }
 
 export const GUIDE_SYSTEM_PROMPT = `Eres el mejor diseñador curricular y pedagogo de Latinoamérica. 
