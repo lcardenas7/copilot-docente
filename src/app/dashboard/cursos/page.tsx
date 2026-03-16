@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +22,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Plus, Search, MoreVertical, Users, Calendar, BookOpen, Settings, Trash2, Edit } from "lucide-react";
 import Link from "next/link";
-import { auth } from "@/lib/auth";
 
 interface Classroom {
   id: string;
@@ -37,24 +37,16 @@ interface Classroom {
 }
 
 export default function CursosPage() {
+  const { data: session, status } = useSession();
   const [classrooms, setClassrooms] = useState<Classroom[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const session = await auth();
-      setUser(session?.user);
-    };
-    fetchUser();
-  }, []);
-
-  useEffect(() => {
-    if (user) {
+    if (status === "authenticated") {
       fetchClassrooms();
     }
-  }, [user]);
+  }, [status]);
 
   const fetchClassrooms = async () => {
     try {
