@@ -33,7 +33,7 @@ const CHARACTER_COLORS: Record<string, { skin: string; hair: string; clothes: st
 };
 
 // Expression paths for eyes and mouth
-const EXPRESSIONS: Record<Expression, { eyes: string; mouth: string }> = {
+const EXPRESSIONS: Record<string, { eyes: string; mouth: string }> = {
   neutral: { eyes: "M-8,-5 L-4,-5 M4,-5 L8,-5", mouth: "M-6,8 L6,8" },
   happy: { eyes: "M-8,-5 L-4,-5 M4,-5 L8,-5", mouth: "M-8,6 Q0,14 8,6" },
   confused: { eyes: "M-8,-6 L-4,-4 M4,-4 L8,-6", mouth: "M-4,8 Q0,6 4,10" },
@@ -67,7 +67,13 @@ function ComicPanel({ panel, index }: { panel: Panel; index: number }) {
   ) ?? "adulto"; // fallback siempre disponible
   
   const colors = CHARACTER_COLORS[characterKey];
-  const expression = EXPRESSIONS[panel.expression];
+  
+  // Normalizar la expresión con fallback defensivo
+  const expressionKey = Object.keys(EXPRESSIONS).find(
+    key => key === panel.expression?.toLowerCase()
+  ) ?? "neutral"; // fallback siempre disponible
+  
+  const expression = EXPRESSIONS[expressionKey];
   
   return (
     <div 
