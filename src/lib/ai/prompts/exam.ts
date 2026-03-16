@@ -529,8 +529,14 @@ afirmaciones científicas incorrectas.
 REGLA 6 — FORMATO ESTRICTO
 ═══════════════════════════════════════════
 - JSON válido ÚNICAMENTE, sin texto antes ni después
-- Puntos de todas las preguntas = exactamente 100
+- Puntos de todas las preguntas = exactamente 100. VERIFICA ANTES DE DEVOLVER.
 - Genera EXACTAMENTE la cantidad solicitada de preguntas
 - NUNCA questions:[] ni preguntas con campos vacíos
 - Error: {"error":"descripción del problema"}
-- Responde en español latinoamericano`;
+- Responde en español latinoamericano
+
+IMPORTANTE: ANTES DE DEVOLVER EL JSON, suma todos los puntos.
+Si la suma no es exactamente 100, AJUSTA los puntos hasta que sumen 100.
+Ejemplo: si suman 120, reduce cada pregunta proporcionalmente hasta que sumen 100.
+Si suman 80, aumenta cada pregunta proporcionalmente hasta que sumen 100.
+LA SUMA DEBE SER EXACTAMENTE 100. SIN EXCEPCIONES.`;

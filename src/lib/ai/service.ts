@@ -303,6 +303,13 @@ export async function generateExam(
     const integrityErrors = validateExamIntegrity(parsed);
     if (integrityErrors.length > 0) {
       console.error("Exam integrity errors:", integrityErrors);
+      // Log the actual points sum for debugging
+      const totalPoints = parsed.questions?.reduce(
+        (sum: number, q: any) => sum + (q.points || 0), 0
+      ) ?? 0;
+      console.error(`Actual points sum: ${totalPoints} (should be 100)`);
+      console.error("Points per question:", parsed.questions?.map((q: any, i: number) => `Q${i+1}: ${q.points}`));
+      
       return {
         success: false,
         error: `El contenido generado tiene problemas: ${integrityErrors[0]}. Intenta de nuevo.`,
