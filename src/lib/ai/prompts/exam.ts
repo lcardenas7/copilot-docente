@@ -535,8 +535,25 @@ REGLA 6 — FORMATO ESTRICTO
 - Error: {"error":"descripción del problema"}
 - Responde en español latinoamericano
 
-IMPORTANTE: ANTES DE DEVOLVER EL JSON, suma todos los puntos.
-Si la suma no es exactamente 100, AJUSTA los puntos hasta que sumen 100.
-Ejemplo: si suman 120, reduce cada pregunta proporcionalmente hasta que sumen 100.
-Si suman 80, aumenta cada pregunta proporcionalmente hasta que sumen 100.
-LA SUMA DEBE SER EXACTAMENTE 100. SIN EXCEPCIONES.`;
+CRÍTICO: CÁLCULO DE PUNTOS OBLIGATORIO
+1. Asigna puntos iniciales a cada pregunta (ej: 10, 15, 20, etc.)
+2. SUMA todos los puntos asignados
+3. Si la suma ≠ 100, AJUSTA con esta fórmula:
+   - factor = 100 / suma_actual
+   - puntos_ajustados = Math.round(puntos_iniciales × factor)
+4. Vuelve a sumar los puntos ajustados
+5. Si aún no suman 100, ajusta manualmente (suma 1 o resta 1) hasta que sea exactamente 100
+
+EJEMPLO CONCRETO:
+- 10 preguntas con 12 puntos cada una = 120 total
+- factor = 100 / 120 = 0.833
+- puntos_ajustados = Math.round(12 × 0.833) = 10 cada una
+- Nuevo total = 10 × 10 = 100 ✓
+
+OTRO EJEMPLO:
+- 8 preguntas: [15, 10, 12, 8, 20, 15, 10, 10] = 100 total ✓
+- Si sumara 94: factor = 100 / 94 = 1.064
+- Ajustar: [16, 11, 13, 9, 21, 16, 11, 11] = 98 (falta 2)
+- Final: [16, 11, 13, 9, 21, 16, 11, 13] = 100 ✓
+
+LA SUMA DEBE SER EXACTAMENTE 100. VERIFICA 3 VECES ANTES DE DEVOLVER.`;

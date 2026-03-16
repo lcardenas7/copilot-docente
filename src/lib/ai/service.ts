@@ -310,11 +310,45 @@ export async function generateExam(
       console.error(`Actual points sum: ${totalPoints} (should be 100)`);
       console.error("Points per question:", parsed.questions?.map((q: any, i: number) => `Q${i+1}: ${q.points}`));
       
-      return {
-        success: false,
-        error: `El contenido generado tiene problemas: ${integrityErrors[0]}. Intenta de nuevo.`,
-        cached: false
-      };
+      // Try to auto-adjust points if close to 100
+      if (integrityErrors.length === 1 && integrityErrors[0].includes("puntos suman")) {
+        const diff = Math.abs(totalPoints - 100);
+        if (diff <= 6) { // Allow small difference and auto-adjust
+          console.log(`Auto-adjusting points (${totalPoints} → 100), diff: ${diff}`);
+          const factor = 100 / totalPoints;
+          parsed.questions.forEach((q: any) => {
+            q.points = Math.round((q.points || 10) * factor) || 10;
+          });
+          
+          // Verify adjustment worked
+          const newTotal = parsed.questions?.reduce((sum: number, q: any) => sum + (q.points || 0), 0) ?? 0;
+          if (newTotal === 100) {
+            console.log(`Successfully adjusted points to ${newTotal}`);
+          } else {
+            // Manual fine adjustment
+            const remainingDiff = 100 - newTotal;
+            if (remainingDiff > 0 && parsed.questions.length > 0) {
+              parsed.questions[0].points += remainingDiff;
+            } else if (remainingDiff < 0 && parsed.questions.length > 0) {
+              parsed.questions[0].points += remainingDiff;
+            }
+          }
+        } else {
+          // Too far from 100, fail
+          return {
+            success: false,
+            error: `El contenido generado tiene problemas: ${integrityErrors[0]}. Intenta de nuevo.`,
+            cached: false
+          };
+        }
+      } else {
+        // Other integrity errors, fail
+        return {
+          success: false,
+          error: `El contenido generado tiene problemas: ${integrityErrors[0]}. Intenta de nuevo.`,
+          cached: false
+        };
+      }
     }
 
     // Save to cache
