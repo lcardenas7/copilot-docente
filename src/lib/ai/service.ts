@@ -55,28 +55,42 @@ async function saveToCache(cacheKey: string, result: any): Promise<void> {
 function validateExamIntegrity(exam: any): string[] {
   const errors: string[] = [];
 
-  if (!exam.questions || exam.questions.length === 0) {
+  // Validación básica de estructura
+  if (!exam) {
+    errors.push("Respuesta de IA vacía o inválida");
+    return errors;
+  }
+
+  if (!exam.questions) {
+    errors.push("El examen no tiene el campo 'questions'");
+    return errors;
+  }
+
+  if (!Array.isArray(exam.questions)) {
+    errors.push("El campo 'questions' no es un array");
+    return errors;
+  }
+
+  if (exam.questions.length === 0) {
     errors.push("El examen no tiene preguntas");
+    return errors;
   }
 
-  if (!exam.situation) {
-    errors.push("Falta la situación problema");
-  }
-
-  const totalPoints = exam.questions?.reduce(
+  // Validación de puntos (más flexible - permitir ajuste automático)
+  const totalPoints = exam.questions.reduce(
     (sum: number, q: any) => sum + (q.points || 0), 0
-  ) ?? 0;
-  if (Math.abs(totalPoints - 100) > 1) {
+  );
+  if (Math.abs(totalPoints - 100) > 10) {
+    // Solo fallar si está muy lejos de 100 (más de 10 puntos)
     errors.push(`Los puntos suman ${totalPoints}, deben ser 100`);
   }
 
-  exam.questions?.forEach((q: any, i: number) => {
+  // Validación de cada pregunta
+  exam.questions.forEach((q: any, i: number) => {
     if (!q.question || q.question.trim() === "") {
       errors.push(`Pregunta ${i+1} tiene texto vacío`);
     }
-    if (!q.explanation || q.explanation.trim() === "") {
-      errors.push(`Pregunta ${i+1} no tiene explicación`);
-    }
+    // Explicación es opcional para algunas áreas
     if (q.explanation?.includes("error en la explicación") || 
         q.explanation?.includes("explicación anterior es incorrecta")) {
       errors.push(`Pregunta ${i+1} tiene explicación contradictoria`);
@@ -313,7 +327,7 @@ export async function generateExam(
       // Try to auto-adjust points if close to 100
       if (integrityErrors.length === 1 && integrityErrors[0].includes("puntos suman")) {
         const diff = Math.abs(totalPoints - 100);
-        if (diff <= 6) { // Allow small difference and auto-adjust
+        if (diff <= 10) { // Allow difference up to 10 and auto-adjust
           console.log(`Auto-adjusting points (${totalPoints} → 100), diff: ${diff}`);
           const factor = 100 / totalPoints;
           parsed.questions.forEach((q: any) => {

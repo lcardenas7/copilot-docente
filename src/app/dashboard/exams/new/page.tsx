@@ -414,7 +414,17 @@ export default function NewExamPage() {
 
         {/* Questions */}
         <div className="space-y-4">
-          {generatedExam.questions?.map((q: any, i: number) => renderQuestion(q, i))}
+          {(!generatedExam.questions || generatedExam.questions.length === 0) ? (
+            <Card className="border-red-200 bg-red-50 dark:bg-red-950/20">
+              <CardContent className="pt-6">
+                <p className="text-red-600 dark:text-red-400 text-center">
+                  No se pudieron generar preguntas. Por favor intenta de nuevo.
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            generatedExam.questions.map((q: any, i: number) => renderQuestion(q, i))
+          )}
         </div>
 
         {/* Grading Notes */}
