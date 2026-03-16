@@ -39,35 +39,48 @@ interface SmartVisualProps {
 }
 
 export default function SmartVisual({ visual, className = "" }: SmartVisualProps) {
-  const renderVisual = () => {
-    switch (visual.engine) {
-      case "svg_dynamic":
-        return <SVGDynamicRenderer type={visual.type} data={visual.data} />;
-      
-      case "mermaid":
-        return <MermaidRenderer code={visual.code} type={visual.type} />;
-      
-      case "comic":
-        return <ComicRenderer panels={visual.panels as any} />;
-      
-      case "image_search":
-        return <ImageSearchRenderer query={visual.query} source={visual.source} />;
-      
-      default:
-        return <div className="text-muted-foreground">Visualización no soportada</div>;
-    }
-  };
+  // Guard clause - si visual es inválido, no renderizar nada
+  if (!visual || !visual.engine) return null;
+  
+  try {
+    const renderVisual = () => {
+      switch (visual.engine) {
+        case "svg_dynamic":
+          if (!visual.type || !visual.data) return null;
+          return <SVGDynamicRenderer type={visual.type} data={visual.data} />;
+        
+        case "mermaid":
+          if (!visual.code) return null;
+          return <MermaidRenderer code={visual.code} type={visual.type} />;
+        
+        case "comic":
+          if (!visual.panels || visual.panels.length === 0) return null;
+          return <ComicRenderer panels={visual.panels as any} />;
+        
+        case "image_search":
+          if (!visual.query) return null;
+          return <ImageSearchRenderer query={visual.query} source={visual.source} />;
+        
+        default:
+          return <div className="text-muted-foreground">Visualización no soportada</div>;
+      }
+    };
 
-  return (
-    <figure className={`my-4 ${className}`}>
-      <div className="rounded-lg overflow-hidden border bg-white dark:bg-gray-900">
-        {renderVisual()}
-      </div>
-      {visual.caption && (
-        <figcaption className="text-sm text-center text-muted-foreground mt-2 italic">
-          {visual.caption}
-        </figcaption>
-      )}
-    </figure>
-  );
+    return (
+      <figure className={`my-4 ${className}`}>
+        <div className="rounded-lg overflow-hidden border bg-white dark:bg-gray-900">
+          {renderVisual()}
+        </div>
+        {visual.caption && (
+          <figcaption className="text-sm text-center text-muted-foreground mt-2 italic">
+            {visual.caption}
+          </figcaption>
+        )}
+      </figure>
+    );
+  } catch (error) {
+    // Si cualquier renderer falla, no romper la app — solo no mostrar el visual
+    console.error("SmartVisual render error:", error, visual);
+    return null;
+  }
 }

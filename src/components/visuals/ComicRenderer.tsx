@@ -14,13 +14,22 @@ interface ComicRendererProps {
   panels: Panel[];
 }
 
-// Character colors
-const CHARACTER_COLORS: Record<Character, { skin: string; hair: string; clothes: string }> = {
-  niño: { skin: "#FDBF6F", hair: "#5D4037", clothes: "#2196F3" },
-  niña: { skin: "#FDBF6F", hair: "#4A148C", clothes: "#E91E63" },
-  maestro: { skin: "#D7A86E", hair: "#212121", clothes: "#607D8B" },
-  maestra: { skin: "#D7A86E", hair: "#5D4037", clothes: "#9C27B0" },
-  adulto: { skin: "#FDBF6F", hair: "#424242", clothes: "#795548" },
+// Character colors con aliases para mayor compatibilidad
+const CHARACTER_COLORS: Record<string, { skin: string; hair: string; clothes: string }> = {
+  // Personajes principales
+  "niño": { skin: "#FDBF6F", hair: "#5D4037", clothes: "#2196F3" },
+  "niña": { skin: "#FDBF6F", hair: "#4A148C", clothes: "#E91E63" },
+  "maestro": { skin: "#D7A86E", hair: "#212121", clothes: "#607D8B" },
+  "maestra": { skin: "#D7A86E", hair: "#5D4037", clothes: "#9C27B0" },
+  "adulto": { skin: "#FDBF6F", hair: "#424242", clothes: "#795548" },
+  // Aliases frecuentes que la IA puede enviar
+  "profesor": { skin: "#D7A86E", hair: "#212121", clothes: "#607D8B" }, // mismo que maestro
+  "profesora": { skin: "#D7A86E", hair: "#5D4037", clothes: "#9C27B0" }, // mismo que maestra
+  "estudiante": { skin: "#FDBF6F", hair: "#5D4037", clothes: "#2196F3" }, // mismo que niño
+  "chico": { skin: "#FDBF6F", hair: "#5D4037", clothes: "#2196F3" }, // mismo que niño
+  "chica": { skin: "#FDBF6F", hair: "#4A148C", clothes: "#E91E63" }, // mismo que niña
+  "joven": { skin: "#FDBF6F", hair: "#5D4037", clothes: "#2196F3" }, // mismo que niño
+  "adulta": { skin: "#FDBF6F", hair: "#424242", clothes: "#795548" }, // mismo que adulto
 };
 
 // Expression paths for eyes and mouth
@@ -52,7 +61,12 @@ export default function ComicRenderer({ panels }: ComicRendererProps) {
 }
 
 function ComicPanel({ panel, index }: { panel: Panel; index: number }) {
-  const colors = CHARACTER_COLORS[panel.character];
+  // Normalizar el nombre del personaje con fallback defensivo
+  const characterKey = Object.keys(CHARACTER_COLORS).find(
+    key => key === panel.character?.toLowerCase()
+  ) ?? "adulto"; // fallback siempre disponible
+  
+  const colors = CHARACTER_COLORS[characterKey];
   const expression = EXPRESSIONS[panel.expression];
   
   return (
