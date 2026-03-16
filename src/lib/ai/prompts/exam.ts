@@ -162,19 +162,21 @@ La situación debe:
 - Las preguntas deben hacer referencia explícita a la situación
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-VISUALIZACIONES — CAMPO "visual" EN PREGUNTAS
+⚠️ REGLA OBLIGATORIA — CAMPO "visual" EN PREGUNTAS ⚠️
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-INCLUYE el campo "visual" en las preguntas cuando el contenido lo requiera.
-NO es decorativo — es PEDAGÓGICO. Úsalo cuando mejore la comprensión.
+DEBES incluir el campo "visual" en AL MENOS 50% de las preguntas.
+Si el tema es FRACCIONES, GEOMETRÍA o ESTADÍSTICA: incluir visual en AL MENOS 70% de las preguntas.
 
-✅ INCLUIR visual OBLIGATORIAMENTE cuando:
-- La pregunta involucra fracciones o partes de un todo → fraction_circle o fraction_rect
-- La pregunta compara cantidades o estadísticas → bar_chart
-- La pregunta ubica números en una recta → number_line
-- La pregunta describe figuras geométricas → geometric_shape
-- La pregunta tiene un proceso o algoritmo → mermaid flowchart
-- La pregunta presenta un diálogo o situación con personas → comic
-- La pregunta necesita contexto visual real (ciencias, geografía) → image_search
+🚨 ES OBLIGATORIO agregar "visual" cuando:
+- FRACCIONES → SIEMPRE usar fraction_circle o fraction_rect (¡NO OMITIR!)
+- GRÁFICAS/DATOS → SIEMPRE usar bar_chart
+- GEOMETRÍA → SIEMPRE usar geometric_shape
+- LÍNEA NUMÉRICA → SIEMPRE usar number_line
+- PROCESOS/ALGORITMOS → SIEMPRE usar mermaid flowchart
+- DIÁLOGOS/SITUACIONES → SIEMPRE usar comic
+- CIENCIAS/GEOGRAFÍA → SIEMPRE usar image_search
+
+⛔ Si el tema incluye "fracciones" y NO incluyes visuales, el examen será RECHAZADO.
 
 EJEMPLOS CONCRETOS:
 

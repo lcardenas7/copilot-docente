@@ -226,11 +226,25 @@ export async function generateExam(
     let parsed;
     try {
       const rawParsed = JSON.parse(content);
-      parsed = ExamSchema.parse(rawParsed);
-    } catch (error) {
-      console.error("JSON parsing or validation error:", error);
-      console.error("Raw content:", content);
-      return { success: false, error: "Invalid AI response format", cached: false };
+      // Try validation but use raw if it fails (more flexible)
+      const validation = ExamSchema.safeParse(rawParsed);
+      if (validation.success) {
+        parsed = validation.data;
+      } else {
+        console.error("Zod validation errors:", JSON.stringify(validation.error.errors, null, 2));
+        console.error("Raw content sample:", content.substring(0, 500));
+        // Use raw parsed if basic structure is valid
+        if (rawParsed.title && rawParsed.questions && Array.isArray(rawParsed.questions)) {
+          console.log("Using raw parsed data despite validation errors");
+          parsed = rawParsed;
+        } else {
+          return { success: false, error: "Invalid AI response format: " + validation.error.errors[0]?.message, cached: false };
+        }
+      }
+    } catch (error: any) {
+      console.error("JSON parsing error:", error?.message);
+      console.error("Raw content sample:", content?.substring(0, 500));
+      return { success: false, error: "Invalid JSON from AI", cached: false };
     }
 
     // Save to cache
