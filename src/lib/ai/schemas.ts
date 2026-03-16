@@ -9,11 +9,8 @@ export const VisualSchema = z.discriminatedUnion("engine", [
     engine: z.literal("svg_dynamic"),
     type: z.enum([
       "fraction_circle", "fraction_rect", "number_line",
-      "bar_chart", "pie_chart", "coordinate_plane",
-      "geometric_shape", "venn_diagram",
-      "cell_animal", "cell_plant", "atom_structure",
-      "circuit_simple", "force_diagram", "vector_diagram",
-      "timeline", "body_system"
+      "bar_chart", "pie_chart", "geometric_shape",
+      "timeline", "force_diagram", "circuit_simple"
     ]),
     data: z.record(z.string(), z.any()),
     caption: z.string().optional(),
@@ -25,13 +22,13 @@ export const VisualSchema = z.discriminatedUnion("engine", [
     code: z.string(),
     caption: z.string().optional(),
   }),
-  // Comic - viñetas con personajes y diálogos
+  // Comic - viñetas con personajes y diálogos (más flexible)
   z.object({
     engine: z.literal("comic"),
     panels: z.array(z.object({
-      character: z.enum(["niño", "niña", "maestro", "maestra", "adulto"]),
+      character: z.string(),
       text: z.string(),
-      expression: z.enum(["neutral", "happy", "confused", "surprised", "thinking", "sad"]),
+      expression: z.string(),
       setting: z.string().optional(),
     })),
     caption: z.string().optional(),
