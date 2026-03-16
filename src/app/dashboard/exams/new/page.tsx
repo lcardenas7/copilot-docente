@@ -21,6 +21,13 @@ import {
   MessageSquare, AlertCircle
 } from "lucide-react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+
+// Dynamic import para SmartVisual (evita SSR issues)
+const SmartVisual = dynamic(
+  () => import("@/components/visuals/SmartVisual"),
+  { ssr: false }
+);
 
 const QUESTION_TYPE_ICONS: Record<string, any> = {
   MULTIPLE_CHOICE: CircleDot,
@@ -133,6 +140,13 @@ export default function NewExamPage() {
                   <span className="text-xs text-muted-foreground">Bloom: {q.bloomLevel}</span>
                 )}
               </div>
+
+              {/* Visual (si existe) */}
+              {q.visual && (
+                <div className="mb-4">
+                  <SmartVisual visual={q.visual} />
+                </div>
+              )}
 
               {/* Question Text */}
               <p className="font-medium mb-4 text-base">{q.question}</p>
