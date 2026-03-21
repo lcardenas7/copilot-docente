@@ -3,20 +3,66 @@
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 
-export default function LoginPage() {
+function LoginContent() {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    if (errorParam) {
+      console.error("OAuth error from URL:", errorParam);
+      setError(getErrorMessage(errorParam));
+    }
+  }, [searchParams]);
+
+  const getErrorMessage = (error: string): string => {
+    switch (error) {
+      case "Configuration":
+        return "Error de configuración del servidor. Contacta al administrador.";
+      case "AccessDenied":
+        return "Acceso denegado. No tienes permiso para iniciar sesión.";
+      case "Verification":
+        return "El enlace de verificación ha expirado o ya fue usado.";
+      case "OAuthSignin":
+        return "Error al iniciar el proceso de autenticación con Google.";
+      case "OAuthCallback":
+        return "Error en la respuesta de Google. Verifica la configuración OAuth.";
+      case "OAuthCreateAccount":
+        return "No se pudo crear la cuenta. Intenta de nuevo.";
+      case "EmailCreateAccount":
+        return "No se pudo crear la cuenta con ese email.";
+      case "Callback":
+        return "Error en el callback de autenticación.";
+      case "OAuthAccountNotLinked":
+        return "Este email ya está asociado a otra cuenta.";
+      case "SessionRequired":
+        return "Debes iniciar sesión para acceder.";
+      default:
+        return `Error de autenticación: ${error}`;
+    }
+  };
 
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
+      setError(null);
       console.log("Iniciando login con Google...");
-      await signIn("google", { callbackUrl: "/dashboard" });
-    } catch (error) {
-      console.error("Error en login:", error);
+      
+      // signIn with redirect:true doesn't return a result, it redirects
+      await signIn("google", { 
+        callbackUrl: "/dashboard",
+        redirect: true 
+      });
+      // If we reach here without redirect, something went wrong
+    } catch (err) {
+      console.error("Error en login:", err);
+      setError("Error inesperado. Por favor intenta de nuevo.");
       setIsLoading(false);
     }
   };
@@ -34,6 +80,12 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {error && (
+            <div className="flex items-center gap-2 p-3 text-sm text-red-600 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <AlertCircle className="h-4 w-4 flex-shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
           <Button
             className="w-full"
             size="lg"
@@ -77,5 +129,17 @@ export default function LoginPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-muted/50">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent" />
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
