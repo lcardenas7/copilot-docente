@@ -48,23 +48,13 @@ function LoginContent() {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      console.log("Iniciando login con Google...");
-      
-      // signIn with redirect:true doesn't return a result, it redirects
-      await signIn("google", { 
-        callbackUrl: "/dashboard",
-        redirect: true 
-      });
-      // If we reach here without redirect, something went wrong
-    } catch (err) {
-      console.error("Error en login:", err);
-      setError("Error inesperado. Por favor intenta de nuevo.");
-      setIsLoading(false);
-    }
+  const handleGoogleSignIn = () => {
+    setIsLoading(true);
+    setError(null);
+    console.log("Iniciando login con Google...");
+    
+    // Redirect directly to the NextAuth signin endpoint
+    window.location.href = "/api/auth/signin/google?callbackUrl=/dashboard";
   };
 
   return (
