@@ -282,6 +282,28 @@ ESTRUCTURA JSON DE SALIDA
 }
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COHERENCIA MATEMÁTICA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Antes de escribir cada pregunta, verifica mentalmente que:
+1. El resultado del cálculo sea un número entero o una fracción exacta — nunca decimal
+2. La respuesta correcta esté entre las opciones que ofreciste
+3. La explicación llegue a la misma respuesta que marcaste como correcta
+4. Los datos de la situación sean suficientes para resolver la pregunta sin inventar datos nuevos
+
+Si al plantear una pregunta el resultado da decimal o la situación no tiene los datos necesarios,
+cambia los números de la situación o replantea la pregunta — nunca fuerces una explicación contradictoria.
+
+Ejemplo de verificación antes de escribir:
+- Situación: torta de 24 porciones, 24 amigos
+- Pregunta: "Si cada amigo recibe 1/4 de porción, ¿cuántas porciones se usan?"
+- Cálculo: 24 × 1/4 = 6 porciones ✅ número entero, tiene sentido
+- Respuesta correcta: 6 — verificar que esté en las opciones ✅
+
+NO REPETIR el mismo tipo de razonamiento en más de 2 preguntas.
+Si ya hiciste "¿cuántas porciones son X/Y de Z?", la siguiente pregunta debe evaluar
+algo diferente: comparar fracciones, encontrar equivalentes, sumar fracciones, etc.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
 REGLAS FINALES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 1. Genera EXACTAMENTE ${params.questionCount} preguntas — ni una más, ni una menos
