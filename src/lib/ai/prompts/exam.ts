@@ -147,19 +147,21 @@ CUÁNDO incluir situación problema:
 Estructura del campo "situation":
 {
   "situation": {
-    "title": "El mercado de Don Carlos",
-    "context": "Don Carlos tiene una tienda de frutas en Medellín. El lunes vendió 3/4 de su inventario de mangos y el martes recibió un nuevo pedido de 40 mangos más...",
-    "characters": ["Don Carlos", "su hija Valentina"],
-    "setting": "Tienda de frutas, Medellín",
-    "data": ["Inventario inicial: 80 mangos", "Precio por mango: $500"]
+    "title": "La feria gastronómica del colegio",
+    "context": "Valentina y sus compañeros organizan una feria gastronómica para recaudar fondos. Tienen un presupuesto de $120.000, diferentes recetas que rinden porciones distintas y deben calcular costos, ganancias y distribución...",
+    "characters": ["Valentina", "el profesor Héctor", "Camilo"],
+    "setting": "Colegio San José, Cartagena",
+    "data": ["Presupuesto: $120.000", "Recetas: empanadas (rinde 48), limonada (rinde 60 vasos)", "Precio venta empanada: $2.500"]
   }
 }
 
 La situación debe:
-- Usar nombres y lugares LATINOAMERICANOS reales
-- Tener datos numéricos concretos que las preguntas usen
+- Usar nombres y lugares LATINOAMERICANOS reales y VARIADOS
+- Tener MÚLTIPLES datos numéricos que se combinen entre sí
 - Ser narrativa, como una historia corta (3-5 oraciones)
 - Las preguntas deben hacer referencia explícita a la situación
+- NUNCA repetir el mismo personaje como protagonista en todas las preguntas
+- Incluir AL MENOS 2-3 personajes diferentes que interactúen
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⚠️ REGLA OBLIGATORIA — CAMPO "visual" EN PREGUNTAS ⚠️
@@ -326,6 +328,42 @@ ESTRUCTURA JSON DE SALIDA
 }
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ REGLAS ANTI-REPETICIÓN (MUY IMPORTANTE)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚫 PROHIBIDO:
+- Repetir el mismo personaje en más de 2 preguntas (usa DIFERENTES personajes)
+- Hacer preguntas con la misma estructura (ej: NO 5 preguntas de "¿cuánto es X/Y de Z?")
+- Usar los mismos números base en varias preguntas (varía cantidades)
+- Explicaciones de más de 3 oraciones (sé conciso y claro)
+- Usar solo un tipo de operación (combina: fracción de un número, suma de fracciones, comparación, equivalencias, etc.)
+
+✅ OBLIGATORIO:
+- Cada pregunta debe requerir un RAZONAMIENTO DIFERENTE
+- Varía los contextos: una en tienda, otra en cocina, otra en deporte, otra en construcción
+- Usa AL MENOS 4 personajes diferentes en un examen de 10 preguntas
+- Cada pregunta debe aportar algo nuevo que las anteriores no evalúan
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️ NIVELES DE DIFICULTAD — DIFERENCIAS REALES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${params.difficulty === "EASY" ? `FÁCIL:
+- Operaciones directas con un solo paso
+- Fracciones simples (1/2, 1/4, 1/3)
+- Datos dados explícitamente
+- Ejemplo: "¿Cuánto es 1/2 de 20 manzanas?"` : params.difficulty === "MEDIUM" ? `MEDIO:
+- Requiere 2 pasos para resolver
+- Fracciones con denominadores diferentes
+- Algunos datos deben inferirse
+- Ejemplo: "Si Lucía compró 3/4 kg de arroz a $2.000 el kg y 1/2 kg de frijoles a $3.500 el kg, ¿cuánto pagó en total?"` : `DIFÍCIL — NIVEL AVANZADO:
+- Requiere 3 o más pasos de cálculo
+- Combinar múltiples operaciones (suma + multiplicación + comparación de fracciones)
+- El estudiante debe EXTRAER datos relevantes de un texto largo
+- Incluir información extra que NO se necesita (distractores en el enunciado)
+- Requiere conversiones o encontrar equivalencias antes de operar
+- Ejemplo: "En la panadería de Sofía, el lunes hornea 120 panes y vende 2/3. El martes hornea 90 panes más pero solo vende 3/5 del total que tiene (incluyendo los sobrantes del lunes). Si cada pan cuesta $800 y ella paga $200 de costo por pan, ¿cuál fue su ganancia neta el martes?"
+- Las respuestas NO deben ser obvias ni redondeadas`}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 REGLAS FINALES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 1. Genera EXACTAMENTE ${params.questionCount} preguntas
@@ -334,9 +372,11 @@ REGLAS FINALES
 4. Niveles de Bloom según dificultad: ${params.difficulty === "EASY" ? "REMEMBER, UNDERSTAND" : params.difficulty === "MEDIUM" ? "UNDERSTAND, APPLY, ANALYZE" : "ANALYZE, EVALUATE, CREATE"}
 5. Distractores plausibles (errores comunes de estudiantes)
 6. Preguntas claras, sin ambigüedades, apropiadas para ${params.grade}
-7. Explicaciones pedagógicas para CADA pregunta
+7. Explicaciones pedagógicas BREVES (máximo 2-3 oraciones) para CADA pregunta
 8. Progresión de dificultad (fácil → difícil)
-9. ÚNICAMENTE JSON válido, sin texto adicional ni markdown`;
+9. ÚNICAMENTE JSON válido, sin texto adicional ni markdown
+10. CADA pregunta debe evaluar una habilidad o concepto DIFERENTE
+11. Las instrucciones del docente tienen PRIORIDAD sobre las reglas genéricas`;
 }
 
 export const EXAM_SYSTEM_PROMPT = `Eres un asistente pedagógico que ayuda a docentes a diseñar evaluaciones educativas en distintas áreas del conocimiento para Latinoamérica.
