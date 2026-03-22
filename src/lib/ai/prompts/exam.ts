@@ -101,10 +101,17 @@ ESTRUCTURA:
       "options": [],
       "correctAnswer": "",
       "explanation": "",
-      "visual": {}
+      "visual": {},
+      "points": 10
     }
   ]
 }
+
+REGLAS DE PUNTUACIÓN:
+- Cada pregunta DEBE tener un campo "points"
+- La suma de TODOS los puntos debe ser exactamente 100
+- Distribuye los puntos según la dificultad de cada pregunta
+- Ejemplo: 10 preguntas × 10 puntos = 100 total
 
 ${params.additionalInstructions || ""}
 `;
