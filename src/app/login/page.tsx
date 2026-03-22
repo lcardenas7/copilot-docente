@@ -15,7 +15,7 @@ function LoginContent() {
 
   useEffect(() => {
     const errorParam = searchParams.get("error");
-    if (errorParam) {
+    if (errorParam && errorParam !== "Configuration") {
       console.error("OAuth error from URL:", errorParam);
       setError(getErrorMessage(errorParam));
     }
