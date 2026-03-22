@@ -1,5 +1,24 @@
 import { AIContext, buildContextBlock } from "../context";
 
+// ─────────────────────────────────────────────────────────────
+// SYSTEM PROMPT — quién es la IA y cómo piensa
+// ─────────────────────────────────────────────────────────────
+export const EXAM_SYSTEM_PROMPT = `Eres un docente experto en pedagogía latinoamericana con 20 años de experiencia creando evaluaciones de alta calidad. Generas exámenes en JSON válido únicamente, sin texto adicional ni markdown.
+
+Tu objetivo es crear evaluaciones que desarrollen pensamiento crítico y conecten el aprendizaje con la vida real de los estudiantes latinoamericanos.
+
+Cuando generas un examen piensas así:
+1. ¿Qué quiero que el estudiante demuestre que sabe o puede hacer?
+2. ¿Cómo conecto ese conocimiento con una situación real y cercana a su contexto?
+3. ¿Qué visual ayudaría a entender mejor esta pregunta?
+4. ¿La explicación es clara, breve y enseña algo?
+
+Responde siempre en español latinoamericano.`;
+
+
+// ─────────────────────────────────────────────────────────────
+// USER PROMPT — el contexto específico de cada generación
+// ─────────────────────────────────────────────────────────────
 export function buildExamPrompt(params: {
   subject: string;
   grade: string;
@@ -12,370 +31,262 @@ export function buildExamPrompt(params: {
   additionalInstructions?: string;
   pedagogicalContext?: AIContext;
 }): string {
-  const pedagogicalBlock = params.pedagogicalContext 
-    ? buildContextBlock(params.pedagogicalContext)
+
+  // Bloque de contexto pedagógico del aula (si viene de un curso)
+  const contextBlock = params.pedagogicalContext
+    ? `CONTEXTO DEL AULA:
+- Materia: ${params.pedagogicalContext.course} | Grado: ${params.pedagogicalContext.grade}
+- Unidad actual: ${params.pedagogicalContext.unit ?? "No especificada"}
+- Tema actual: ${params.pedagogicalContext.topic ?? params.topic}
+- Temas previos vistos: ${params.pedagogicalContext.previousTopics?.join(", ") ?? "No especificados"}
+Ten en cuenta este contexto para que el examen sea coherente con lo que el grupo ha trabajado.
+
+`
     : "";
+
+  // Guía de dificultad en lenguaje natural
+  const difficultyGuide: Record<string, string> = {
+    EASY:   "Operaciones directas de un solo paso, datos explícitos, fracciones simples como 1/2, 1/4 o 1/3.",
+    MEDIUM: "Requiere 2 pasos, combinar conceptos, algunos datos implícitos que el estudiante debe inferir.",
+    HARD:   "Múltiples pasos encadenados, combinar varias operaciones, información relevante mezclada con datos distractores, resultados no obvios ni redondeados."
+  };
+
+  const difficultyText = difficultyGuide[params.difficulty] ?? "Nivel apropiado para el grado.";
+
+  // Ejemplos de cada tipo de pregunta
   const questionTypeExamples: Record<string, string> = {
     MULTIPLE_CHOICE: `{
       "number": 1,
       "type": "MULTIPLE_CHOICE",
       "points": 10,
-      "question": "Texto claro de la pregunta",
+      "bloomLevel": "APPLY",
+      "question": "Texto claro de la pregunta basado en la situación",
+      "visual": { ... },
       "options": [
-        { "letter": "A", "text": "Opción A - distractor plausible" },
-        { "letter": "B", "text": "Opción B - distractor plausible" },
-        { "letter": "C", "text": "Opción C - respuesta correcta" },
-        { "letter": "D", "text": "Opción D - distractor plausible" }
+        { "letter": "A", "text": "Distractor plausible — error común" },
+        { "letter": "B", "text": "Distractor plausible — error común" },
+        { "letter": "C", "text": "Respuesta correcta" },
+        { "letter": "D", "text": "Distractor plausible — error común" }
       ],
       "correctAnswer": "C",
-      "explanation": "Explicación pedagógica de por qué C es correcta"
+      "explanation": "Explicación en máximo 2-3 oraciones mostrando el procedimiento"
     }`,
+
     TRUE_FALSE: `{
       "number": 2,
       "type": "TRUE_FALSE",
-      "points": 5,
-      "question": "Afirmación clara a evaluar como verdadera o falsa",
+      "points": 8,
+      "bloomLevel": "ANALYZE",
+      "question": "Afirmación clara y precisa que el estudiante evalúa como verdadera o falsa",
       "correctAnswer": true,
-      "explanation": "Explicación de por qué es verdadero/falso"
+      "explanation": "Explicación de por qué es verdadero o falso con el procedimiento"
     }`,
+
     FILL_BLANK: `{
       "number": 3,
       "type": "FILL_BLANK",
       "points": 8,
+      "bloomLevel": "UNDERSTAND",
       "question": "Completa: La _____ es el proceso por el cual las plantas _____.",
-      "blanks": ["fotosíntesis", "producen oxígeno"],
-      "explanation": "Explicación del concepto"
+      "blanks": ["fotosíntesis", "producen su propio alimento usando luz solar"],
+      "explanation": "Explicación del concepto evaluado"
     }`,
+
     MATCHING: `{
       "number": 4,
       "type": "MATCHING",
       "points": 12,
+      "bloomLevel": "UNDERSTAND",
       "question": "Relaciona cada concepto de la columna A con su definición en la columna B",
-      "columnA": ["Concepto 1", "Concepto 2", "Concepto 3", "Concepto 4"],
-      "columnB": ["Definición A", "Definición B", "Definición C", "Definición D"],
-      "correctMatches": {"0": "2", "1": "0", "2": "3", "3": "1"},
+      "columnA": ["Numerador", "Denominador", "Fracción propia", "Fracción impropia"],
+      "columnB": [
+        "El número de partes que se toman",
+        "El número total de partes iguales",
+        "El numerador es menor que el denominador",
+        "El numerador es mayor o igual al denominador"
+      ],
+      "correctMatches": { "0": "0", "1": "1", "2": "2", "3": "3" },
       "explanation": "Explicación de las relaciones correctas"
     }`,
+
     ORDERING: `{
       "number": 5,
       "type": "ORDERING",
       "points": 10,
+      "bloomLevel": "APPLY",
       "question": "Ordena los siguientes pasos del proceso de manera correcta",
-      "items": ["Paso que va tercero", "Paso que va primero", "Paso que va cuarto", "Paso que va segundo"],
-      "correctOrder": [1, 3, 0, 2],
-      "explanation": "Explicación del orden correcto"
+      "items": [
+        "Encontrar el mínimo común múltiplo",
+        "Identificar los denominadores",
+        "Sumar los numeradores",
+        "Convertir las fracciones al nuevo denominador"
+      ],
+      "correctOrder": [1, 0, 3, 2],
+      "explanation": "Explicación del orden correcto y por qué es así"
     }`,
+
     SHORT_ANSWER: `{
       "number": 6,
       "type": "SHORT_ANSWER",
       "points": 10,
-      "question": "Pregunta que requiere respuesta breve (1-3 oraciones)",
-      "acceptableAnswers": ["Respuesta aceptable 1", "Variación aceptable 2"],
-      "keywords": ["palabra clave 1", "palabra clave 2"],
-      "explanation": "Criterios para evaluar la respuesta"
+      "bloomLevel": "ANALYZE",
+      "question": "¿Por qué 2/4 y 1/2 representan la misma cantidad? Explica con tus palabras.",
+      "acceptableAnswers": [
+        "Porque si divides 2/4, al simplificar obtienes 1/2",
+        "Porque ambas representan la mitad de algo"
+      ],
+      "keywords": ["equivalentes", "simplificar", "misma cantidad", "mitad"],
+      "explanation": "Criterios para evaluar: debe mencionar que representan la misma parte del todo"
     }`,
+
     OPEN: `{
       "number": 7,
       "type": "OPEN",
       "points": 20,
-      "question": "Pregunta de desarrollo que requiere análisis profundo",
+      "bloomLevel": "EVALUATE",
+      "question": "Explica cómo resolverías el siguiente problema y justifica cada paso...",
       "rubric": [
-        {"criterion": "Comprensión del tema", "points": 8, "description": "Demuestra entendimiento completo"},
-        {"criterion": "Argumentación", "points": 7, "description": "Presenta argumentos claros y coherentes"},
-        {"criterion": "Ejemplos", "points": 5, "description": "Incluye ejemplos relevantes"}
+        { "criterion": "Comprensión del problema", "points": 6, "description": "Identifica correctamente los datos y lo que se pide" },
+        { "criterion": "Procedimiento", "points": 8, "description": "Aplica el método correcto paso a paso" },
+        { "criterion": "Respuesta y justificación", "points": 6, "description": "Llega a la respuesta correcta y la explica" }
       ],
       "sampleAnswer": "Respuesta modelo completa que serviría como referencia para calificar",
       "minWords": 50
     }`,
+
     MULTIPLE_ANSWER: `{
       "number": 8,
       "type": "MULTIPLE_ANSWER",
       "points": 12,
-      "question": "Selecciona TODAS las opciones correctas",
+      "bloomLevel": "ANALYZE",
+      "question": "Selecciona TODAS las opciones que representan fracciones equivalentes a 1/2",
       "options": [
-        { "letter": "A", "text": "Opción correcta 1", "isCorrect": true },
-        { "letter": "B", "text": "Opción incorrecta", "isCorrect": false },
-        { "letter": "C", "text": "Opción correcta 2", "isCorrect": true },
-        { "letter": "D", "text": "Opción incorrecta", "isCorrect": false },
-        { "letter": "E", "text": "Opción correcta 3", "isCorrect": true }
+        { "letter": "A", "text": "2/4", "isCorrect": true },
+        { "letter": "B", "text": "3/5", "isCorrect": false },
+        { "letter": "C", "text": "4/8", "isCorrect": true },
+        { "letter": "D", "text": "3/7", "isCorrect": false },
+        { "letter": "E", "text": "5/10", "isCorrect": true }
       ],
-      "explanation": "Explicación de por qué A, C y E son correctas"
+      "explanation": "2/4, 4/8 y 5/10 son equivalentes a 1/2 porque al simplificarlas se obtiene 1/2"
     }`
   };
 
+  // Construir ejemplos solo de los tipos seleccionados
   const selectedExamples = params.questionTypes
     .map(type => questionTypeExamples[type])
     .filter(Boolean)
     .join(",\n    ");
 
-  const additionalBlock = params.additionalInstructions 
-    ? `\nINSTRUCCIONES ADICIONALES DEL DOCENTE:\n${params.additionalInstructions}\n` 
-    : "";
+  return `Crea un examen completo y de alta calidad con los siguientes parámetros:
 
-  return `Genera un examen COMPLETO y PROFESIONAL para evaluación educativa.
+MATERIA: ${params.subject}
+GRADO: ${params.grade}
+TEMA: ${params.topic}
+PREGUNTAS: ${params.questionCount} (exactamente este número)
+DIFICULTAD: ${params.difficulty} — ${difficultyText}
+TIPOS DE PREGUNTAS: ${params.questionTypes.join(", ")}
+${params.additionalInstructions ? `\nINSTRUCCIONES ESPECÍFICAS DEL DOCENTE (prioridad máxima):\n${params.additionalInstructions}\n` : ""}
+${contextBlock}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SITUACIÓN PROBLEMA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Crea una situación narrativa real que dé contexto y sentido a las preguntas.
+Que sea algo que podría pasar de verdad en Colombia, México, Argentina u otro país de LATAM.
+Usa nombres variados y lugares concretos — no siempre el mismo personaje.
+Incluye varios datos numéricos que se usen en diferentes preguntas.
+La situación debe tener al menos 4-6 oraciones con una historia clara.
+Las preguntas deben surgir naturalmente de esa situación.
 
-PARÁMETROS:
-- Materia: ${params.subject}
-- Grado: ${params.grade}
-- Tema: ${params.topic}
-- Cantidad de preguntas: ${params.questionCount}
-- Dificultad: ${params.difficulty}
-- Tipos de preguntas a incluir: ${params.questionTypes.join(", ")}
-- Incluir clave de respuestas: ${params.includeAnswerKey !== false ? "Sí" : "No"}
-${pedagogicalBlock}${additionalBlock}
+Nombres sugeridos (varía): Valentina, Sofía, Daniela, Mariana, Andrés, Miguel, Sebastián, Camilo, Felipe, Lucía
+Lugares sugeridos (varía): Cartagena, Bogotá, Medellín, Ciudad de México, Lima, Quito, Buenos Aires, Santiago
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SITUACIONES PROBLEMA — CONTEXTO NARRATIVO
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-INCLUYE una situación problema cuando el tema lo amerite o el docente lo solicite.
-Una situación problema es un contexto narrativo REAL que da sentido a las preguntas.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VISUALES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Usa tu criterio pedagógico para decidir cuándo una imagen ayuda a entender mejor la pregunta.
+Incluye visuals donde genuinamente aporten — no los fuerces si no son necesarios.
 
-CUÁNDO incluir situación problema:
-- Matemáticas aplicadas (compras, medidas, repartos, porcentajes)
-- Ciencias con experimentos o fenómenos observables
-- Problemas de la vida cotidiana
-- Cuando el docente mencione "situación", "problema", "contexto", "caso" en sus instrucciones
+Tipos disponibles y cuándo usarlos:
+- fraction_circle / fraction_rect → fracciones, partes de un todo
+- bar_chart → comparar cantidades, estadísticas, datos del problema
+- number_line → posición de números, comparar fracciones en la recta
+- geometric_shape → figuras geométricas con medidas
+- mermaid flowchart → algoritmos, procesos secuenciales, lógica
+- comic → diálogos entre personajes, situaciones con personas
+- image_search (wikimedia) → ecosistemas, mapas, organismos, historia
+- image_search (unsplash) → contextos cotidianos, lugares reales
 
-Estructura del campo "situation":
-{
-  "situation": {
-    "title": "La feria gastronómica del colegio",
-    "context": "Valentina y sus compañeros organizan una feria gastronómica para recaudar fondos. Tienen un presupuesto de $120.000, diferentes recetas que rinden porciones distintas y deben calcular costos, ganancias y distribución...",
-    "characters": ["Valentina", "el profesor Héctor", "Camilo"],
-    "setting": "Colegio San José, Cartagena",
-    "data": ["Presupuesto: $120.000", "Recetas: empanadas (rinde 48), limonada (rinde 60 vasos)", "Precio venta empanada: $2.500"]
-  }
-}
+Formatos exactos a usar:
+{"engine":"svg_dynamic","type":"fraction_circle","data":{"total":8,"shaded":3,"style":"pizza"},"caption":"descripción clara"}
+{"engine":"svg_dynamic","type":"fraction_rect","data":{"total":4,"shaded":1},"caption":"descripción"}
+{"engine":"svg_dynamic","type":"bar_chart","data":{"labels":["A","B","C"],"values":[40,70,55],"title":"Título del gráfico"},"caption":"descripción"}
+{"engine":"svg_dynamic","type":"number_line","data":{"min":0,"max":1,"marked":[0.5,0.75]},"caption":"descripción"}
+{"engine":"svg_dynamic","type":"geometric_shape","data":{"shape":"rectangle","dimensions":{"base":6,"altura":4},"showLabels":true},"caption":"descripción"}
+{"engine":"mermaid","type":"flowchart","code":"flowchart TD\\n  A[Inicio] --> B{¿Condición?}\\n  B -->|Sí| C[Resultado]\\n  B -->|No| D[Otro resultado]","caption":"descripción"}
+{"engine":"comic","panels":[{"character":"niño","text":"texto del diálogo","expression":"thinking"},{"character":"maestra","text":"respuesta","expression":"happy"}],"caption":"descripción"}
+{"engine":"image_search","query":"término de búsqueda específico en español","source":"wikimedia","caption":"descripción"}
+{"engine":"image_search","query":"search term in english","source":"unsplash","caption":"descripción"}
 
-La situación debe:
-- Usar nombres y lugares LATINOAMERICANOS reales y VARIADOS
-- Tener MÚLTIPLES datos numéricos que se combinen entre sí
-- Ser narrativa, como una historia corta (3-5 oraciones)
-- Las preguntas deben hacer referencia explícita a la situación
-- NUNCA repetir el mismo personaje como protagonista en todas las preguntas
-- Incluir AL MENOS 2-3 personajes diferentes que interactúen
+IMPORTANTE: Los números en los datos del visual deben coincidir exactamente con los del enunciado.
+Para comic, solo usar estos valores en "character": niño, niña, maestro, maestra, adulto
+Para comic, solo usar estos valores en "expression": neutral, happy, confused, surprised, thinking, sad
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚠️ REGLA OBLIGATORIA — CAMPO "visual" EN PREGUNTAS ⚠️
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-DEBES incluir el campo "visual" en AL MENOS 50% de las preguntas.
-Si el tema es FRACCIONES, GEOMETRÍA o ESTADÍSTICA: incluir visual en AL MENOS 70% de las preguntas.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CALIDAD DE LAS PREGUNTAS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Cada pregunta evalúa algo diferente — no repitas el mismo razonamiento
+- Los distractores son errores que un estudiante real cometería, no opciones absurdas
+- Las explicaciones son breves (2-3 oraciones máximo) y muestran el procedimiento
+- Para matemáticas: muestra el cálculo paso a paso en la explicación
+- Para otras materias: explica el porqué con referencia a la situación
+- Progresión de dificultad a lo largo del examen (empieza más fácil, termina más difícil)
+- Bloom varía según dificultad: EASY→REMEMBER/UNDERSTAND, MEDIUM→APPLY/ANALYZE, HARD→EVALUATE/CREATE
 
-🚨 ES OBLIGATORIO agregar "visual" cuando:
-- FRACCIONES → SIEMPRE usar fraction_circle o fraction_rect (¡NO OMITIR!)
-- GRÁFICAS/DATOS → SIEMPRE usar bar_chart
-- GEOMETRÍA → SIEMPRE usar geometric_shape
-- LÍNEA NUMÉRICA → SIEMPRE usar number_line
-- PROCESOS/ALGORITMOS → SIEMPRE usar mermaid flowchart
-- DIÁLOGOS/SITUACIONES → SIEMPRE usar comic
-- CIENCIAS/GEOGRAFÍA → SIEMPRE usar image_search
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EJEMPLOS DE TIPOS DE PREGUNTA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Usa exactamente estas estructuras según los tipos solicitados:
+    ${selectedExamples}
 
-⛔ Si el tema incluye "fracciones" y NO incluyes visuales, el examen será RECHAZADO.
-
-EJEMPLOS CONCRETOS:
-
-Ejemplo 1 — Fracción con visual:
-{
-  "number": 1,
-  "type": "MULTIPLE_CHOICE",
-  "question": "Observa la pizza. ¿Qué fracción quedó sin comer?",
-  "visual": {
-    "engine": "svg_dynamic",
-    "type": "fraction_circle",
-    "data": { "total": 8, "shaded": 5, "style": "pizza" },
-    "caption": "Pizza dividida en 8 porciones — las oscuras se comieron"
-  },
-  "options": [
-    { "letter": "A", "text": "5/8" },
-    { "letter": "B", "text": "3/8" },
-    { "letter": "C", "text": "3/5" },
-    { "letter": "D", "text": "5/3" }
-  ],
-  "correctAnswer": "B",
-  "points": 10,
-  "explanation": "Se comieron 5 de 8 porciones, quedan 3/8"
-}
-
-Ejemplo 2 — Gráfica de barras:
-{
-  "number": 2,
-  "type": "MULTIPLE_CHOICE",
-  "question": "Según la gráfica, ¿qué producto vendió más Don Carlos?",
-  "visual": {
-    "engine": "svg_dynamic",
-    "type": "bar_chart",
-    "data": {
-      "labels": ["Mangos", "Bananos", "Naranjas", "Papayas"],
-      "values": [45, 72, 38, 60],
-      "title": "Ventas de la semana"
-    },
-    "caption": "Ventas por producto"
-  },
-  "options": [
-    { "letter": "A", "text": "Mangos" },
-    { "letter": "B", "text": "Bananos" },
-    { "letter": "C", "text": "Naranjas" },
-    { "letter": "D", "text": "Papayas" }
-  ],
-  "correctAnswer": "B",
-  "points": 10,
-  "explanation": "Los bananos tienen el valor más alto: 72 unidades"
-}
-
-Ejemplo 3 — Situación con diálogo (comic):
-{
-  "number": 3,
-  "type": "OPEN",
-  "question": "Lee el diálogo. ¿Cuál es el error en el razonamiento de Camilo? Explica cómo debería resolverlo correctamente.",
-  "visual": {
-    "engine": "comic",
-    "panels": [
-      { "character": "niño", "text": "Si tengo 1/2 y le sumo 1/3, me da 2/5", "expression": "thinking" },
-      { "character": "maestra", "text": "¿Estás seguro de eso, Camilo?", "expression": "surprised" }
-    ],
-    "caption": "Camilo explica su razonamiento"
-  },
-  "points": 15,
-  "rubric": [
-    { "criterion": "Identifica el error", "points": 5, "description": "Reconoce que sumó numeradores y denominadores" },
-    { "criterion": "Explica el procedimiento correcto", "points": 10, "description": "Describe cómo encontrar común denominador" }
-  ],
-  "sampleAnswer": "Camilo sumó numeradores y denominadores por separado. Para sumar fracciones con diferente denominador, primero debe encontrar el mínimo común múltiplo (6), convertir 1/2 = 3/6 y 1/3 = 2/6, y luego sumar: 3/6 + 2/6 = 5/6"
-}
-
-Ejemplo 4 — Diagrama de flujo:
-{
-  "number": 4,
-  "type": "FILL_BLANK",
-  "question": "Observa el algoritmo. ¿Qué paso falta en el recuadro con signos de interrogación?",
-  "visual": {
-    "engine": "mermaid",
-    "type": "flowchart",
-    "code": "flowchart TD\\n  A[Inicio] --> B[Leer número]\\n  B --> C{¿Es par?}\\n  C -->|Sí| D[Dividir entre 2]\\n  C -->|No| E[???]\\n  D --> F[Fin]\\n  E --> F",
-    "caption": "Algoritmo incompleto"
-  },
-  "blanks": ["Multiplicar por 3 y sumar 1"],
-  "points": 8,
-  "explanation": "Es el algoritmo de Collatz: si es impar, multiplica por 3 y suma 1"
-}
-
-Ejemplo 5 — Imagen real (ciencias):
-{
-  "number": 5,
-  "type": "MULTIPLE_CHOICE",
-  "question": "Observa la imagen. ¿Qué tipo de ecosistema es este?",
-  "visual": {
-    "engine": "image_search",
-    "query": "bosque tropical húmedo Colombia Amazonas",
-    "source": "wikimedia",
-    "caption": "Ecosistema colombiano"
-  },
-  "options": [
-    { "letter": "A", "text": "Desierto" },
-    { "letter": "B", "text": "Bosque tropical húmedo" },
-    { "letter": "C", "text": "Tundra" },
-    { "letter": "D", "text": "Sabana" }
-  ],
-  "correctAnswer": "B",
-  "points": 10,
-  "explanation": "La vegetación densa y húmeda es característica del bosque tropical"
-}
-
-REGLA DE CONSISTENCIA: Los datos en "visual.data" DEBEN coincidir con la pregunta.
-Si la pregunta dice "8 porciones y se comieron 5" → data: { total: 8, shaded: 5 }.
-NUNCA generes coordenadas SVG. Solo parámetros semánticos.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ESTRUCTURA JSON DE SALIDA
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
 {
-  "title": "Título del examen",
-  "subtitle": "Subtítulo descriptivo",
-  "instructions": "Instrucciones claras para el estudiante",
-  "estimatedTime": "45 minutos",
+  "title": "Título descriptivo del examen",
+  "subtitle": "Subtítulo con materia, grado y tema",
+  "instructions": "Instrucciones claras para el estudiante (2-3 oraciones)",
+  "estimatedTime": "X minutos",
   "totalPoints": 100,
   "passingScore": 60,
-  "situation": {  // ← INCLUIR cuando el tema lo amerite
-    "title": "...",
-    "context": "Texto narrativo de 3-5 oraciones con datos concretos...",
-    "characters": ["..."],
-    "setting": "Lugar específico en LATAM",
-    "data": ["Dato numérico 1", "Dato 2"]
+  "situation": {
+    "title": "Nombre de la situación",
+    "context": "Historia real de 4-6 oraciones con datos concretos y múltiples personajes que interactúan",
+    "characters": ["Nombre 1", "Nombre 2", "Nombre 3"],
+    "setting": "Ciudad o lugar específico de LATAM",
+    "data": ["Dato clave 1: valor exacto", "Dato clave 2: valor exacto", "Dato clave 3: valor exacto"]
   },
   "questions": [
     {
       "number": 1,
-      "type": "MULTIPLE_CHOICE",
+      "type": "TIPO_DE_PREGUNTA",
       "points": 10,
       "bloomLevel": "APPLY",
-      "question": "Texto de la pregunta (puede referirse a la situación)",
-      "visual": { ... },  // ← INCLUIR cuando mejore la comprensión
-      "options": [...],
-      "correctAnswer": "A",
-      "explanation": "Explicación pedagógica"
+      "question": "Texto claro de la pregunta, referenciando la situación cuando aplique",
+      "visual": { ... },
+      ... campos específicos del tipo de pregunta ...,
+      "explanation": "Explicación pedagógica breve y correcta"
     }
   ],
-  "answerKey": { "1": "A", "2": true },
-  "gradingNotes": "Notas para el docente"
+  "answerKey": { "1": "A", "2": true, "3": "B" },
+  "gradingNotes": "Observaciones útiles para el docente al calificar"
 }
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚠️ REGLAS ANTI-REPETICIÓN (MUY IMPORTANTE)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚫 PROHIBIDO:
-- Repetir el mismo personaje en más de 2 preguntas (usa DIFERENTES personajes)
-- Hacer preguntas con la misma estructura (ej: NO 5 preguntas de "¿cuánto es X/Y de Z?")
-- Usar los mismos números base en varias preguntas (varía cantidades)
-- Explicaciones de más de 3 oraciones (sé conciso y claro)
-- Usar solo un tipo de operación (combina: fracción de un número, suma de fracciones, comparación, equivalencias, etc.)
-
-✅ OBLIGATORIO:
-- Cada pregunta debe requerir un RAZONAMIENTO DIFERENTE
-- Varía los contextos: una en tienda, otra en cocina, otra en deporte, otra en construcción
-- Usa AL MENOS 4 personajes diferentes en un examen de 10 preguntas
-- Cada pregunta debe aportar algo nuevo que las anteriores no evalúan
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚠️ NIVELES DE DIFICULTAD — DIFERENCIAS REALES
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${params.difficulty === "EASY" ? `FÁCIL:
-- Operaciones directas con un solo paso
-- Fracciones simples (1/2, 1/4, 1/3)
-- Datos dados explícitamente
-- Ejemplo: "¿Cuánto es 1/2 de 20 manzanas?"` : params.difficulty === "MEDIUM" ? `MEDIO:
-- Requiere 2 pasos para resolver
-- Fracciones con denominadores diferentes
-- Algunos datos deben inferirse
-- Ejemplo: "Si Lucía compró 3/4 kg de arroz a $2.000 el kg y 1/2 kg de frijoles a $3.500 el kg, ¿cuánto pagó en total?"` : `DIFÍCIL — NIVEL AVANZADO:
-- Requiere 3 o más pasos de cálculo
-- Combinar múltiples operaciones (suma + multiplicación + comparación de fracciones)
-- El estudiante debe EXTRAER datos relevantes de un texto largo
-- Incluir información extra que NO se necesita (distractores en el enunciado)
-- Requiere conversiones o encontrar equivalencias antes de operar
-- Ejemplo: "En la panadería de Sofía, el lunes hornea 120 panes y vende 2/3. El martes hornea 90 panes más pero solo vende 3/5 del total que tiene (incluyendo los sobrantes del lunes). Si cada pan cuesta $800 y ella paga $200 de costo por pan, ¿cuál fue su ganancia neta el martes?"
-- Las respuestas NO deben ser obvias ni redondeadas`}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
 REGLAS FINALES
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-1. Genera EXACTAMENTE ${params.questionCount} preguntas
-2. Los puntos DEBEN sumar exactamente 100
-3. Distribuye los tipos: ${params.questionTypes.join(", ")}
-4. Distractores plausibles (errores comunes de estudiantes)
-5. Preguntas claras, sin ambigüedades, apropiadas para ${params.grade}
-6. Explicaciones pedagógicas BREVES (máximo 2-3 oraciones) para CADA pregunta
-7. Progresión de dificultad (fácil → difícil)
-8. ÚNICAMENTE JSON válido, sin texto adicional ni markdown
-9. CADA pregunta debe evaluar una habilidad o concepto DIFERENTE
-10. Las instrucciones del docente tienen PRIORIDAD sobre las reglas genéricas`;
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Genera EXACTAMENTE ${params.questionCount} preguntas — ni una más, ni una menos
+2. Los puntos de TODAS las preguntas deben sumar exactamente 100
+3. JSON válido únicamente — sin texto antes ni después, sin markdown
+4. Si hay un error que impide generar el examen, devuelve: {"error": "descripción del problema"}
+5. Las instrucciones específicas del docente tienen prioridad sobre cualquier otra regla`;
 }
-
-export const EXAM_SYSTEM_PROMPT = `Eres un asistente experto en crear evaluaciones educativas para docentes de Latinoamérica.
-
-Tu objetivo es generar exámenes que realmente evalúen el aprendizaje, no solo memorización.
-
-Adapta las preguntas al grado, materia y nivel de dificultad solicitados.
-
-Prioridad MÁXIMA: las instrucciones específicas del docente están por encima de cualquier regla general.
-
-Genera contenido variado, creativo y pedagógicamente sólido.`;
