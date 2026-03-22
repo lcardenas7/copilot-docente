@@ -1,43 +1,34 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import { db } from "@/lib/db";
-import type { Adapter } from "next-auth/adapters";
-
-// Validate environment variables
-const googleClientId = process.env.GOOGLE_CLIENT_ID;
-const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
-
-if (!googleClientId || !googleClientSecret) {
-  console.error("❌ GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is missing!");
-  console.error("GOOGLE_CLIENT_ID exists:", !!googleClientId);
-  console.error("GOOGLE_CLIENT_SECRET exists:", !!googleClientSecret);
-}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   debug: true,
   trustHost: true,
   secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
-  adapter: PrismaAdapter(db) as Adapter,
   providers: [
     Google({
-      clientId: googleClientId || "",
-      clientSecret: googleClientSecret || "",
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     }),
   ],
   callbacks: {
-    async session({ session, user }) {
+    async jwt({ token, account, profile }) {
+      if (account && profile) {
+        token.id = profile.sub;
+        token.email = profile.email;
+        token.name = profile.name;
+        token.picture = profile.picture;
+      }
+      return token;
+    },
+    async session({ session, token }) {
       if (session.user) {
-        session.user.id = user.id;
-        // Fetch additional user data
-        const dbUser = await db.user.findUnique({
-          where: { id: user.id },
-          select: { role: true, plan: true },
-        });
-        if (dbUser) {
-          (session.user as any).role = dbUser.role;
-          (session.user as any).plan = dbUser.plan;
-        }
+        session.user.id = token.id as string || token.sub || "";
+        session.user.email = token.email as string || "";
+        session.user.name = token.name as string || "";
+        session.user.image = token.picture as string || "";
+        (session.user as any).role = "TEACHER";
+        (session.user as any).plan = "FREE";
       }
       return session;
     },
@@ -47,6 +38,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     error: "/login",
   },
   session: {
-    strategy: "database",
+    strategy: "jwt",
   },
 });
