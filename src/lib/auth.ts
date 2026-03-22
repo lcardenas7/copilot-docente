@@ -4,12 +4,23 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/lib/db";
 import type { Adapter } from "next-auth/adapters";
 
+// Validate environment variables
+const googleClientId = process.env.GOOGLE_CLIENT_ID;
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+
+if (!googleClientId || !googleClientSecret) {
+  console.error("❌ GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is missing!");
+  console.error("GOOGLE_CLIENT_ID exists:", !!googleClientId);
+  console.error("GOOGLE_CLIENT_SECRET exists:", !!googleClientSecret);
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  debug: process.env.NODE_ENV === "development",
   adapter: PrismaAdapter(db) as Adapter,
   providers: [
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: googleClientId || "",
+      clientSecret: googleClientSecret || "",
     }),
   ],
   callbacks: {
