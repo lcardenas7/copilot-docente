@@ -6,16 +6,29 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-function createPrismaClient() {
-  const connectionString = process.env.DATABASE_URL;
-  
-  if (!connectionString) {
-    throw new Error("DATABASE_URL environment variable is not set");
-  }
+// Lazy initialization - only create pool when actually needed
+let poolInstance: Pool | null = null;
 
-  const pool = new Pool({ connectionString });
-  const adapter = new PrismaPg(pool);
-  
+function getPool(): Pool {
+  if (!poolInstance) {
+    const connectionString = process.env.DATABASE_URL;
+    if (!connectionString) {
+      throw new Error("DATABASE_URL is not set");
+    }
+    
+    poolInstance = new Pool({
+      connectionString,
+      max: 1,
+      idleTimeoutMillis: 1000,
+      connectionTimeoutMillis: 5000,
+      ssl: { rejectUnauthorized: false },
+    });
+  }
+  return poolInstance;
+}
+
+function createPrismaClient() {
+  const adapter = new PrismaPg(getPool());
   return new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
