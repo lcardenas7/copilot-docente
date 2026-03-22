@@ -265,8 +265,14 @@ export async function generateExam(
 
     // Generate with Groq
     const prompt = buildExamPrompt({
-      ...params,
-      pedagogicalContext: pedagogicalContext || undefined,
+      subject: params.subject,
+      grade: params.grade,
+      topic: params.topic,
+      questionCount: params.questionCount,
+      difficulty: params.difficulty,
+      includeVisuals: true, // Default to true for now
+      questionTypes: params.questionTypes,
+      additionalInstructions: params.additionalInstructions,
     });
     const content = await generateWithGroq(EXAM_SYSTEM_PROMPT, prompt);
 
