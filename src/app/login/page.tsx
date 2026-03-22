@@ -76,9 +76,8 @@ function LoginContent() {
               <span>{error}</span>
             </div>
           )}
-          <Link
+          <a
             href="/api/auth/signin/google?callbackUrl=%2Fdashboard"
-            prefetch={false}
             className="inline-flex items-center justify-center w-full h-11 px-8 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary/90 transition-colors"
           >
             <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
@@ -100,7 +99,7 @@ function LoginContent() {
               />
             </svg>
             Continuar con Google
-          </Link>
+          </a>
           <p className="text-center text-sm text-muted-foreground">
             Al continuar, aceptas nuestros{" "}
             <Link href="/terms" className="underline hover:text-primary">
