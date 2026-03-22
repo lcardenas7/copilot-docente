@@ -1,34 +1,25 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-// Lazy initialization - only create pool when actually needed
-let poolInstance: Pool | null = null;
-
-function getPool(): Pool {
-  if (!poolInstance) {
-    const connectionString = process.env.DATABASE_URL;
-    if (!connectionString) {
-      throw new Error("DATABASE_URL is not set");
-    }
-    
-    poolInstance = new Pool({
-      connectionString,
-      max: 1,
-      idleTimeoutMillis: 1000,
-      connectionTimeoutMillis: 5000,
-      ssl: { rejectUnauthorized: false },
-    });
-  }
-  return poolInstance;
-}
-
 function createPrismaClient() {
-  const adapter = new PrismaPg(getPool());
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error("DATABASE_URL is not set");
+  }
+
+  // Pass PoolConfig directly - PrismaPg manages the pool internally
+  // This works better in Vercel serverless than creating a Pool instance
+  const adapter = new PrismaPg({
+    connectionString,
+    max: 2,
+    idleTimeoutMillis: 5000,
+    connectionTimeoutMillis: 5000,
+  });
+
   return new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
