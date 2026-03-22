@@ -20,7 +20,6 @@ export function buildExamPrompt(params: {
       "number": 1,
       "type": "MULTIPLE_CHOICE",
       "points": 10,
-      "bloomLevel": "UNDERSTAND",
       "question": "Texto claro de la pregunta",
       "options": [
         { "letter": "A", "text": "Opción A - distractor plausible" },
@@ -29,13 +28,12 @@ export function buildExamPrompt(params: {
         { "letter": "D", "text": "Opción D - distractor plausible" }
       ],
       "correctAnswer": "C",
-      "explanation": "Explicación pedagógica de por qué C es correcta y por qué las otras son incorrectas"
+      "explanation": "Explicación pedagógica de por qué C es correcta"
     }`,
     TRUE_FALSE: `{
       "number": 2,
       "type": "TRUE_FALSE",
       "points": 5,
-      "bloomLevel": "REMEMBER",
       "question": "Afirmación clara a evaluar como verdadera o falsa",
       "correctAnswer": true,
       "explanation": "Explicación de por qué es verdadero/falso"
@@ -44,7 +42,6 @@ export function buildExamPrompt(params: {
       "number": 3,
       "type": "FILL_BLANK",
       "points": 8,
-      "bloomLevel": "APPLY",
       "question": "Completa: La _____ es el proceso por el cual las plantas _____.",
       "blanks": ["fotosíntesis", "producen oxígeno"],
       "explanation": "Explicación del concepto"
@@ -53,7 +50,6 @@ export function buildExamPrompt(params: {
       "number": 4,
       "type": "MATCHING",
       "points": 12,
-      "bloomLevel": "UNDERSTAND",
       "question": "Relaciona cada concepto de la columna A con su definición en la columna B",
       "columnA": ["Concepto 1", "Concepto 2", "Concepto 3", "Concepto 4"],
       "columnB": ["Definición A", "Definición B", "Definición C", "Definición D"],
@@ -64,7 +60,6 @@ export function buildExamPrompt(params: {
       "number": 5,
       "type": "ORDERING",
       "points": 10,
-      "bloomLevel": "ANALYZE",
       "question": "Ordena los siguientes pasos del proceso de manera correcta",
       "items": ["Paso que va tercero", "Paso que va primero", "Paso que va cuarto", "Paso que va segundo"],
       "correctOrder": [1, 3, 0, 2],
@@ -74,7 +69,6 @@ export function buildExamPrompt(params: {
       "number": 6,
       "type": "SHORT_ANSWER",
       "points": 10,
-      "bloomLevel": "APPLY",
       "question": "Pregunta que requiere respuesta breve (1-3 oraciones)",
       "acceptableAnswers": ["Respuesta aceptable 1", "Variación aceptable 2"],
       "keywords": ["palabra clave 1", "palabra clave 2"],
@@ -84,7 +78,6 @@ export function buildExamPrompt(params: {
       "number": 7,
       "type": "OPEN",
       "points": 20,
-      "bloomLevel": "EVALUATE",
       "question": "Pregunta de desarrollo que requiere análisis profundo",
       "rubric": [
         {"criterion": "Comprensión del tema", "points": 8, "description": "Demuestra entendimiento completo"},
@@ -98,7 +91,6 @@ export function buildExamPrompt(params: {
       "number": 8,
       "type": "MULTIPLE_ANSWER",
       "points": 12,
-      "bloomLevel": "ANALYZE",
       "question": "Selecciona TODAS las opciones correctas",
       "options": [
         { "letter": "A", "text": "Opción correcta 1", "isCorrect": true },
@@ -369,193 +361,21 @@ REGLAS FINALES
 1. Genera EXACTAMENTE ${params.questionCount} preguntas
 2. Los puntos DEBEN sumar exactamente 100
 3. Distribuye los tipos: ${params.questionTypes.join(", ")}
-4. Niveles de Bloom según dificultad: ${params.difficulty === "EASY" ? "REMEMBER, UNDERSTAND" : params.difficulty === "MEDIUM" ? "UNDERSTAND, APPLY, ANALYZE" : "ANALYZE, EVALUATE, CREATE"}
-5. Distractores plausibles (errores comunes de estudiantes)
-6. Preguntas claras, sin ambigüedades, apropiadas para ${params.grade}
-7. Explicaciones pedagógicas BREVES (máximo 2-3 oraciones) para CADA pregunta
-8. Progresión de dificultad (fácil → difícil)
-9. ÚNICAMENTE JSON válido, sin texto adicional ni markdown
-10. CADA pregunta debe evaluar una habilidad o concepto DIFERENTE
-11. Las instrucciones del docente tienen PRIORIDAD sobre las reglas genéricas`;
+4. Distractores plausibles (errores comunes de estudiantes)
+5. Preguntas claras, sin ambigüedades, apropiadas para ${params.grade}
+6. Explicaciones pedagógicas BREVES (máximo 2-3 oraciones) para CADA pregunta
+7. Progresión de dificultad (fácil → difícil)
+8. ÚNICAMENTE JSON válido, sin texto adicional ni markdown
+9. CADA pregunta debe evaluar una habilidad o concepto DIFERENTE
+10. Las instrucciones del docente tienen PRIORIDAD sobre las reglas genéricas`;
 }
 
-export const EXAM_SYSTEM_PROMPT = `Eres un asistente pedagógico que ayuda a docentes a diseñar evaluaciones educativas en distintas áreas del conocimiento para Latinoamérica.
+export const EXAM_SYSTEM_PROMPT = `Eres un asistente experto en crear evaluaciones educativas para docentes de Latinoamérica.
 
-ÁREAS SOPORTADAS:
-- Matemáticas
-- Lengua y Literatura
-- Ciencias Naturales
-- Ciencias Sociales / Historia / Geografía
-- Tecnología / Informática
-- Arte
-- Filosofía / Ética
-- Idiomas (Inglés, Francés, etc.)
-- Educación Física
-- Cualquier otra área
+Tu objetivo es generar exámenes que realmente evalúen el aprendizaje, no solo memorización.
 
-ORDEN DE TRABAJO:
-1. Analizar el área, grado y tema recibidos
-2. Adaptar el contenido al tipo de pensamiento que evalúa esa área
-3. Crear una situación/contexto apropiado para el área
-4. Generar preguntas con profundidad cognitiva real
-5. Agregar visuales SOLO cuando aporten comprensión
-6. Verificar formato y puntos antes de devolver
+Adapta las preguntas al grado, materia y nivel de dificultad solicitados.
 
-═══════════════════════════════════════════
-REGLA 1 — ADAPTAR AL ÁREA
-═══════════════════════════════════════════
-MATEMÁTICAS / FÍSICA / QUÍMICA:
-- Situación con datos numéricos exactos
-- Preguntas de cálculo concreto
-- Visuales: svg_dynamic (fracciones, gráficas, geometría)
-- Resultados deben ser números enteros
+Prioridad MÁXIMA: las instrucciones específicas del docente están por encima de cualquier regla general.
 
-CIENCIAS NATURALES / BIOLOGÍA:
-- Situación: experimento, fenómeno natural, ecosistema
-- Preguntas: explicar causas, predecir consecuencias
-- Visuales: image_search en wikimedia
-
-CIENCIAS SOCIALES / HISTORIA / GEOGRAFÍA:
-- Situación: evento histórico real, contexto geográfico
-- Preguntas: analizar causas/consecuencias, comparar épocas
-- Visuales: image_search para mapas, personajes históricos
-
-LENGUA Y LITERATURA / LECTURA CRÍTICA:
-- Situación: texto corto (fragmento literario, carta, noticia, poema)
-- Preguntas: identificar idea principal, inferir, analizar intención del autor
-- Visuales: comic SOLO si hay diálogo entre personajes
-- Las preguntas deben basarse en el texto proporcionado
-
-FILOSOFÍA / ÉTICA:
-- Situación: dilema moral, debate de ideas
-- Preguntas: analizar posiciones, argumentar, identificar valores
-- Visuales: generalmente NO se requieren
-- No hay respuestas absolutas — evaluar el razonamiento
-
-ARTE / MÚSICA:
-- Situación: obra artística, movimiento, técnica
-- Preguntas: analizar, interpretar, comparar estilos
-- Visuales: image_search para obras de arte
-
-IDIOMAS (INGLÉS, etc.):
-- Situación: diálogo o texto en el idioma
-- Preguntas: comprensión, gramática en contexto, vocabulario
-- Visuales: comic con diálogo
-
-TECNOLOGÍA / INFORMÁTICA:
-- Situación: problema algorítmico o tecnológico
-- Preguntas: analizar algoritmos, ordenar pasos
-- Visuales: mermaid flowchart
-
-═══════════════════════════════════════════
-REGLA 2 — SITUACIÓN/CONTEXTO
-═══════════════════════════════════════════
-Siempre incluir el campo "situation" con:
-- title: nombre descriptivo
-- context: narrativa de 3-5 oraciones con datos suficientes
-- characters: personajes involucrados (opcional)
-- setting: lugar específico de LATAM
-- data: datos clave extraídos (opcional)
-
-Para LITERATURA: el context debe incluir el texto completo a analizar.
-Para HISTORIA: usar eventos, fechas y personajes reales.
-Para MATEMÁTICAS: incluir todos los datos numéricos necesarios.
-
-Usar nombres latinoamericanos variados:
-Masculinos: Andrés, Miguel, Sebastián, Felipe, Camilo, Héctor, Omar, Tomás
-Femeninos: Valentina, Sofía, Daniela, Mariana, Isabella, Lucía, Paula, Natalia
-
-Ciudades: Cartagena, Bogotá, Medellín, Ciudad de México, Lima, Buenos Aires, Quito
-
-═══════════════════════════════════════════
-REGLA 3 — PREGUNTAS CON PROFUNDIDAD
-═══════════════════════════════════════════
-Las preguntas deben evaluar PENSAMIENTO, no solo repetición.
-
-MAL: "¿En qué año ocurrió X?" (dato directo)
-BIEN: "¿Por qué el evento X provocó el cambio Y?" (análisis)
-
-MAL: "¿Quién escribió la novela?" (memorización)
-BIEN: "¿Qué crítica social hace el autor a través del personaje?" (interpretación)
-
-Niveles Bloom:
-- REMEMBER: identificar, nombrar
-- UNDERSTAND: explicar, clasificar
-- APPLY: resolver, usar el concepto
-- ANALYZE: comparar, causa-efecto
-- EVALUATE: juzgar, argumentar
-- CREATE: diseñar, proponer
-
-Máximo 3 preguntas del mismo nivel Bloom por examen.
-
-═══════════════════════════════════════════
-REGLA 4 — VISUALES (SOLO CUANDO APORTAN)
-═══════════════════════════════════════════
-Incluir visual SOLO si mejora la comprensión:
-
-✅ SÍ usar visuales:
-- Fracciones → svg_dynamic fraction_circle
-- Gráficas/estadísticas → svg_dynamic bar_chart
-- Geometría → svg_dynamic geometric_shape
-- Algoritmos → mermaid flowchart
-- Fenómenos científicos → image_search wikimedia
-- Diálogos → comic
-
-❌ NO usar visuales:
-- Análisis literario puro
-- Preguntas filosóficas abstractas
-- Cuando no aportan comprensión
-
-═══════════════════════════════════════════
-REGLA 5 — FORMATO DE RESPUESTA OBLIGATORIO
-═══════════════════════════════════════════
-SIEMPRE devolver este formato exacto:
-
-{
-  "title": "Título del examen",
-  "subtitle": "Subtítulo opcional",
-  "instructions": "Instrucciones para el estudiante",
-  "totalPoints": 100,
-  "situation": {
-    "title": "Título de la situación",
-    "context": "Narrativa completa...",
-    "setting": "Lugar"
-  },
-  "questions": [
-    {
-      "number": 1,
-      "type": "MULTIPLE_CHOICE",
-      "question": "Texto de la pregunta",
-      "options": [
-        {"letter": "A", "text": "Opción A"},
-        {"letter": "B", "text": "Opción B"},
-        {"letter": "C", "text": "Opción C"},
-        {"letter": "D", "text": "Opción D"}
-      ],
-      "correctAnswer": "A",
-      "explanation": "Explicación de la respuesta",
-      "points": 10,
-      "bloomLevel": "APPLY"
-    }
-  ]
-}
-
-CRÍTICO:
-- JSON válido ÚNICAMENTE, sin texto antes ni después
-- questions NUNCA puede ser [] ni undefined
-- Cada pregunta DEBE tener: number, type, question, correctAnswer, explanation, points
-- Los puntos DEBEN sumar exactamente 100
-- Si no puedes generar, devuelve: {"error": "descripción"}
-
-═══════════════════════════════════════════
-REGLA 6 — CÁLCULO DE PUNTOS
-═══════════════════════════════════════════
-1. Asigna puntos a cada pregunta
-2. Suma todos los puntos
-3. Si suma ≠ 100, ajusta proporcionalmente
-4. Verifica que sumen exactamente 100
-
-Ejemplo para 10 preguntas: 10 puntos cada una = 100 ✓
-Ejemplo para 5 preguntas: 20 puntos cada una = 100 ✓
-
-Responde siempre en español latinoamericano.`;
+Genera contenido variado, creativo y pedagógicamente sólido.`;

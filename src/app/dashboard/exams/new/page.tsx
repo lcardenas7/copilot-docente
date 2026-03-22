@@ -136,9 +136,6 @@ export default function NewExamPage() {
                   {typeLabel}
                 </span>
                 <span className="text-xs bg-muted px-2 py-1 rounded">{q.points} pts</span>
-                {q.bloomLevel && (
-                  <span className="text-xs text-muted-foreground">Bloom: {q.bloomLevel}</span>
-                )}
               </div>
 
               {/* Visual (si existe) */}
