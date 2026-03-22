@@ -263,7 +263,7 @@ export async function generateExam(
       return { success: true, data: cachedResult, cached: true };
     }
 
-    // Generate with Groq
+    // Generate prompt
     const prompt = buildExamPrompt({
       subject: params.subject,
       grade: params.grade,
@@ -274,51 +274,84 @@ export async function generateExam(
       questionTypes: params.questionTypes,
       additionalInstructions: params.additionalInstructions,
     });
-    const content = await generateWithGroq(EXAM_SYSTEM_PROMPT, prompt);
 
-    if (!content) {
-      return { success: false, error: "No response from AI", cached: false };
-    }
+    // Generate with Groq with retry logic
+    let content = "";
+    let parsed = null;
+    
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        console.log(`=== GROQ ATTEMPT ${attempt + 1} ===`);
+        content = await generateWithGroq(EXAM_SYSTEM_PROMPT, prompt);
+        
+        if (!content) {
+          throw new Error("No response from AI");
+        }
 
-    // Log raw content from Groq BEFORE any processing
-    console.log("=== GROQ RAW RESPONSE ===");
-    console.log("Full content length:", content.length);
-    console.log("Raw JSON from Groq:", content);
-    console.log("=== END RAW RESPONSE ===");
+        // Log raw content from Groq BEFORE any processing
+        console.log("=== GROQ RAW RESPONSE ===");
+        console.log("Full content length:", content.length);
+        console.log("Raw JSON from Groq:", content);
+        console.log("=== END RAW RESPONSE ===");
 
-    // Parse and validate with Zod
-    let parsed;
-    try {
-      const rawParsed = JSON.parse(content);
-      console.log("=== PARSED JSON ===");
-      console.log("Parsed structure keys:", Object.keys(rawParsed));
-      console.log("Questions count:", rawParsed.questions?.length || 0);
-      console.log("Has situation:", !!rawParsed.situation);
-      console.log("Total points:", rawParsed.totalPoints);
-      console.log("=== END PARSED ===");
-      
-      // Try validation but use raw if it fails (more flexible)
-      const validation = ExamSchema.safeParse(rawParsed);
-      if (validation.success) {
-        console.log("✅ Zod validation PASSED");
-        parsed = validation.data;
-      } else {
-        console.error("❌ Zod validation errors:", JSON.stringify(validation.error.issues, null, 2));
-        console.error("Raw content sample:", content.substring(0, 500));
-        // Use raw parsed if basic structure is valid
-        if (rawParsed.title && rawParsed.questions && Array.isArray(rawParsed.questions)) {
-          console.log("⚠️ Using raw parsed data despite validation errors");
-          parsed = rawParsed;
+        // Parse and validate with Zod
+        try {
+          const rawParsed = JSON.parse(content);
+          console.log("=== PARSED JSON ===");
+          console.log("Parsed structure keys:", Object.keys(rawParsed));
+          console.log("Questions count:", rawParsed.questions?.length || 0);
+          console.log("Has situation:", !!rawParsed.situation);
+          console.log("Total points:", rawParsed.totalPoints);
+          console.log("=== END PARSED ===");
+          
+          // Strong validation
+          if (!rawParsed) {
+            throw new Error("Invalid JSON");
+          }
+          
+          if (!rawParsed.questions || rawParsed.questions.length === 0) {
+            throw new Error("Empty questions");
+          }
+          
+          // Try validation but use raw if it fails (more flexible)
+          const validation = ExamSchema.safeParse(rawParsed);
+          if (validation.success) {
+            console.log("✅ Zod validation PASSED");
+            parsed = validation.data;
+          } else {
+            console.error("❌ Zod validation errors:", JSON.stringify(validation.error.issues, null, 2));
+            console.error("Raw content sample:", content.substring(0, 500));
+            // Use raw parsed if basic structure is valid
+            if (rawParsed.title && rawParsed.questions && Array.isArray(rawParsed.questions)) {
+              console.log("⚠️ Using raw parsed data despite validation errors");
+              parsed = rawParsed;
+            } else {
+              throw new Error("Invalid AI response format: " + validation.error.issues[0]?.message);
+            }
+          }
+        } catch (error: any) {
+          console.error("❌ JSON parsing error:", error?.message);
+          console.error("Raw content sample:", content?.substring(0, 500));
+          throw new Error("Invalid JSON from AI");
+        }
+
+        // If we got here, parsing succeeded, break the retry loop
+        break;
+        
+      } catch (error: any) {
+        console.log(`❌ Attempt ${attempt + 1} failed:`, error?.message);
+        if (attempt === 0) {
+          console.log("🔄 Retrying AI...");
         } else {
-          return { success: false, error: "Invalid AI response format: " + validation.error.issues[0]?.message, cached: false };
+          console.log("❌ All retry attempts failed");
+          return { success: false, error: error?.message || "Failed to generate exam", cached: false };
         }
       }
-    } catch (error: any) {
-      console.error("❌ JSON parsing error:", error?.message);
-      console.error("Raw content sample:", content?.substring(0, 500));
-      return { success: false, error: "Invalid JSON from AI", cached: false };
     }
 
+    // Normalizer: ensure questions array exists
+    const questions = parsed.questions ?? [];
+    
     // Validate exam integrity
     const integrityErrors = validateExamIntegrity(parsed);
     if (integrityErrors.length > 0) {

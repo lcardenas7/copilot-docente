@@ -21,13 +21,7 @@ import {
   MessageSquare, AlertCircle
 } from "lucide-react";
 import Link from "next/link";
-import dynamic from "next/dynamic";
-
-// Dynamic import para SmartVisual (evita SSR issues)
-const SmartVisual = dynamic(
-  () => import("@/components/visuals/SmartVisual"),
-  { ssr: false }
-);
+import { SmartVisual } from "@/components/ui/SmartVisual";
 
 const QUESTION_TYPE_ICONS: Record<string, any> = {
   MULTIPLE_CHOICE: CircleDot,
@@ -66,6 +60,9 @@ export default function NewExamPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedExam, setGeneratedExam] = useState<any>(null);
   const [showAnswers, setShowAnswers] = useState(true);
+  const [exam, setExam] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [includeVisuals, setIncludeVisuals] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [formData, setFormData] = useState({
     subject: "",
@@ -99,7 +96,10 @@ export default function NewExamPage() {
       const response = await fetch("/api/ai/generate-exam", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          includeVisuals,
+        }),
       });
 
       const data = await response.json();
@@ -138,8 +138,8 @@ export default function NewExamPage() {
                 <span className="text-xs bg-muted px-2 py-1 rounded">{q.points} pts</span>
               </div>
 
-              {/* Visual (si existe) */}
-              {q.visual && (
+              {/* Visual (si existe y está habilitado) */}
+              {q.visual && includeVisuals && (
                 <div className="mb-4">
                   <SmartVisual visual={q.visual} />
                 </div>
@@ -410,19 +410,25 @@ export default function NewExamPage() {
         </Card>
 
         {/* Questions */}
-        <div className="space-y-4">
-          {(!generatedExam.questions || generatedExam.questions.length === 0) ? (
-            <Card className="border-red-200 bg-red-50 dark:bg-red-950/20">
-              <CardContent className="pt-6">
-                <p className="text-red-600 dark:text-red-400 text-center">
-                  No se pudieron generar preguntas. Por favor intenta de nuevo.
+        {!generatedExam || !generatedExam.questions || generatedExam.questions.length === 0 ? (
+          <Card className="border-red-200 dark:border-red-800">
+            <CardContent className="pt-6">
+              <div className="text-center py-8">
+                <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-red-800 dark:text-red-200 mb-2">
+                  Error generando examen
+                </h3>
+                <p className="text-red-600 dark:text-red-400">
+                  No se pudieron cargar las preguntas del examen.
                 </p>
-              </CardContent>
-            </Card>
-          ) : (
-            generatedExam.questions.map((q: any, i: number) => renderQuestion(q, i))
-          )}
-        </div>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-6">
+            {generatedExam.questions.map((q: any, i: number) => renderQuestion(q, i))}
+          </div>
+        )}
 
         {/* Grading Notes */}
         {generatedExam.gradingNotes && (
@@ -615,6 +621,29 @@ export default function NewExamPage() {
                 );
               })}
             </div>
+          </div>
+
+          {/* Advanced Toggle */}
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-full text-muted-foreground"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+          >
+            {showAdvanced ? <ChevronUp className="mr-2 h-4 w-4" /> : <ChevronDown className="mr-2 h-4 w-4" />}
+            {showAdvanced ? "Ocultar opciones avanzadas" : "Opciones avanzadas"}
+          </Button>
+
+          {/* Visuals Toggle */}
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="includeVisuals"
+              checked={includeVisuals}
+              onChange={(e) => setIncludeVisuals(e.target.checked)}
+              className="rounded"
+            />
+            <Label htmlFor="includeVisuals">Incluir recursos visuales</Label>
           </div>
 
           {/* Advanced Toggle */}
