@@ -10,7 +10,7 @@ export const VisualSchema = z.discriminatedUnion("engine", [
     type: z.enum([
       "fraction_circle", "fraction_rect", "number_line",
       "bar_chart", "pie_chart", "geometric_shape",
-      "timeline", "force_diagram", "circuit_simple"
+      "timeline", "force_diagram", "circuit_simple", "table"
     ]),
     data: z.record(z.string(), z.any()),
     caption: z.string().optional(),

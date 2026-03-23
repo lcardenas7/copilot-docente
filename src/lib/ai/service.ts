@@ -239,6 +239,7 @@ export async function generateExam(
     difficulty: string;
     questionTypes: string[];
     additionalInstructions?: string;
+    includeVisuals?: boolean;
     topicId?: string;
     classroomId?: string;
   }
@@ -270,7 +271,7 @@ export async function generateExam(
       topic: params.topic,
       questionCount: params.questionCount,
       difficulty: params.difficulty,
-      includeVisuals: true, // Default to true for now
+      includeVisuals: params.includeVisuals ?? false,
       questionTypes: params.questionTypes,
       additionalInstructions: params.additionalInstructions,
     });

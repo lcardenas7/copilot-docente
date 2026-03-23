@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
     const { 
       subject, grade, topic, questionCount, difficulty, 
       questionTypes, additionalInstructions,
+      includeVisuals,
       classroomId,
       unitId,
       topicId
@@ -86,6 +87,7 @@ export async function POST(request: NextRequest) {
       difficulty: difficulty || "MEDIUM",
       questionTypes: questionTypes || ["MULTIPLE_CHOICE"],
       additionalInstructions: additionalInstructions || "",
+      includeVisuals: includeVisuals ?? false,
       classroomId,
       topicId,
     });

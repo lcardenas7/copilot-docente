@@ -5,7 +5,7 @@ import React, { useMemo } from "react";
 type SVGType = 
   | "fraction_circle" | "fraction_rect" | "number_line"
   | "bar_chart" | "pie_chart" | "coordinate_plane"
-  | "geometric_shape" | "venn_diagram"
+  | "geometric_shape" | "venn_diagram" | "table"
   | "cell_animal" | "cell_plant" | "atom_structure"
   | "circuit_simple" | "force_diagram" | "vector_diagram"
   | "timeline" | "body_system";
@@ -48,6 +48,8 @@ export default function SVGDynamicRenderer({ type, data }: SVGDynamicRendererPro
         return renderForceDiagram(data);
       case "circuit_simple":
         return renderCircuitSimple(data);
+      case "table":
+        return renderTable(data);
       default:
         return renderPlaceholder(type);
     }
@@ -553,6 +555,57 @@ function renderCircuitSimple(data: Record<string, any>) {
       <rect x="30" y="50" width={width - 60} height="100" fill="none" stroke={COLORS.text} strokeWidth="2" rx="10" />
       {renderedComponents}
     </svg>
+  );
+}
+
+// ==================== TABLE ====================
+function renderTable(data: Record<string, any>) {
+  const { headers = [], rows = [], title = "" } = data;
+  
+  if (!headers.length && !rows.length) return renderPlaceholder("table");
+
+  return (
+    <div className="w-full max-w-lg">
+      {title && (
+        <p className="text-sm font-semibold text-center mb-2" style={{ color: COLORS.text }}>{title}</p>
+      )}
+      <table className="w-full border-collapse text-sm">
+        {headers.length > 0 && (
+          <thead>
+            <tr>
+              {(headers as string[]).map((h, i) => (
+                <th
+                  key={i}
+                  className="px-3 py-2 text-left font-semibold"
+                  style={{ 
+                    backgroundColor: COLORS.primary, 
+                    color: "white",
+                    borderRadius: i === 0 ? "8px 0 0 0" : i === headers.length - 1 ? "0 8px 0 0" : undefined
+                  }}
+                >
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+        )}
+        <tbody>
+          {(rows as string[][]).map((row, i) => (
+            <tr key={i} style={{ backgroundColor: i % 2 === 0 ? "#F8FAFC" : "white" }}>
+              {row.map((cell: string, j: number) => (
+                <td
+                  key={j}
+                  className="px-3 py-2 border-b"
+                  style={{ borderColor: COLORS.unshaded, color: COLORS.text }}
+                >
+                  {cell}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 

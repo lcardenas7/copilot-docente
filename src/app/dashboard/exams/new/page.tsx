@@ -21,7 +21,7 @@ import {
   MessageSquare, AlertCircle
 } from "lucide-react";
 import Link from "next/link";
-import { SmartVisual } from "@/components/ui/SmartVisual";
+import SmartVisual from "@/components/visuals/SmartVisual";
 
 const QUESTION_TYPE_ICONS: Record<string, any> = {
   MULTIPLE_CHOICE: CircleDot,

@@ -187,23 +187,38 @@ RECURSOS VISUALES
 ${params.includeVisuals ? `
 ACTIVADO — DEBES incluir recursos visuales en al menos el 40% de las preguntas.
 
+IMPORTANTE: Cada visual DEBE tener el campo "engine": "svg_dynamic" además de "type" y "data".
+El frontend usa "engine" para saber cómo renderizar. Sin "engine", el visual NO se muestra.
+
 Tipos de visual permitidos y cuándo usarlos:
-- "table": datos comparativos, resultados de encuestas, registros — SIEMPRE que haya datos numéricos
-  Ejemplo: {"type": "table", "data": {"headers": ["Mes", "Ventas", "Gastos"], "rows": [["Enero", "150.000", "80.000"], ["Febrero", "200.000", "95.000"]]}}
-- "bar_chart": comparaciones entre categorías
-  Ejemplo: {"type": "bar_chart", "data": {"title": "Producción agrícola", "labels": ["Café", "Maíz", "Arroz"], "values": [45, 30, 25], "unit": "toneladas"}}
-- "number_line": ubicación de números, fracciones, intervalos
-  Ejemplo: {"type": "number_line", "data": {"min": 0, "max": 2, "points": [{"value": 0.5, "label": "A"}, {"value": 1.25, "label": "B"}]}}
-- "fraction_circle": representación de fracciones o porcentajes
-  Ejemplo: {"type": "fraction_circle", "data": {"total": 8, "shaded": 3, "label": "Parte sombreada"}}
-- "geometric_shape": figuras geométricas con medidas
-  Ejemplo: {"type": "geometric_shape", "data": {"shape": "rectangle", "width": 12, "height": 5, "unit": "cm"}}
+
+1. TABLA — datos comparativos, encuestas, registros numéricos
+   {"engine": "svg_dynamic", "type": "table", "data": {"title": "Ventas por mes", "headers": ["Mes", "Ventas", "Gastos"], "rows": [["Enero", "150.000", "80.000"], ["Febrero", "200.000", "95.000"]]}, "caption": "Tabla de ventas del semestre"}
+
+2. GRÁFICO DE BARRAS — comparaciones entre categorías
+   {"engine": "svg_dynamic", "type": "bar_chart", "data": {"title": "Producción agrícola", "labels": ["Café", "Maíz", "Arroz"], "values": [45, 30, 25]}, "caption": "Producción en toneladas por cultivo"}
+
+3. RECTA NUMÉRICA — ubicar números, fracciones, intervalos
+   {"engine": "svg_dynamic", "type": "number_line", "data": {"min": 0, "max": 10, "step": 1, "marked": [2.5, 7]}, "caption": "Ubica los puntos en la recta"}
+
+4. CÍRCULO DE FRACCIONES — representar fracciones o porcentajes
+   {"engine": "svg_dynamic", "type": "fraction_circle", "data": {"total": 8, "shaded": 3, "style": "pizza"}, "caption": "Pizza dividida en 8 porciones, 3 sombreadas"}
+
+5. FIGURA GEOMÉTRICA — formas con medidas
+   {"engine": "svg_dynamic", "type": "geometric_shape", "data": {"shape": "rectangle", "dimensions": {"width": 12, "height": 5}}, "caption": "Rectángulo de 12 cm × 5 cm"}
+
+6. GRÁFICO CIRCULAR — distribución porcentual
+   {"engine": "svg_dynamic", "type": "pie_chart", "data": {"labels": ["Agua", "Tierra", "Aire"], "values": [60, 25, 15]}, "caption": "Composición del ecosistema"}
+
+7. LÍNEA DE TIEMPO — secuencias cronológicas
+   {"engine": "svg_dynamic", "type": "timeline", "data": {"events": [{"year": 1810, "label": "Grito de Independencia"}, {"year": 1819, "label": "Batalla de Boyacá"}]}, "caption": "Línea del tiempo de la independencia"}
 
 REGLAS DE VISUALES:
-- El visual debe ser NECESARIO para responder (no decorativo)
+- SIEMPRE incluir "engine": "svg_dynamic" — SIN ESTO EL VISUAL NO APARECE
+- El visual debe ser NECESARIO para responder la pregunta (no decorativo)
 - La pregunta debe requerir LEER e INTERPRETAR el visual
-- Los datos del visual deben ser coherentes con el enunciado
-- Nunca inventes coordenadas complejas o gráficos que no puedas representar en JSON
+- Los datos del visual deben ser coherentes con el enunciado y las opciones
+- Prioriza tablas y gráficos de barras — son los más útiles y claros
 ` : `
 DESACTIVADO — No incluyas ningún recurso visual. Usa "visual": null en todas las preguntas.
 `}
@@ -243,7 +258,7 @@ ESTRUCTURA JSON (respeta EXACTAMENTE)
       "competency": "[Competencia ICFES específica del área]",
       "bloomLevel": "[analizar|evaluar|aplicar|crear|comprender|recordar]",
       "points": [puntos],
-      "visual": null
+      "visual": {"engine": "svg_dynamic", "type": "table", "data": {...}, "caption": "..."} | null
     }
   ],
   "gradingNotes": "[Notas útiles para el docente al calificar]"
