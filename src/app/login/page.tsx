@@ -58,7 +58,7 @@ function LoginContent() {
     <div className="min-h-screen flex">
       {/* Left side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-teal-600 to-emerald-700" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-500 to-sky-600" />
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2230%22%20height%3D%2230%22%20viewBox%3D%220%200%2030%2030%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Ccircle%20cx%3D%221%22%20cy%3D%221%22%20r%3D%221%22%20fill%3D%22rgba(255,255,255,0.07)%22/%3E%3C/svg%3E')]" />
         <div className="relative z-10 flex flex-col justify-center px-12 xl:px-16">
           <div className="flex items-center space-x-3 mb-8">
@@ -97,11 +97,11 @@ function LoginContent() {
       </div>
 
       {/* Right side - Login form */}
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-8 bg-gradient-to-b from-white to-blue-50/30">
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-8 bg-gradient-to-b from-white to-sky-50/30">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="flex items-center justify-center space-x-2.5 mb-8 lg:hidden">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-teal-500 shadow-lg shadow-blue-500/25">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-sky-500 shadow-lg shadow-blue-500/25">
               <GraduationCap className="h-6 w-6 text-white" />
             </div>
             <span className="font-bold text-xl">Copilot del Docente</span>

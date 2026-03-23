@@ -36,7 +36,7 @@ export default async function DashboardLayout({
         <div className="flex h-14 items-center px-4">
           <MobileNav />
           <Link href="/dashboard" className="flex items-center space-x-2 ml-2 md:ml-0">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-teal-500 shadow-sm">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-sky-500 shadow-sm">
               <GraduationCap className="h-4 w-4 text-white" />
             </div>
             <span className="font-bold hidden sm:inline text-sm">Copilot del Docente</span>

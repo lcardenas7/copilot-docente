@@ -26,7 +26,7 @@ export default function AnalyticsPage() {
               <span className="text-xs font-medium">Tendencias de rendimiento</span>
             </div>
             <div className="flex flex-col items-center text-center p-3">
-              <PieChart className="h-5 w-5 text-teal-500 mb-2" />
+              <PieChart className="h-5 w-5 text-sky-500 mb-2" />
               <span className="text-xs font-medium">Distribución de notas</span>
             </div>
             <div className="flex flex-col items-center text-center p-3">

@@ -13,7 +13,7 @@ export default function QuestionsPage() {
             Guarda y organiza tus preguntas para reutilizarlas
           </p>
         </div>
-        <Button className="bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white shadow-lg shadow-blue-500/25 rounded-xl">
+        <Button className="bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white shadow-lg shadow-blue-500/25 rounded-xl">
           <Plus className="mr-2 h-4 w-4" />
           Nueva Pregunta
         </Button>
@@ -21,8 +21,8 @@ export default function QuestionsPage() {
 
       <Card className="border shadow-sm">
         <CardContent className="flex flex-col items-center justify-center py-16">
-          <div className="rounded-2xl bg-gradient-to-br from-teal-50 to-cyan-50 p-6 mb-6">
-            <HelpCircle className="h-12 w-12 text-teal-500" />
+          <div className="rounded-2xl bg-gradient-to-br from-sky-50 to-blue-50 p-6 mb-6">
+            <HelpCircle className="h-12 w-12 text-sky-500" />
           </div>
           <h3 className="text-xl font-bold mb-2">Tu banco de preguntas está vacío</h3>
           <p className="text-muted-foreground text-center max-w-md mb-8">
@@ -30,7 +30,7 @@ export default function QuestionsPage() {
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-lg mb-8">
             <div className="flex flex-col items-center text-center p-3">
-              <FolderOpen className="h-5 w-5 text-teal-500 mb-2" />
+              <FolderOpen className="h-5 w-5 text-sky-500 mb-2" />
               <span className="text-xs font-medium">Organiza por tema</span>
             </div>
             <div className="flex flex-col items-center text-center p-3">
@@ -38,12 +38,12 @@ export default function QuestionsPage() {
               <span className="text-xs font-medium">Etiquetas personalizadas</span>
             </div>
             <div className="flex flex-col items-center text-center p-3">
-              <Search className="h-5 w-5 text-emerald-500 mb-2" />
+              <Search className="h-5 w-5 text-sky-400 mb-2" />
               <span className="text-xs font-medium">Búsqueda rápida</span>
             </div>
           </div>
           <div className="flex gap-3">
-            <Button className="bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white shadow-lg shadow-blue-500/25 rounded-xl h-11 px-8">
+            <Button className="bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white shadow-lg shadow-blue-500/25 rounded-xl h-11 px-8">
               <Plus className="mr-2 h-4 w-4" />
               Agregar pregunta
             </Button>

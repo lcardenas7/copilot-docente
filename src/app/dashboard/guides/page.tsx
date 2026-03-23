@@ -17,7 +17,7 @@ export default async function GuidesPage() {
           </p>
         </div>
         <Link href="/dashboard/guides/new">
-          <Button className="bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white shadow-lg shadow-blue-500/25 rounded-xl">
+          <Button className="bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white shadow-lg shadow-blue-500/25 rounded-xl">
             <Plus className="mr-2 h-4 w-4" />
             Nueva Guía
           </Button>
@@ -27,7 +27,7 @@ export default async function GuidesPage() {
       {/* Empty State */}
       <Card className="border shadow-sm">
         <CardContent className="flex flex-col items-center justify-center py-16">
-          <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-teal-50 p-6 mb-6">
+          <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-sky-50 p-6 mb-6">
             <BookOpen className="h-12 w-12 text-blue-500" />
           </div>
           <h3 className="text-xl font-bold mb-2">Crea tu primera guía de clase</h3>
@@ -36,7 +36,7 @@ export default async function GuidesPage() {
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-lg mb-8">
             <div className="flex flex-col items-center text-center p-3">
-              <Sparkles className="h-5 w-5 text-teal-500 mb-2" />
+              <Sparkles className="h-5 w-5 text-sky-500 mb-2" />
               <span className="text-xs font-medium">Generación con IA</span>
             </div>
             <div className="flex flex-col items-center text-center p-3">
@@ -44,12 +44,12 @@ export default async function GuidesPage() {
               <span className="text-xs font-medium">Objetivos claros</span>
             </div>
             <div className="flex flex-col items-center text-center p-3">
-              <Clock className="h-5 w-5 text-emerald-500 mb-2" />
+              <Clock className="h-5 w-5 text-sky-400 mb-2" />
               <span className="text-xs font-medium">En 2 minutos</span>
             </div>
           </div>
           <Link href="/dashboard/guides/new">
-            <Button className="bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white shadow-lg shadow-blue-500/25 rounded-xl h-11 px-8">
+            <Button className="bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white shadow-lg shadow-blue-500/25 rounded-xl h-11 px-8">
               <Plus className="mr-2 h-4 w-4" />
               Crear mi primera guía
             </Button>

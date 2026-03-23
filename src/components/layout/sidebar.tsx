@@ -115,7 +115,7 @@ export function Sidebar() {
                 className={cn(
                   "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200",
                   isActive
-                    ? "bg-gradient-to-r from-blue-600 to-teal-500 text-white shadow-md shadow-blue-500/20"
+                    ? "bg-gradient-to-r from-blue-600 to-sky-500 text-white shadow-md shadow-blue-500/20"
                     : "text-muted-foreground hover:bg-blue-50/80 hover:text-foreground"
                 )}
               >
@@ -127,7 +127,7 @@ export function Sidebar() {
         </nav>
       </div>
       <div className="border-t p-4">
-        <div className="rounded-xl bg-gradient-to-br from-blue-50 to-teal-50 p-3 border border-blue-100">
+        <div className="rounded-xl bg-gradient-to-br from-blue-50 to-sky-50 p-3 border border-sky-100">
           <p className="text-xs font-semibold text-blue-700">Plan Gratuito</p>
           <p className="text-xs text-muted-foreground mt-1">
             5 guías restantes este mes

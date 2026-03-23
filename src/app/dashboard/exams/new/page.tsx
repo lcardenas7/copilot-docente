@@ -334,9 +334,27 @@ export default function NewExamPage() {
                 </div>
               )}
 
+              {/* Competency & Bloom Level */}
+              {showAnswers && (q.competency || q.bloomLevel) && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {q.competency && (
+                    <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                      <Target className="h-3 w-3" />
+                      {q.competency}
+                    </span>
+                  )}
+                  {q.bloomLevel && (
+                    <span className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200">
+                      <GraduationCap className="h-3 w-3" />
+                      Bloom: {q.bloomLevel}
+                    </span>
+                  )}
+                </div>
+              )}
+
               {/* Explanation */}
               {showAnswers && q.explanation && (
-                <div className="border-l-4 border-primary/30 pl-3 py-2 bg-muted/30 rounded-r">
+                <div className="border-l-4 border-blue-300 pl-3 py-2 bg-blue-50/50 rounded-r">
                   <p className="text-sm text-muted-foreground">
                     <strong className="text-foreground">Explicación:</strong> {q.explanation}
                   </p>
@@ -489,10 +507,12 @@ export default function NewExamPage() {
         </div>
       </div>
 
-      <Card>
+      <Card className="border shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-yellow-500" />
+            <div className="rounded-lg bg-gradient-to-br from-blue-500 to-sky-500 p-1.5">
+              <Sparkles className="h-4 w-4 text-white" />
+            </div>
             Generar con IA
           </CardTitle>
           <CardDescription>
@@ -624,56 +644,50 @@ export default function NewExamPage() {
           </div>
 
           {/* Advanced Toggle */}
-          <Button
+          <button
             type="button"
-            variant="ghost"
-            className="w-full text-muted-foreground"
+            className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors border border-dashed rounded-xl hover:border-blue-300 hover:bg-blue-50/50"
             onClick={() => setShowAdvanced(!showAdvanced)}
           >
-            {showAdvanced ? <ChevronUp className="mr-2 h-4 w-4" /> : <ChevronDown className="mr-2 h-4 w-4" />}
+            {showAdvanced ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             {showAdvanced ? "Ocultar opciones avanzadas" : "Opciones avanzadas"}
-          </Button>
-
-          {/* Visuals Toggle */}
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="includeVisuals"
-              checked={includeVisuals}
-              onChange={(e) => setIncludeVisuals(e.target.checked)}
-              className="rounded"
-            />
-            <Label htmlFor="includeVisuals">Incluir recursos visuales</Label>
-          </div>
-
-          {/* Advanced Toggle */}
-          <Button
-            type="button"
-            variant="ghost"
-            className="w-full text-muted-foreground"
-            onClick={() => setShowAdvanced(!showAdvanced)}
-          >
-            {showAdvanced ? <ChevronUp className="mr-2 h-4 w-4" /> : <ChevronDown className="mr-2 h-4 w-4" />}
-            {showAdvanced ? "Ocultar opciones avanzadas" : "Opciones avanzadas"}
-          </Button>
+          </button>
 
           {showAdvanced && (
-            <div className="space-y-4 border rounded-lg p-4 bg-muted/30">
+            <div className="space-y-4 border rounded-xl p-5 bg-gradient-to-br from-blue-50/30 to-sky-50/20">
+              {/* Visuals Toggle */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="includeVisuals" className="font-medium">Incluir recursos visuales</Label>
+                  <p className="text-xs text-muted-foreground mt-0.5">Gráficos, tablas y esquemas cuando aporten comprensión</p>
+                </div>
+                <input
+                  type="checkbox"
+                  id="includeVisuals"
+                  checked={includeVisuals}
+                  onChange={(e) => setIncludeVisuals(e.target.checked)}
+                  className="rounded h-4 w-4"
+                />
+              </div>
+
+              {/* Additional Instructions */}
               <div className="space-y-2">
                 <Label>Instrucciones adicionales (opcional)</Label>
                 <Textarea
-                  placeholder="Ej: Incluir preguntas sobre el capítulo 5 del libro. Evitar preguntas de fechas. Enfocar en comprensión conceptual..."
+                  placeholder="Ej: Incluir preguntas sobre el capítulo 5 del libro. Evitar preguntas de fechas. Enfocar en comprensión conceptual. Usar contexto de la región caribe..."
                   value={formData.additionalInstructions}
                   onChange={(e) => setFormData({ ...formData, additionalInstructions: e.target.value })}
                   rows={3}
+                  className="resize-none"
                 />
+                <p className="text-xs text-muted-foreground">Dale instrucciones específicas a la IA para personalizar el examen</p>
               </div>
             </div>
           )}
 
           {/* Generate Button */}
           <Button
-            className="w-full"
+            className="w-full bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white shadow-lg shadow-blue-500/25 rounded-xl h-12"
             size="lg"
             onClick={handleGenerate}
             disabled={isGenerating}

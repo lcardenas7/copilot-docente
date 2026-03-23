@@ -30,11 +30,11 @@ export default function TemplatesPage() {
               <span className="text-xs font-medium">Guías guardadas</span>
             </div>
             <div className="flex flex-col items-center text-center p-3">
-              <FileText className="h-5 w-5 text-teal-500 mb-2" />
+              <FileText className="h-5 w-5 text-sky-500 mb-2" />
               <span className="text-xs font-medium">Exámenes guardados</span>
             </div>
             <div className="flex flex-col items-center text-center p-3">
-              <Copy className="h-5 w-5 text-emerald-500 mb-2" />
+              <Copy className="h-5 w-5 text-sky-400 mb-2" />
               <span className="text-xs font-medium">Duplicar con 1 clic</span>
             </div>
           </div>
@@ -45,7 +45,7 @@ export default function TemplatesPage() {
               </Button>
             </Link>
             <Link href="/dashboard/exams/new">
-              <Button className="bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white shadow-lg shadow-blue-500/25 rounded-xl h-11">
+              <Button className="bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white shadow-lg shadow-blue-500/25 rounded-xl h-11">
                 <FileText className="mr-2 h-4 w-4" /> Crear examen
               </Button>
             </Link>

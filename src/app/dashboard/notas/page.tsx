@@ -30,16 +30,16 @@ export default function NotasPage() {
               <span className="text-xs font-medium">Cálculo automático</span>
             </div>
             <div className="flex flex-col items-center text-center p-3">
-              <TrendingUp className="h-5 w-5 text-teal-500 mb-2" />
+              <TrendingUp className="h-5 w-5 text-sky-500 mb-2" />
               <span className="text-xs font-medium">Seguimiento de progreso</span>
             </div>
             <div className="flex flex-col items-center text-center p-3">
-              <FileSpreadsheet className="h-5 w-5 text-emerald-500 mb-2" />
+              <FileSpreadsheet className="h-5 w-5 text-sky-400 mb-2" />
               <span className="text-xs font-medium">Exportar a Excel</span>
             </div>
           </div>
           <Link href="/dashboard/cursos/nuevo">
-            <Button className="bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white shadow-lg shadow-blue-500/25 rounded-xl h-11 px-8">
+            <Button className="bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white shadow-lg shadow-blue-500/25 rounded-xl h-11 px-8">
               Crear mi primer curso
             </Button>
           </Link>

@@ -49,7 +49,7 @@ export default async function SettingsPage() {
       <Card className="border shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <div className="rounded-lg bg-teal-50 p-1.5 text-teal-600">
+            <div className="rounded-lg bg-sky-50 p-1.5 text-sky-600">
               <CreditCard className="h-4 w-4" />
             </div>
             Suscripción
@@ -73,7 +73,7 @@ export default async function SettingsPage() {
               <span className="font-medium">0 / 5</span>
             </div>
             <div className="h-2 bg-muted rounded-full">
-              <div className="h-2 bg-gradient-to-r from-blue-500 to-teal-500 rounded-full w-0" />
+              <div className="h-2 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full w-0" />
             </div>
           </div>
           <div className="space-y-2">
@@ -82,10 +82,10 @@ export default async function SettingsPage() {
               <span className="font-medium">0 / 2</span>
             </div>
             <div className="h-2 bg-muted rounded-full">
-              <div className="h-2 bg-gradient-to-r from-blue-500 to-teal-500 rounded-full w-0" />
+              <div className="h-2 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full w-0" />
             </div>
           </div>
-          <Button className="w-full bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white shadow-lg shadow-blue-500/25 rounded-xl h-11">
+          <Button className="w-full bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white shadow-lg shadow-blue-500/25 rounded-xl h-11">
             Actualizar a Pro - $7/mes
           </Button>
         </CardContent>
@@ -113,7 +113,7 @@ export default async function SettingsPage() {
       <Card className="border shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <div className="rounded-lg bg-emerald-50 p-1.5 text-emerald-600">
+            <div className="rounded-lg bg-sky-50 p-1.5 text-sky-600">
               <Shield className="h-4 w-4" />
             </div>
             Seguridad

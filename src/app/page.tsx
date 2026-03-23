@@ -21,7 +21,7 @@ export default function Home() {
       <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-white/80 backdrop-blur-xl">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
           <Link href="/" className="flex items-center space-x-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-teal-500 shadow-lg shadow-blue-500/25">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-sky-500 shadow-lg shadow-blue-500/25">
               <GraduationCap className="h-5 w-5 text-white" />
             </div>
             <span className="font-bold text-lg tracking-tight">Copilot del Docente</span>
@@ -31,7 +31,7 @@ export default function Home() {
               <Button variant="ghost" className="text-sm font-medium">Iniciar sesión</Button>
             </Link>
             <Link href="/login">
-              <Button className="bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white shadow-lg shadow-blue-500/25 text-sm">
+              <Button className="bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white shadow-lg shadow-blue-500/25 text-sm">
                 Comenzar gratis
               </Button>
             </Link>
@@ -55,7 +55,7 @@ export default function Home() {
           </div>
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl max-w-5xl leading-[1.1]">
             Tu copiloto inteligente para{" "}
-            <span className="bg-gradient-to-r from-blue-600 via-teal-500 to-emerald-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-600 via-sky-500 to-blue-400 bg-clip-text text-transparent">
               preparar clases
             </span>
           </h1>
@@ -65,7 +65,7 @@ export default function Home() {
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4">
             <Link href="/login">
-              <Button size="lg" className="text-base px-8 h-12 bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white shadow-xl shadow-blue-500/30 rounded-xl">
+              <Button size="lg" className="text-base px-8 h-12 bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white shadow-xl shadow-blue-500/30 rounded-xl">
                 Comenzar gratis
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -114,13 +114,13 @@ export default function Home() {
               icon={BookOpen}
               title="Guías de clase"
               description="Genera planeaciones estructuradas con objetivos, actividades, evaluación y recursos adaptados a tu currículo."
-              gradient="from-teal-500 to-emerald-600"
+              gradient="from-sky-500 to-blue-600"
             />
             <FeatureCard
               icon={MessageSquare}
               title="Asistente pedagógico"
               description="Consulta dudas pedagógicas y recibe recomendaciones personalizadas para tu contexto educativo."
-              gradient="from-blue-500 to-teal-600"
+              gradient="from-blue-500 to-sky-600"
             />
             <FeatureCard
               icon={Clock}
@@ -146,10 +146,10 @@ export default function Home() {
 
       {/* How it works */}
       <section className="relative py-24 sm:py-32 overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-blue-50/50 via-teal-50/30 to-transparent" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-blue-50/50 via-sky-50/30 to-transparent" />
         <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700 mb-4 uppercase tracking-wider">
+            <div className="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700 mb-4 uppercase tracking-wider">
               Cómo funciona
             </div>
             <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
@@ -180,7 +180,7 @@ export default function Home() {
       <section className="py-24 sm:py-32">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700 mb-4 uppercase tracking-wider">
+            <div className="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700 mb-4 uppercase tracking-wider">
               Planes
             </div>
             <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
@@ -230,7 +230,7 @@ export default function Home() {
 
       {/* CTA */}
       <section className="relative py-24 sm:py-32 overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-blue-600 via-teal-600 to-cyan-700" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-blue-600 via-blue-700 to-sky-800" />
         <div className="absolute inset-0 -z-10 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2230%22%20height%3D%2230%22%20viewBox%3D%220%200%2030%2030%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Ccircle%20cx%3D%221%22%20cy%3D%221%22%20r%3D%221%22%20fill%3D%22rgba(255,255,255,0.07)%22/%3E%3C/svg%3E')]" />
         <div className="container mx-auto px-4 sm:px-6 text-center relative">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl text-white">
@@ -252,7 +252,7 @@ export default function Home() {
       <footer className="border-t bg-white/50 py-12">
         <div className="container mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center space-x-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-teal-500">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-sky-500">
               <GraduationCap className="h-4 w-4 text-white" />
             </div>
             <span className="font-bold text-sm">Copilot del Docente</span>
@@ -304,7 +304,7 @@ function StepCard({
 }) {
   return (
     <div className="text-center">
-      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-teal-500 text-white text-2xl font-bold shadow-lg shadow-blue-500/30">
+      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-sky-500 text-white text-2xl font-bold shadow-lg shadow-blue-500/30">
         {number}
       </div>
       <h3 className="mt-5 text-lg font-bold">{title}</h3>
@@ -337,7 +337,7 @@ function PricingCard({
       }`}
     >
       {highlighted && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center rounded-full bg-gradient-to-r from-blue-600 to-teal-500 px-4 py-1 text-xs font-semibold text-white shadow-lg">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center rounded-full bg-gradient-to-r from-blue-600 to-sky-500 px-4 py-1 text-xs font-semibold text-white shadow-lg">
           Popular
         </div>
       )}
@@ -359,7 +359,7 @@ function PricingCard({
         <Button
           className={`mt-8 w-full rounded-xl h-11 ${
             highlighted
-              ? "bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white shadow-lg shadow-blue-500/25"
+              ? "bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white shadow-lg shadow-blue-500/25"
               : ""
           }`}
           variant={highlighted ? "default" : "outline"}
