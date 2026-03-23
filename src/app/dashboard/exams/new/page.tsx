@@ -138,10 +138,16 @@ export default function NewExamPage() {
                 <span className="text-xs bg-muted px-2 py-1 rounded">{q.points} pts</span>
               </div>
 
-              {/* Visual (si existe y está habilitado) */}
-              {q.visual && includeVisuals && (
+              {/* Visual (si la IA generó uno, siempre mostrarlo) */}
+              {q.visual && q.visual.engine && (
                 <div className="mb-4">
                   <SmartVisual visual={q.visual} />
+                </div>
+              )}
+              {/* Fallback: si la IA generó visual sin engine, intentar con svg_dynamic */}
+              {q.visual && !q.visual.engine && q.visual.type && (
+                <div className="mb-4">
+                  <SmartVisual visual={{ ...q.visual, engine: "svg_dynamic" as const }} />
                 </div>
               )}
 
@@ -197,30 +203,36 @@ export default function NewExamPage() {
               )}
 
               {/* TRUE_FALSE */}
-              {q.type === "TRUE_FALSE" && (
-                <div className="flex gap-3 mb-4">
-                  <div className={`flex-1 p-3 rounded-lg border text-center ${
-                    showAnswers && q.correctAnswer === true
-                      ? "bg-green-50 border-green-300 dark:bg-green-900/20"
-                      : "bg-muted/30 border-transparent"
-                  }`}>
-                    <span className="font-medium">Verdadero</span>
-                    {showAnswers && q.correctAnswer === true && (
-                      <CheckCircle className="h-4 w-4 text-green-600 inline ml-2" />
-                    )}
+              {q.type === "TRUE_FALSE" && (() => {
+                // Normalizar correctAnswer: la IA puede devolver true/false, "true"/"false", "A"/"B", "Verdadero"/"Falso"
+                const raw = q.correctAnswer;
+                const isTrue = raw === true || raw === "true" || raw === "A" || raw === "Verdadero" || raw === "verdadero" || raw === "V";
+                const isFalse = raw === false || raw === "false" || raw === "B" || raw === "Falso" || raw === "falso" || raw === "F";
+                return (
+                  <div className="flex gap-3 mb-4">
+                    <div className={`flex-1 p-3 rounded-lg border text-center ${
+                      showAnswers && isTrue
+                        ? "bg-green-50 border-green-300 dark:bg-green-900/20"
+                        : "bg-muted/30 border-transparent"
+                    }`}>
+                      <span className="font-medium">Verdadero</span>
+                      {showAnswers && isTrue && (
+                        <CheckCircle className="h-4 w-4 text-green-600 inline ml-2" />
+                      )}
+                    </div>
+                    <div className={`flex-1 p-3 rounded-lg border text-center ${
+                      showAnswers && isFalse
+                        ? "bg-green-50 border-green-300 dark:bg-green-900/20"
+                        : "bg-muted/30 border-transparent"
+                    }`}>
+                      <span className="font-medium">Falso</span>
+                      {showAnswers && isFalse && (
+                        <CheckCircle className="h-4 w-4 text-green-600 inline ml-2" />
+                      )}
+                    </div>
                   </div>
-                  <div className={`flex-1 p-3 rounded-lg border text-center ${
-                    showAnswers && q.correctAnswer === false
-                      ? "bg-green-50 border-green-300 dark:bg-green-900/20"
-                      : "bg-muted/30 border-transparent"
-                  }`}>
-                    <span className="font-medium">Falso</span>
-                    {showAnswers && q.correctAnswer === false && (
-                      <CheckCircle className="h-4 w-4 text-green-600 inline ml-2" />
-                    )}
-                  </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* FILL_BLANK */}
               {q.type === "FILL_BLANK" && showAnswers && q.blanks && (

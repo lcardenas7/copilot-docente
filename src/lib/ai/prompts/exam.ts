@@ -98,10 +98,38 @@ TIPO DE PREGUNTAS: REGLAS ICFES
 Si el usuario selecciona tipos específicos, respeta su elección pero aplica las proporciones anteriores como guía.
 
 ═══════════════════════════════════════
+FORMATO DE VERDADERO/FALSO
+═══════════════════════════════════════
+
+Para preguntas TRUE_FALSE, el correctAnswer DEBE ser el booleano true o false (no string).
+Ejemplo: "correctAnswer": true (si es verdadero) o "correctAnswer": false (si es falso).
+
+═══════════════════════════════════════
+FORMATO DE RECURSOS VISUALES
+═══════════════════════════════════════
+
+Cuando incluir visuales esté ACTIVADO, cada visual DEBE tener esta estructura EXACTA:
+
+"visual": {
+  "engine": "svg_dynamic",
+  "type": "table",
+  "data": { "headers": [...], "rows": [...] },
+  "caption": "Descripción del visual"
+}
+
+CAMPOS OBLIGATORIOS:
+- "engine": SIEMPRE "svg_dynamic" — sin esto el visual NO se renderiza
+- "type": uno de: table, bar_chart, number_line, fraction_circle, fraction_rect, geometric_shape, pie_chart, timeline
+- "data": parámetros específicos del tipo (ver ejemplos en la instrucción del usuario)
+- "caption": descripción corta del visual
+
+Si visuales está DESACTIVADO, usa: "visual": null
+
+═══════════════════════════════════════
 FORMATO DE SALIDA
 ═══════════════════════════════════════
 
-Devuelve ÚNICAMENTE JSON válido. Sin texto antes ni después.
+Devuelve ÚNICAMENTE JSON válido. Sin texto antes ni después. Sin backticks. Sin markdown.
 Si no puedes generar contenido válido, responde: {"error":"No se pudo generar el examen"}
 `;
 
