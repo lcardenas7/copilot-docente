@@ -202,7 +202,7 @@ REQUISITOS OBLIGATORIOS POR PREGUNTA
 
 Cada pregunta DEBE cumplir TODOS estos criterios:
 
-1. SITUACIÓN CONTEXTUALIZADA: Empieza con un escenario real (persona, lugar, dato concreto de LATAM). No "calcule" ni "resuelva" sueltos.
+1. SITUACIÓN CONTEXTUALIZADA: Empieza con un escenario real y cercano al estudiante. Usa LUGARES COTIDIANOS: panadería, cafetería, tienda de barrio, finca, taller mecánico, mercado, plaza de mercado, biblioteca escolar, cancha del colegio, huerta casera, supermercado, ferretería. EVITA ciudades específicas (no Bogotá, Lima, Quito) salvo que el contexto lo requiera estrictamente (historia, geografía). Usa nombres comunes de personas (Juan, María, Carlos, Ana, Don Pedro, Doña Rosa).
 2. OPERACIÓN COGNITIVA CLARA: El estudiante debe interpretar, comparar, decidir, analizar o evaluar — NO solo recordar o calcular mecánicamente.
 3. DISTRACTORES INTELIGENTES: Cada opción incorrecta representa un error real y plausible que un estudiante cometería.
 4. RESPUESTA VERIFICADA: Si hay cálculos, RESUÉLVELOS paso a paso internamente y VERIFICA el resultado antes de escribirlo.
@@ -274,7 +274,7 @@ ESTRUCTURA JSON (respeta EXACTAMENTE)
     {
       "number": 1,
       "type": "MULTIPLE_CHOICE",
-      "question": "[Situación contextualizada con datos reales + pregunta que requiera pensar]",
+      "question": "En la panadería de Don Pedro se registraron las ventas de la semana...",
       "options": [
         {"letter": "A", "text": "[opción plausible]"},
         {"letter": "B", "text": "[opción plausible]"},
@@ -282,15 +282,41 @@ ESTRUCTURA JSON (respeta EXACTAMENTE)
         {"letter": "D", "text": "[opción plausible]"}
       ],
       "correctAnswer": "B",
-      "explanation": "[Por qué B es correcta + por qué A, C, D son incorrectas + qué error representa cada distractor]",
-      "competency": "[Competencia ICFES específica del área]",
-      "bloomLevel": "[analizar|evaluar|aplicar|crear|comprender|recordar]",
-      "points": [puntos],
-      "visual": {"engine": "svg_dynamic", "type": "table", "data": {...}, "caption": "..."} | null
+      "explanation": "[Por qué B es correcta + por qué A, C, D son incorrectas]",
+      "competency": "[Competencia ICFES]",
+      "bloomLevel": "analizar",
+      "points": 12,
+      "visual": ${params.includeVisuals ? `{
+        "engine": "svg_dynamic",
+        "type": "table",
+        "data": {"title": "Ventas semanales", "headers": ["Día", "Pan", "Galletas"], "rows": [["Lunes", "45", "20"], ["Martes", "52", "18"]]},
+        "caption": "Registro de ventas de la panadería"
+      }` : "null"}
+    },
+    {
+      "number": 2,
+      "type": "MULTIPLE_CHOICE",
+      "question": "[Otra pregunta contextualizada...]",
+      "options": [{"letter": "A", "text": "..."}, {"letter": "B", "text": "..."}, {"letter": "C", "text": "..."}, {"letter": "D", "text": "..."}],
+      "correctAnswer": "C",
+      "explanation": "...",
+      "competency": "...",
+      "bloomLevel": "aplicar",
+      "points": 10,
+      "visual": null
     }
   ],
   "gradingNotes": "[Notas útiles para el docente al calificar]"
 }
+
+${params.includeVisuals ? `
+RECORDATORIO FINAL DE VISUALES:
+- AL MENOS ${Math.ceil(params.questionCount * 0.4)} de las ${params.questionCount} preguntas DEBEN tener "visual" con un objeto JSON completo (NO null).
+- Cada visual DEBE tener "engine": "svg_dynamic" como primer campo.
+- Las preguntas sin visual deben usar "visual": null.
+- Los tipos más útiles son: table, bar_chart, fraction_circle, number_line.
+- El visual debe ser necesario para responder la pregunta.
+` : ""}
 
 ═══════════════════════════════════════
 REGLAS FINALES

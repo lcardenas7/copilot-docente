@@ -82,8 +82,8 @@ export const ExamQuestionSchema = z.object({
   rubric: z.array(z.any()).optional(),
   sampleAnswer: z.string().optional(),
   minWords: z.number().optional(),
-  // Visual
-  visual: VisualSchema.optional(),
+  // Visual - acepta undefined, null, o un objeto visual válido
+  visual: VisualSchema.nullable().optional(),
 });
 
 // Schema para situación problema (contexto narrativo)

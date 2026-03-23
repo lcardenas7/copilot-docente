@@ -62,7 +62,7 @@ export default function NewExamPage() {
   const [showAnswers, setShowAnswers] = useState(true);
   const [exam, setExam] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const [includeVisuals, setIncludeVisuals] = useState(false);
+  const [includeVisuals, setIncludeVisuals] = useState(true);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [formData, setFormData] = useState({
     subject: "",
@@ -655,6 +655,21 @@ export default function NewExamPage() {
             </div>
           </div>
 
+          {/* Visuals Toggle - siempre visible */}
+          <div className="flex items-center justify-between p-4 border rounded-xl bg-gradient-to-r from-blue-50/50 to-sky-50/30">
+            <div>
+              <Label htmlFor="includeVisuals" className="font-medium">📊 Incluir recursos visuales</Label>
+              <p className="text-xs text-muted-foreground mt-0.5">Gráficos, tablas y esquemas cuando aporten comprensión</p>
+            </div>
+            <input
+              type="checkbox"
+              id="includeVisuals"
+              checked={includeVisuals}
+              onChange={(e) => setIncludeVisuals(e.target.checked)}
+              className="rounded h-5 w-5 accent-primary"
+            />
+          </div>
+
           {/* Advanced Toggle */}
           <button
             type="button"
@@ -667,20 +682,6 @@ export default function NewExamPage() {
 
           {showAdvanced && (
             <div className="space-y-4 border rounded-xl p-5 bg-gradient-to-br from-blue-50/30 to-sky-50/20">
-              {/* Visuals Toggle */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="includeVisuals" className="font-medium">Incluir recursos visuales</Label>
-                  <p className="text-xs text-muted-foreground mt-0.5">Gráficos, tablas y esquemas cuando aporten comprensión</p>
-                </div>
-                <input
-                  type="checkbox"
-                  id="includeVisuals"
-                  checked={includeVisuals}
-                  onChange={(e) => setIncludeVisuals(e.target.checked)}
-                  className="rounded h-4 w-4"
-                />
-              </div>
 
               {/* Additional Instructions */}
               <div className="space-y-2">
