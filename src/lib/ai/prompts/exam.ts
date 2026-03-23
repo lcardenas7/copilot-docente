@@ -213,10 +213,18 @@ RECURSOS VISUALES
 ═══════════════════════════════════════
 
 ${params.includeVisuals ? `
-ACTIVADO — DEBES incluir recursos visuales en al menos el 40% de las preguntas.
+ACTIVADO — Incluye recursos visuales cuando APORTEN VALOR REAL a la pregunta.
 
 IMPORTANTE: Cada visual DEBE tener el campo "engine": "svg_dynamic" además de "type" y "data".
 El frontend usa "engine" para saber cómo renderizar. Sin "engine", el visual NO se muestra.
+
+CUÁNDO USAR VISUALES según la asignatura:
+- MATEMÁTICAS: Sí, al menos 40% de preguntas. Tablas con datos, gráficos de barras, rectas numéricas, fracciones, figuras geométricas, barras agrupadas.
+- ESTADÍSTICA: Sí, al menos 40%. Tablas de datos experimentales, gráficos de barras/circulares/agrupados.
+- CIENCIAS NATURALES / BIOLOGÍA / QUÍMICA / FÍSICA: SOLO cuando el visual sea una tabla de datos experimentales o gráfico de resultados de un experimento. NO generes tablas decorativas que solo repiten conceptos del texto (ej: tabla "Señal → Respuesta" o "Desecho → Órgano" que solo lista definiciones). Si no hay datos numéricos o experimentales que graficar, usa "visual": null.
+- LENGUAJE / ESPAÑOL: Casi nunca. Solo si hay datos de una encuesta o tabla textual necesaria.
+- SOCIALES / HISTORIA: Líneas de tiempo cuando sea relevante. Tablas de datos comparativos.
+- OTRAS: Usa el criterio — el visual debe ser IMPRESCINDIBLE para resolver la pregunta, no decorativo.
 
 Tipos de visual permitidos y cuándo usarlos:
 
@@ -269,15 +277,30 @@ REGLAS CRÍTICAS DE VISUALES:
 - El visual debe ser NECESARIO para responder la pregunta (no decorativo)
 - Prioriza tablas, gráficos de barras y barras agrupadas — son los más útiles
 
-⚠️ EL VISUAL NUNCA DEBE REVELAR LA RESPUESTA:
-- El visual muestra los DATOS DEL PROBLEMA, NO la solución.
-- PROHIBIDO: recta numérica que marque el punto que es la respuesta.
-- PROHIBIDO: gráfico de barras que muestre valores ya calculados que son la respuesta.
-- PROHIBIDO: círculo de fracciones sombreando la fracción que se pide calcular.
-- PROHIBIDO: gráfico circular mostrando porcentajes que son la respuesta directa.
-- CORRECTO: tabla con datos crudos que el estudiante debe interpretar.
-- CORRECTO: gráfico con datos del problema, no del resultado.
-- CORRECTO: recta numérica vacía o con datos iniciales, no con la respuesta marcada.
+⚠️⚠️⚠️ REGLA #1 — EL VISUAL JAMÁS DEBE CONTENER LA RESPUESTA ⚠️⚠️⚠️
+
+El visual SOLO muestra los DATOS DE ENTRADA del problema. El estudiante CALCULA la respuesta.
+Si el valor que se pregunta aparece en el visual, el estudiante no necesita pensar.
+
+EJEMPLOS CONCRETOS DE LO QUE ESTÁ MAL vs LO QUE ESTÁ BIEN:
+
+❌ MAL: Pregunta "¿Cuánto cuesta con descuento?" + tabla con columna "Precio final: $42.50"
+✅ BIEN: Tabla con SOLO "Producto: Camiseta", "Precio: $50", "Descuento: 15%" — SIN columna de precio final
+
+❌ MAL: Pregunta "¿Cuánto dinero tendrá?" + gráfico con barras "Inversión: 1000, Interés: 80, Total: 1080"
+✅ BIEN: Tabla con SOLO "Inversión: $1000", "Tasa anual: 8%", "Plazo: 1 año" — SIN total
+
+❌ MAL: Pregunta "¿Cuántos litros?" + recta numérica con punto marcado en 9 (que es la respuesta)
+✅ BIEN: Recta numérica VACÍA de 0 a 10 — el estudiante ubica mentalmente
+
+❌ MAL: Pregunta "¿Qué fracción queda?" + círculo con 5/8 sombreado (que es la respuesta)
+✅ BIEN: Círculo con 3/8 sombreado (lo que se comió) — el estudiante calcula lo que queda
+
+❌ MAL: Gráfico de barras mostrando "Leídas: 180, Por leer: 60" cuando se pregunta cuántas quedan
+✅ BIEN: Tabla con "Total páginas: 240", "Fracción leída: 3/4" — el estudiante calcula
+
+REGLA SIMPLE: Si puedes leer la respuesta directamente del visual sin hacer ningún cálculo, el visual está MAL diseñado.
+El visual da los INSUMOS. La PREGUNTA pide el RESULTADO. El ESTUDIANTE hace el CÁLCULO.
 ` : `
 DESACTIVADO — No incluyas ningún recurso visual. Usa "visual": null en todas las preguntas.
 `}
