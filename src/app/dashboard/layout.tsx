@@ -36,14 +36,14 @@ export default async function DashboardLayout({
         <div className="flex h-14 items-center px-4">
           <MobileNav />
           <Link href="/dashboard" className="flex items-center space-x-2 ml-2 md:ml-0">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 shadow-sm">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-teal-500 shadow-sm">
               <GraduationCap className="h-4 w-4 text-white" />
             </div>
             <span className="font-bold hidden sm:inline text-sm">Copilot del Docente</span>
           </Link>
 
           <div className="ml-auto flex items-center space-x-3">
-            <Button variant="ghost" size="icon" className="rounded-xl hover:bg-indigo-50">
+            <Button variant="ghost" size="icon" className="rounded-xl hover:bg-blue-50">
               <Bell className="h-5 w-5 text-muted-foreground" />
             </Button>
             <DropdownMenu>

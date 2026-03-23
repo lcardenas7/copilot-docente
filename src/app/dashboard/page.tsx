@@ -22,17 +22,17 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* Welcome Section */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 p-8 text-white">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-teal-600 to-emerald-700 p-8 text-white">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2230%22%20height%3D%2230%22%20viewBox%3D%220%200%2030%2030%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Ccircle%20cx%3D%221%22%20cy%3D%221%22%20r%3D%221%22%20fill%3D%22rgba(255,255,255,0.06)%22/%3E%3C/svg%3E')]" />
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="h-5 w-5 text-indigo-200" />
-            <span className="text-sm font-medium text-indigo-200">Panel de control</span>
+            <Sparkles className="h-5 w-5 text-blue-200" />
+            <span className="text-sm font-medium text-blue-200">Panel de control</span>
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight">
             ¡Hola, {firstName}!
           </h1>
-          <p className="text-indigo-100 mt-1 text-lg">
+          <p className="text-blue-100 mt-1 text-lg">
             ¿Qué quieres crear hoy con IA?
           </p>
         </div>
@@ -59,7 +59,7 @@ export default async function DashboardPage() {
           icon={HelpCircle}
           title="Banco de Preguntas"
           description="Agregar preguntas"
-          gradient="from-violet-500 to-purple-600"
+          gradient="from-teal-500 to-emerald-600"
         />
         <QuickActionCard
           href="/dashboard/copilot"
@@ -108,14 +108,14 @@ export default async function DashboardPage() {
         <Card className="border shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <TrendingUp className="h-5 w-5 text-indigo-500" />
+              <TrendingUp className="h-5 w-5 text-blue-500" />
               Actividad reciente
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <div className="rounded-2xl bg-gradient-to-br from-indigo-50 to-violet-50 p-5 mb-4">
-                <Zap className="h-8 w-8 text-indigo-400" />
+              <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-teal-50 p-5 mb-4">
+                <Zap className="h-8 w-8 text-blue-400" />
               </div>
               <p className="text-muted-foreground font-medium">
                 Aún no tienes actividad
@@ -124,7 +124,7 @@ export default async function DashboardPage() {
                 ¡Crea tu primer examen o guía!
               </p>
               <Link href="/dashboard/exams/new">
-                <Button className="mt-5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-xl shadow-lg shadow-indigo-500/25">
+                <Button className="mt-5 bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white rounded-xl shadow-lg shadow-blue-500/25">
                   <Plus className="mr-2 h-4 w-4" />
                   Crear examen
                 </Button>
@@ -147,19 +147,19 @@ export default async function DashboardPage() {
                 number="1"
                 title="Genera un examen"
                 description="Selecciona materia, grado y tema. La IA crea todo automáticamente."
-                gradient="from-indigo-500 to-violet-600"
+                gradient="from-blue-500 to-teal-600"
               />
               <TipItem
                 number="2"
                 title="Crea una guía de clase"
                 description="Obtén planeaciones completas con objetivos y actividades."
-                gradient="from-violet-500 to-purple-600"
+                gradient="from-teal-500 to-emerald-600"
               />
               <TipItem
                 number="3"
                 title="Usa instrucciones específicas"
                 description="Dile a la IA exactamente qué quieres: 'Incluir fracciones con problemas'."
-                gradient="from-pink-500 to-rose-600"
+                gradient="from-cyan-500 to-blue-600"
               />
               <TipItem
                 number="4"
@@ -197,7 +197,7 @@ function QuickActionCard({
           </div>
           <h3 className="mt-4 font-bold">{title}</h3>
           <p className="text-sm text-muted-foreground mt-1">{description}</p>
-          <div className="flex items-center gap-1 mt-3 text-xs font-semibold text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center gap-1 mt-3 text-xs font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
             Crear ahora
             <ArrowRight className="h-3 w-3" />
           </div>

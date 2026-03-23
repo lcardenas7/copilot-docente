@@ -58,7 +58,7 @@ function LoginContent() {
     <div className="min-h-screen flex">
       {/* Left side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-teal-600 to-emerald-700" />
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2230%22%20height%3D%2230%22%20viewBox%3D%220%200%2030%2030%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Ccircle%20cx%3D%221%22%20cy%3D%221%22%20r%3D%221%22%20fill%3D%22rgba(255,255,255,0.07)%22/%3E%3C/svg%3E')]" />
         <div className="relative z-10 flex flex-col justify-center px-12 xl:px-16">
           <div className="flex items-center space-x-3 mb-8">
@@ -70,7 +70,7 @@ function LoginContent() {
           <h2 className="text-4xl xl:text-5xl font-extrabold text-white leading-tight mb-6">
             Tu copiloto inteligente para preparar clases
           </h2>
-          <p className="text-lg text-indigo-100 leading-relaxed mb-10 max-w-md">
+          <p className="text-lg text-blue-100 leading-relaxed mb-10 max-w-md">
             Genera exámenes, guías de clase y actividades pedagógicas en minutos con inteligencia artificial.
           </p>
           <div className="space-y-4">
@@ -97,17 +97,17 @@ function LoginContent() {
       </div>
 
       {/* Right side - Login form */}
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-8 bg-gradient-to-b from-white to-indigo-50/30">
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-8 bg-gradient-to-b from-white to-blue-50/30">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="flex items-center justify-center space-x-2.5 mb-8 lg:hidden">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 shadow-lg shadow-indigo-500/25">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-teal-500 shadow-lg shadow-blue-500/25">
               <GraduationCap className="h-6 w-6 text-white" />
             </div>
             <span className="font-bold text-xl">Copilot del Docente</span>
           </div>
 
-          <Card className="border-0 shadow-2xl shadow-indigo-500/10 bg-white">
+          <Card className="border-0 shadow-2xl shadow-blue-500/10 bg-white">
             <CardHeader className="text-center pb-2 pt-8">
               <CardTitle className="text-2xl font-extrabold">Bienvenido</CardTitle>
               <CardDescription className="text-base mt-1">
@@ -129,7 +129,7 @@ function LoginContent() {
                 variant="outline"
               >
                 {isLoading ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-indigo-600 border-t-transparent mr-3" />
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent mr-3" />
                 ) : (
                   <svg className="mr-3 h-5 w-5" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -142,11 +142,11 @@ function LoginContent() {
               </Button>
               <p className="text-center text-xs text-muted-foreground leading-relaxed">
                 Al continuar, aceptas nuestros{" "}
-                <Link href="/terms" className="underline hover:text-indigo-600 transition-colors">
+                <Link href="/terms" className="underline hover:text-blue-600 transition-colors">
                   Términos de servicio
                 </Link>{" "}
                 y{" "}
-                <Link href="/privacy" className="underline hover:text-indigo-600 transition-colors">
+                <Link href="/privacy" className="underline hover:text-blue-600 transition-colors">
                   Política de privacidad
                 </Link>
               </p>

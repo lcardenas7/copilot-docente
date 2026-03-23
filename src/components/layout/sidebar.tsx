@@ -103,9 +103,9 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden md:flex w-64 flex-col border-r bg-muted/40">
+    <aside className="hidden md:flex w-64 flex-col border-r bg-white/50">
       <div className="flex-1 overflow-auto py-4">
-        <nav className="grid gap-1 px-2">
+        <nav className="grid gap-0.5 px-3">
           {sidebarItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
             return (
@@ -113,10 +113,10 @@ export function Sidebar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200",
                   isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    ? "bg-gradient-to-r from-blue-600 to-teal-500 text-white shadow-md shadow-blue-500/20"
+                    : "text-muted-foreground hover:bg-blue-50/80 hover:text-foreground"
                 )}
               >
                 <item.icon className="h-4 w-4" />
@@ -127,14 +127,14 @@ export function Sidebar() {
         </nav>
       </div>
       <div className="border-t p-4">
-        <div className="rounded-lg bg-primary/10 p-3">
-          <p className="text-xs font-medium text-primary">Plan Gratuito</p>
+        <div className="rounded-xl bg-gradient-to-br from-blue-50 to-teal-50 p-3 border border-blue-100">
+          <p className="text-xs font-semibold text-blue-700">Plan Gratuito</p>
           <p className="text-xs text-muted-foreground mt-1">
             5 guías restantes este mes
           </p>
           <Link
             href="/pricing"
-            className="mt-2 inline-block text-xs font-medium text-primary hover:underline"
+            className="mt-2 inline-block text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors"
           >
             Actualizar a Pro →
           </Link>
