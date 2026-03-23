@@ -155,28 +155,66 @@ export default function NewExamPage() {
               <p className="font-medium mb-4 text-base">{q.question}</p>
 
               {/* MULTIPLE_CHOICE */}
-              {q.type === "MULTIPLE_CHOICE" && q.options && (
-                <div className="space-y-2 mb-4">
-                  {q.options.map((opt: any) => (
-                    <div
-                      key={opt.letter}
-                      className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
-                        showAnswers && opt.letter === q.correctAnswer
-                          ? "bg-green-50 border-green-300 dark:bg-green-900/20 dark:border-green-700"
-                          : "bg-muted/30 border-transparent"
-                      }`}
-                    >
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted font-medium text-sm">
-                        {opt.letter}
-                      </span>
-                      <span className="flex-1">{opt.text}</span>
-                      {showAnswers && opt.letter === q.correctAnswer && (
-                        <CheckCircle className="h-5 w-5 text-green-600 shrink-0" />
-                      )}
+              {q.type === "MULTIPLE_CHOICE" && q.options && (() => {
+                const hasVisualOptions = q.options.some((opt: any) => opt.visual);
+                
+                if (hasVisualOptions) {
+                  // Grid layout para opciones con visuales (estilo SABER)
+                  return (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                      {q.options.map((opt: any) => (
+                        <div
+                          key={opt.letter}
+                          className={`relative p-3 rounded-lg border-2 transition-colors ${
+                            showAnswers && opt.letter === q.correctAnswer
+                              ? "bg-green-50 border-green-400 dark:bg-green-900/20 dark:border-green-600"
+                              : "bg-white border-muted hover:border-muted-foreground/30 dark:bg-gray-900"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted font-bold text-sm">
+                              {opt.letter}
+                            </span>
+                            {opt.text && <span className="text-sm">{opt.text}</span>}
+                            {showAnswers && opt.letter === q.correctAnswer && (
+                              <CheckCircle className="h-5 w-5 text-green-600 shrink-0 ml-auto" />
+                            )}
+                          </div>
+                          {opt.visual && (
+                            <div className="mt-1">
+                              <SmartVisual visual={opt.visual.engine ? opt.visual : { ...opt.visual, engine: "svg_dynamic" as const }} />
+                            </div>
+                          )}
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              )}
+                  );
+                }
+                
+                // Layout normal para opciones solo texto
+                return (
+                  <div className="space-y-2 mb-4">
+                    {q.options.map((opt: any) => (
+                      <div
+                        key={opt.letter}
+                        className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
+                          showAnswers && opt.letter === q.correctAnswer
+                            ? "bg-green-50 border-green-300 dark:bg-green-900/20 dark:border-green-700"
+                            : "bg-muted/30 border-transparent"
+                        }`}
+                      >
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted font-medium text-sm">
+                          {opt.letter}
+                        </span>
+                        <span className="flex-1">{opt.text}</span>
+                        {showAnswers && opt.letter === q.correctAnswer && (
+                          <CheckCircle className="h-5 w-5 text-green-600 shrink-0" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
 
               {/* MULTIPLE_ANSWER */}
               {q.type === "MULTIPLE_ANSWER" && q.options && (

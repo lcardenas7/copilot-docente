@@ -226,41 +226,58 @@ Tipos de visual permitidos y cuándo usarlos:
 2. GRÁFICO DE BARRAS — comparaciones entre categorías
    {"engine": "svg_dynamic", "type": "bar_chart", "data": {"title": "Producción agrícola", "labels": ["Café", "Maíz", "Arroz"], "values": [45, 30, 25]}, "caption": "Producción en toneladas por cultivo"}
 
-3. RECTA NUMÉRICA — ubicar números, fracciones, intervalos
+3. GRÁFICO DE BARRAS AGRUPADAS — comparar múltiples series (estilo SABER/ICFES)
+   {"engine": "svg_dynamic", "type": "grouped_bar_chart", "data": {"title": "Medallas por país", "labels": ["Australia", "Brasil", "Jamaica"], "series": [{"name": "Oro", "values": [7, 3, 4]}, {"name": "Bronce", "values": [12, 9, 4]}], "yLabel": "Cantidad"}, "caption": "Medallas olímpicas por país"}
+
+4. RECTA NUMÉRICA — ubicar números, fracciones, intervalos
    {"engine": "svg_dynamic", "type": "number_line", "data": {"min": 0, "max": 10, "step": 1, "marked": [2.5, 7]}, "caption": "Ubica los puntos en la recta"}
 
-4. CÍRCULO DE FRACCIONES — representar fracciones o porcentajes
+5. CÍRCULO DE FRACCIONES — representar fracciones o porcentajes
    {"engine": "svg_dynamic", "type": "fraction_circle", "data": {"total": 8, "shaded": 3, "style": "pizza"}, "caption": "Pizza dividida en 8 porciones, 3 sombreadas"}
 
-5. FIGURA GEOMÉTRICA — formas con medidas
+6. FIGURA GEOMÉTRICA — formas con medidas
    {"engine": "svg_dynamic", "type": "geometric_shape", "data": {"shape": "rectangle", "dimensions": {"width": 12, "height": 5}}, "caption": "Rectángulo de 12 cm × 5 cm"}
 
-6. GRÁFICO CIRCULAR — distribución porcentual
+7. GRÁFICO CIRCULAR — distribución porcentual
    {"engine": "svg_dynamic", "type": "pie_chart", "data": {"labels": ["Agua", "Tierra", "Aire"], "values": [60, 25, 15]}, "caption": "Composición del ecosistema"}
 
-7. LÍNEA DE TIEMPO — secuencias cronológicas
+8. LÍNEA DE TIEMPO — secuencias cronológicas
    {"engine": "svg_dynamic", "type": "timeline", "data": {"events": [{"year": 1810, "label": "Grito de Independencia"}, {"year": 1819, "label": "Batalla de Boyacá"}]}, "caption": "Línea del tiempo de la independencia"}
+
+═══════════════════════════════════════
+OPCIONES CON VISUALES (estilo SABER avanzado)
+═══════════════════════════════════════
+
+Las opciones A, B, C, D también pueden contener visuales. Esto es MUY ÚTIL para preguntas donde:
+- Se muestra una tabla y se pregunta cuál gráfico la representa correctamente.
+- Se da una situación y se pregunta cuál gráfico corresponde.
+
+Para opciones con visuales, agrega el campo "visual" dentro de cada opción:
+{
+  "options": [
+    {"letter": "A", "text": "", "visual": {"engine": "svg_dynamic", "type": "bar_chart", "data": {"labels": ["X", "Y"], "values": [5, 10]}}},
+    {"letter": "B", "text": "", "visual": {"engine": "svg_dynamic", "type": "bar_chart", "data": {"labels": ["X", "Y"], "values": [10, 5]}}},
+    {"letter": "C", "text": "", "visual": {"engine": "svg_dynamic", "type": "bar_chart", "data": {"labels": ["X", "Y"], "values": [5, 5]}}},
+    {"letter": "D", "text": "", "visual": {"engine": "svg_dynamic", "type": "bar_chart", "data": {"labels": ["X", "Y"], "values": [8, 3]}}}
+  ]
+}
+
+Usa opciones con visuales cuando el tema lo amerite (especialmente en matemáticas y estadística). El "text" puede estar vacío si el visual es autoexplicativo.
 
 REGLAS CRÍTICAS DE VISUALES:
 - SIEMPRE incluir "engine": "svg_dynamic" — SIN ESTO EL VISUAL NO APARECE
 - El visual debe ser NECESARIO para responder la pregunta (no decorativo)
-- La pregunta debe requerir LEER e INTERPRETAR el visual
-- Prioriza tablas y gráficos de barras — son los más útiles y claros
+- Prioriza tablas, gráficos de barras y barras agrupadas — son los más útiles
 
-⚠️ REGLA MÁS IMPORTANTE — EL VISUAL NUNCA DEBE REVELAR LA RESPUESTA:
+⚠️ EL VISUAL NUNCA DEBE REVELAR LA RESPUESTA:
 - El visual muestra los DATOS DEL PROBLEMA, NO la solución.
-- El estudiante debe ANALIZAR el visual y DEDUCIR la respuesta por sí mismo.
 - PROHIBIDO: recta numérica que marque el punto que es la respuesta.
-- PROHIBIDO: gráfico de barras que muestre los valores calculados (ej: "leídas: 180, por leer: 60" cuando la pregunta es cuántas quedan por leer).
-- PROHIBIDO: círculo de fracciones que muestre la fracción resultado (ej: si la pregunta es "¿qué fracción queda?", NO sombrear la fracción resultado).
-- PROHIBIDO: gráfico circular que muestre porcentajes que son la respuesta directa.
-
-✅ CORRECTO: El visual presenta la SITUACIÓN INICIAL o los DATOS CRUDOS. Ejemplos:
-- Tabla con datos que el estudiante debe interpretar y calcular.
-- Gráfico de barras con categorías que el estudiante debe comparar.
-- Recta numérica VACÍA donde el estudiante debe ubicar un valor.
-- Círculo de fracciones que muestra la fracción DADA, no la que se pide calcular.
-- Gráfico circular con distribución que requiere INTERPRETACIÓN, no lectura directa.
+- PROHIBIDO: gráfico de barras que muestre valores ya calculados que son la respuesta.
+- PROHIBIDO: círculo de fracciones sombreando la fracción que se pide calcular.
+- PROHIBIDO: gráfico circular mostrando porcentajes que son la respuesta directa.
+- CORRECTO: tabla con datos crudos que el estudiante debe interpretar.
+- CORRECTO: gráfico con datos del problema, no del resultado.
+- CORRECTO: recta numérica vacía o con datos iniciales, no con la respuesta marcada.
 ` : `
 DESACTIVADO — No incluyas ningún recurso visual. Usa "visual": null en todas las preguntas.
 `}

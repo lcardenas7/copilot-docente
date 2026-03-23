@@ -4,7 +4,7 @@ import React, { useMemo } from "react";
 
 type SVGType = 
   | "fraction_circle" | "fraction_rect" | "number_line"
-  | "bar_chart" | "pie_chart" | "coordinate_plane"
+  | "bar_chart" | "grouped_bar_chart" | "pie_chart" | "coordinate_plane"
   | "geometric_shape" | "venn_diagram" | "table"
   | "cell_animal" | "cell_plant" | "atom_structure"
   | "circuit_simple" | "force_diagram" | "vector_diagram"
@@ -38,6 +38,8 @@ export default function SVGDynamicRenderer({ type, data }: SVGDynamicRendererPro
         return renderNumberLine(data);
       case "bar_chart":
         return renderBarChart(data);
+      case "grouped_bar_chart":
+        return renderGroupedBarChart(data);
       case "pie_chart":
         return renderPieChart(data);
       case "geometric_shape":
@@ -211,7 +213,7 @@ function renderNumberLine(data: Record<string, any>) {
 
 // ==================== BAR CHART ====================
 function renderBarChart(data: Record<string, any>) {
-  const { labels = [], values = [], title = "", color = COLORS.primary } = data;
+  const { labels = [], values = [], title = "", color = COLORS.primary, showValues = true } = data;
   const width = 400, height = 250;
   const padding = { top: 40, right: 20, bottom: 50, left: 50 };
   
@@ -227,20 +229,11 @@ function renderBarChart(data: Record<string, any>) {
     
     return (
       <g key={i}>
-        <rect
-          x={x}
-          y={y}
-          width={barWidth}
-          height={barHeight}
-          fill={color}
-          rx="4"
-        />
-        <text x={x + barWidth / 2} y={y - 5} textAnchor="middle" fontSize="12" fill={COLORS.text} fontWeight="bold">
-          {value}
-        </text>
-        <text x={x + barWidth / 2} y={height - padding.bottom + 20} textAnchor="middle" fontSize="11" fill={COLORS.text}>
-          {label}
-        </text>
+        <rect x={x} y={y} width={barWidth} height={barHeight} fill={color} rx="4" />
+        {showValues && (
+          <text x={x + barWidth / 2} y={y - 5} textAnchor="middle" fontSize="12" fill={COLORS.text} fontWeight="bold">{value}</text>
+        )}
+        <text x={x + barWidth / 2} y={height - padding.bottom + 20} textAnchor="middle" fontSize="11" fill={COLORS.text}>{label}</text>
       </g>
     );
   });
@@ -248,15 +241,100 @@ function renderBarChart(data: Record<string, any>) {
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="max-w-md">
       {title && (
-        <text x={width / 2} y={20} textAnchor="middle" fontSize="16" fill={COLORS.text} fontWeight="bold">
-          {title}
-        </text>
+        <text x={width / 2} y={20} textAnchor="middle" fontSize="16" fill={COLORS.text} fontWeight="bold">{title}</text>
       )}
-      {/* Y axis */}
       <line x1={padding.left} y1={padding.top} x2={padding.left} y2={height - padding.bottom} stroke={COLORS.grid} strokeWidth="2" />
-      {/* X axis */}
       <line x1={padding.left} y1={height - padding.bottom} x2={width - padding.right} y2={height - padding.bottom} stroke={COLORS.grid} strokeWidth="2" />
       {bars}
+    </svg>
+  );
+}
+
+// ==================== GROUPED BAR CHART (multi-serie SABER) ====================
+function renderGroupedBarChart(data: Record<string, any>) {
+  const { labels = [], series = [], title = "", showValues = true, yLabel = "" } = data;
+  // series: [{name: "Oro", values: [7,3,4]}, {name: "Bronce", values: [12,9,4]}]
+  const seriesData = series as { name: string; values: number[]; color?: string }[];
+  const seriesCount = seriesData.length || 1;
+  const categoryCount = (labels as string[]).length || 1;
+  
+  const seriesColors = [COLORS.primary, COLORS.accent, COLORS.secondary, "#EC4899", "#8B5CF6"];
+  // Use semantic colors for series names
+  const resolvedSeriesColors = seriesData.map((s, i) => 
+    s.color || getSemanticColor(s.name, seriesColors, i)
+  );
+
+  const width = Math.max(400, categoryCount * seriesCount * 35 + 120);
+  const height = 300;
+  const padding = { top: 40, right: 20, bottom: 70, left: 60 };
+  
+  const allValues = seriesData.flatMap(s => s.values as number[]);
+  const maxValue = Math.max(...allValues, 1);
+  const chartHeight = height - padding.top - padding.bottom;
+  const groupWidth = (width - padding.left - padding.right) / categoryCount;
+  const barWidth = Math.min((groupWidth - 10) / seriesCount, 40);
+  
+  const bars: React.ReactElement[] = [];
+  (labels as string[]).forEach((label, ci) => {
+    const groupX = padding.left + ci * groupWidth;
+    
+    seriesData.forEach((s, si) => {
+      const value = (s.values as number[])[ci] || 0;
+      const barHeight = (value / maxValue) * chartHeight;
+      const x = groupX + (groupWidth - barWidth * seriesCount) / 2 + si * barWidth;
+      const y = height - padding.bottom - barHeight;
+      
+      bars.push(
+        <g key={`${ci}-${si}`}>
+          <rect x={x} y={y} width={barWidth - 2} height={barHeight} fill={resolvedSeriesColors[si]} rx="2" />
+          {showValues && (
+            <text x={x + (barWidth - 2) / 2} y={y - 4} textAnchor="middle" fontSize="10" fill={COLORS.text} fontWeight="bold">{value}</text>
+          )}
+        </g>
+      );
+    });
+    
+    bars.push(
+      <text key={`label-${ci}`} x={groupX + groupWidth / 2} y={height - padding.bottom + 18} textAnchor="middle" fontSize="11" fill={COLORS.text}>{label}</text>
+    );
+  });
+  
+  // Legend
+  const legend = seriesData.map((s, i) => (
+    <g key={`legend-${i}`} transform={`translate(${padding.left + i * 100}, ${height - 18})`}>
+      <rect width="12" height="12" fill={resolvedSeriesColors[i]} rx="2" />
+      <text x="16" y="10" fontSize="11" fill={COLORS.text}>{s.name}</text>
+    </g>
+  ));
+  
+  // Y axis ticks
+  const yTicks: React.ReactElement[] = [];
+  const tickCount = 5;
+  for (let t = 0; t <= tickCount; t++) {
+    const val = Math.round((maxValue / tickCount) * t);
+    const y = height - padding.bottom - (val / maxValue) * chartHeight;
+    yTicks.push(
+      <g key={`ytick-${t}`}>
+        <line x1={padding.left - 5} y1={y} x2={padding.left} y2={y} stroke={COLORS.grid} strokeWidth="1" />
+        <text x={padding.left - 10} y={y + 4} textAnchor="end" fontSize="10" fill={COLORS.muted}>{val}</text>
+        <line x1={padding.left} y1={y} x2={width - padding.right} y2={y} stroke={COLORS.grid} strokeWidth="0.5" opacity="0.3" />
+      </g>
+    );
+  }
+  
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} className="max-w-lg">
+      {title && (
+        <text x={width / 2} y={20} textAnchor="middle" fontSize="15" fill={COLORS.text} fontWeight="bold">{title}</text>
+      )}
+      {yLabel && (
+        <text x={15} y={height / 2} textAnchor="middle" fontSize="11" fill={COLORS.muted} transform={`rotate(-90, 15, ${height / 2})`}>{yLabel}</text>
+      )}
+      <line x1={padding.left} y1={padding.top} x2={padding.left} y2={height - padding.bottom} stroke={COLORS.grid} strokeWidth="2" />
+      <line x1={padding.left} y1={height - padding.bottom} x2={width - padding.right} y2={height - padding.bottom} stroke={COLORS.grid} strokeWidth="2" />
+      {yTicks}
+      {bars}
+      {legend}
     </svg>
   );
 }

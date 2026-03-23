@@ -9,7 +9,7 @@ export const VisualSchema = z.discriminatedUnion("engine", [
     engine: z.literal("svg_dynamic"),
     type: z.enum([
       "fraction_circle", "fraction_rect", "number_line",
-      "bar_chart", "pie_chart", "geometric_shape",
+      "bar_chart", "grouped_bar_chart", "pie_chart", "geometric_shape",
       "timeline", "force_diagram", "circuit_simple", "table"
     ]),
     data: z.record(z.string(), z.any()),
