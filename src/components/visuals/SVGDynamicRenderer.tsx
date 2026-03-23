@@ -114,11 +114,8 @@ function renderFractionCircle(data: Record<string, any>) {
   }
   
   return (
-    <svg viewBox="0 0 300 320" className="max-w-xs">
+    <svg viewBox="0 0 300 300" className="max-w-xs">
       {sectors}
-      <text x="150" y="300" textAnchor="middle" fontSize="18" fill={COLORS.text} fontWeight="bold">
-        {shaded}/{total}
-      </text>
     </svg>
   );
 }
@@ -264,9 +261,35 @@ function renderBarChart(data: Record<string, any>) {
   );
 }
 
+// Mapeo de colores semánticos para pie chart
+const SEMANTIC_COLORS: Record<string, string> = {
+  rojo: "#EF4444", roja: "#EF4444", rojas: "#EF4444", rojos: "#EF4444",
+  verde: "#22C55E", verdes: "#22C55E",
+  azul: "#3B82F6", azules: "#3B82F6",
+  amarillo: "#EAB308", amarilla: "#EAB308", amarillas: "#EAB308", amarillos: "#EAB308",
+  naranja: "#F97316", naranjas: "#F97316",
+  morado: "#A855F7", morada: "#A855F7", moradas: "#A855F7", morados: "#A855F7",
+  rosa: "#EC4899", rosado: "#EC4899", rosada: "#EC4899",
+  café: "#92400E", marrón: "#92400E", marron: "#92400E",
+  blanco: "#F1F5F9", blancos: "#F1F5F9", blancas: "#F1F5F9",
+  negro: "#1E293B", negros: "#1E293B", negras: "#1E293B",
+  gris: "#94A3B8",
+};
+
+function getSemanticColor(label: string, fallbackColors: string[], index: number): string {
+  const lower = label.toLowerCase().trim();
+  for (const [key, color] of Object.entries(SEMANTIC_COLORS)) {
+    if (lower.includes(key)) return color;
+  }
+  return fallbackColors[index % fallbackColors.length];
+}
+
 // ==================== PIE CHART ====================
 function renderPieChart(data: Record<string, any>) {
-  const { labels = [], values = [], colors = [COLORS.primary, COLORS.secondary, COLORS.accent, "#EC4899", "#8B5CF6"] } = data;
+  const { labels = [], values = [] } = data;
+  const defaultColors = [COLORS.primary, COLORS.secondary, COLORS.accent, "#EC4899", "#8B5CF6"];
+  // Resolve colors: use semantic colors based on label names
+  const resolvedColors = (labels as string[]).map((label, i) => getSemanticColor(label, defaultColors, i));
   const cx = 150, cy = 130, r = 100;
   
   const total = (values as number[]).reduce((a, b) => a + b, 0) || 1;
@@ -292,20 +315,17 @@ function renderPieChart(data: Record<string, any>) {
       <g key={i}>
         <path
           d={`M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`}
-          fill={(colors as string[])[i % colors.length]}
+          fill={resolvedColors[i % resolvedColors.length]}
           stroke="white"
           strokeWidth="2"
         />
-        <text x={labelX} y={labelY} textAnchor="middle" dominantBaseline="middle" fontSize="12" fill="white" fontWeight="bold">
-          {Math.round((value / total) * 100)}%
-        </text>
       </g>
     );
   });
   
   const legend = (labels as string[]).map((label, i) => (
     <g key={`legend-${i}`} transform={`translate(10, ${260 + i * 20})`}>
-      <rect width="12" height="12" fill={(colors as string[])[i % colors.length]} rx="2" />
+      <rect width="12" height="12" fill={resolvedColors[i % resolvedColors.length]} rx="2" />
       <text x="18" y="10" fontSize="11" fill={COLORS.text}>{label}</text>
     </g>
   ));

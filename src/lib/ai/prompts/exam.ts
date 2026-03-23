@@ -241,12 +241,26 @@ Tipos de visual permitidos y cuándo usarlos:
 7. LÍNEA DE TIEMPO — secuencias cronológicas
    {"engine": "svg_dynamic", "type": "timeline", "data": {"events": [{"year": 1810, "label": "Grito de Independencia"}, {"year": 1819, "label": "Batalla de Boyacá"}]}, "caption": "Línea del tiempo de la independencia"}
 
-REGLAS DE VISUALES:
+REGLAS CRÍTICAS DE VISUALES:
 - SIEMPRE incluir "engine": "svg_dynamic" — SIN ESTO EL VISUAL NO APARECE
 - El visual debe ser NECESARIO para responder la pregunta (no decorativo)
 - La pregunta debe requerir LEER e INTERPRETAR el visual
-- Los datos del visual deben ser coherentes con el enunciado y las opciones
 - Prioriza tablas y gráficos de barras — son los más útiles y claros
+
+⚠️ REGLA MÁS IMPORTANTE — EL VISUAL NUNCA DEBE REVELAR LA RESPUESTA:
+- El visual muestra los DATOS DEL PROBLEMA, NO la solución.
+- El estudiante debe ANALIZAR el visual y DEDUCIR la respuesta por sí mismo.
+- PROHIBIDO: recta numérica que marque el punto que es la respuesta.
+- PROHIBIDO: gráfico de barras que muestre los valores calculados (ej: "leídas: 180, por leer: 60" cuando la pregunta es cuántas quedan por leer).
+- PROHIBIDO: círculo de fracciones que muestre la fracción resultado (ej: si la pregunta es "¿qué fracción queda?", NO sombrear la fracción resultado).
+- PROHIBIDO: gráfico circular que muestre porcentajes que son la respuesta directa.
+
+✅ CORRECTO: El visual presenta la SITUACIÓN INICIAL o los DATOS CRUDOS. Ejemplos:
+- Tabla con datos que el estudiante debe interpretar y calcular.
+- Gráfico de barras con categorías que el estudiante debe comparar.
+- Recta numérica VACÍA donde el estudiante debe ubicar un valor.
+- Círculo de fracciones que muestra la fracción DADA, no la que se pide calcular.
+- Gráfico circular con distribución que requiere INTERPRETACIÓN, no lectura directa.
 ` : `
 DESACTIVADO — No incluyas ningún recurso visual. Usa "visual": null en todas las preguntas.
 `}
