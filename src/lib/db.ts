@@ -11,13 +11,12 @@ function createPrismaClient() {
     throw new Error("DATABASE_URL is not set");
   }
 
-  // Pass PoolConfig directly - PrismaPg manages the pool internally
-  // This works better in Vercel serverless than creating a Pool instance
   const adapter = new PrismaPg({
     connectionString,
     max: 2,
     idleTimeoutMillis: 5000,
-    connectionTimeoutMillis: 5000,
+    connectionTimeoutMillis: 10000,
+    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
   });
 
   return new PrismaClient({
