@@ -18,8 +18,8 @@ export default function MermaidRenderer({ code, type }: MermaidRendererProps) {
       if (!containerRef.current || !code) return;
 
       try {
-        // Dynamic import of mermaid from esm.sh
-        const mermaid = (await import("https://esm.sh/mermaid@11" as any)).default;
+        // Dynamic import of mermaid (npm package)
+        const mermaid = (await import("mermaid")).default;
         
         // Initialize mermaid with theme
         mermaid.initialize({
