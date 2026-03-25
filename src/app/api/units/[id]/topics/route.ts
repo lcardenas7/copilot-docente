@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { ensureUser } from "@/lib/ensure-user";
 
 export async function GET(
   request: NextRequest,
@@ -9,8 +10,9 @@ export async function GET(
   try {
     const { id } = await params;
     const session = await auth();
+    const userId = await ensureUser(session as any);
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }
@@ -22,7 +24,7 @@ export async function GET(
         unitId: id,
         unit: {
           classroom: {
-            teacherId: session.user.id,
+            teacherId: userId,
           },
         },
       },
@@ -57,8 +59,9 @@ export async function POST(
   try {
     const { id } = await params;
     const session = await auth();
+    const userId = await ensureUser(session as any);
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }
@@ -75,7 +78,7 @@ export async function POST(
       },
     });
 
-    if (!unit || unit.classroom.teacherId !== session.user.id) {
+    if (!unit || unit.classroom.teacherId !== userId) {
       return NextResponse.json(
         { success: false, error: "Unidad no encontrada" },
         { status: 404 }

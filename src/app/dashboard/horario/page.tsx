@@ -89,8 +89,8 @@ export default function SchedulePage() {
         classroomsRes.json(),
       ]);
 
-      setSchedule(scheduleData);
-      setClassrooms(classroomsData);
+      setSchedule(Array.isArray(scheduleData) ? scheduleData : []);
+      setClassrooms(classroomsData?.classrooms || classroomsData || []);
     } catch (error) {
       console.error(error);
       toast.error("Error al cargar datos");

@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { ensureUser } from "@/lib/ensure-user";
 
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
+    const userId = await ensureUser(session as any);
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }
@@ -16,7 +18,7 @@ export async function GET(request: NextRequest) {
     // Get all classrooms for the teacher with student count
     const classrooms = await db.classroom.findMany({
       where: {
-        teacherId: session.user.id,
+        teacherId: userId,
       },
       include: {
         enrollments: {
@@ -73,8 +75,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
+    const userId = await ensureUser(session as any);
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }
@@ -100,7 +103,7 @@ export async function POST(request: NextRequest) {
     // Create classroom
     const classroom = await db.classroom.create({
       data: {
-        teacherId: session.user.id,
+        teacherId: userId,
         name,
         subject,
         grade,

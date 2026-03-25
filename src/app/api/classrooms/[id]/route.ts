@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { ensureUser } from "@/lib/ensure-user";
 
 export async function GET(
   request: NextRequest,
@@ -9,8 +10,9 @@ export async function GET(
   try {
     const { id } = await params;
     const session = await auth();
+    const userId = await ensureUser(session as any);
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }
@@ -20,7 +22,7 @@ export async function GET(
     const classroom = await db.classroom.findUnique({
       where: {
         id,
-        teacherId: session.user.id,
+        teacherId: userId,
       },
       include: {
         units: {
@@ -94,8 +96,9 @@ export async function PATCH(
   try {
     const { id } = await params;
     const session = await auth();
+    const userId = await ensureUser(session as any);
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }
@@ -108,7 +111,7 @@ export async function PATCH(
     const classroom = await db.classroom.update({
       where: {
         id,
-        teacherId: session.user.id,
+        teacherId: userId,
       },
       data: {
         ...(name && { name }),
@@ -142,8 +145,9 @@ export async function DELETE(
   try {
     const { id } = await params;
     const session = await auth();
+    const userId = await ensureUser(session as any);
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }
@@ -153,7 +157,7 @@ export async function DELETE(
     await db.classroom.delete({
       where: {
         id,
-        teacherId: session.user.id,
+        teacherId: userId,
       },
     });
 

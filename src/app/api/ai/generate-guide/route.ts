@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { generateGuide } from "@/lib/ai/service";
+import { ensureUser } from "@/lib/ensure-user";
+
+export const maxDuration = 60; // Allow up to 60 seconds for AI generation
 
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
+    const userId = await ensureUser(session as any);
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }
@@ -23,7 +27,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await generateGuide(session.user.id, {
+    const result = await generateGuide(userId, {
       subject,
       grade,
       topic,

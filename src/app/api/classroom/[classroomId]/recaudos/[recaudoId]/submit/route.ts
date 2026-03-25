@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { ensureUser } from "@/lib/ensure-user";
 
 export async function POST(
   request: NextRequest,
@@ -8,7 +9,8 @@ export async function POST(
 ) {
   try {
     const session = await auth();
-    if (!session?.user?.id) {
+    const userId = await ensureUser(session as any);
+    if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
@@ -19,7 +21,7 @@ export async function POST(
     const enrollment = await db.enrollment.findFirst({
       where: {
         classroomId,
-        studentId: session.user.id,
+        studentId: userId,
       },
     });
 
@@ -49,7 +51,7 @@ export async function POST(
       where: {
         recaudoId_studentId: {
           recaudoId,
-          studentId: session.user.id,
+          studentId: userId,
         },
       },
     });
@@ -77,7 +79,7 @@ export async function POST(
     await db.recaudoResponse.create({
       data: {
         recaudoId,
-        studentId: session.user.id,
+        studentId: userId,
         responses,
       },
     });

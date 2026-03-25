@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { ensureUser } from "@/lib/ensure-user";
 
 // GET: Fetch teacher logs
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
+    const userId = await ensureUser(session as any);
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }
@@ -16,7 +18,7 @@ export async function GET(request: NextRequest) {
 
     const logs = await db.teacherLog.findMany({
       where: {
-        teacherId: session.user.id,
+        teacherId: userId,
       },
       include: {
         classroom: {
@@ -57,8 +59,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
+    const userId = await ensureUser(session as any);
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }
@@ -77,7 +80,7 @@ export async function POST(request: NextRequest) {
 
     const log = await db.teacherLog.create({
       data: {
-        teacherId: session.user.id,
+        teacherId: userId,
         title,
         content,
         tags: tags || [],

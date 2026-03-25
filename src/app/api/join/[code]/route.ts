@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { ensureUser } from "@/lib/ensure-user";
 
 // GET: Get classroom info by code
 export async function GET(
@@ -10,6 +11,7 @@ export async function GET(
   try {
     const { code: codeParam } = await params;
     const session = await auth();
+    const userId = await ensureUser(session as any);
     const code = codeParam.toUpperCase();
 
     const classroom = await db.classroom.findUnique({
@@ -21,8 +23,8 @@ export async function GET(
         _count: {
           select: { enrollments: true },
         },
-        enrollments: session?.user?.id ? {
-          where: { studentId: session.user.id },
+        enrollments: userId ? {
+          where: { studentId: userId },
           select: { id: true },
         } : false,
       },
@@ -46,7 +48,7 @@ export async function GET(
         color: classroom.color,
         teacherName: classroom.teacher.name || "Docente",
         studentCount: classroom._count.enrollments,
-        isEnrolled: session?.user?.id 
+        isEnrolled: userId 
           ? (classroom.enrollments as any[])?.length > 0 
           : false,
       },
@@ -68,8 +70,9 @@ export async function POST(
   try {
     const { code: codeParam } = await params;
     const session = await auth();
+    const userId = await ensureUser(session as any);
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "Debes iniciar sesión" },
         { status: 401 }
@@ -94,7 +97,7 @@ export async function POST(
       where: {
         classroomId_studentId: {
           classroomId: classroom.id,
-          studentId: session.user.id,
+          studentId: userId,
         },
       },
     });
@@ -111,7 +114,7 @@ export async function POST(
     await db.enrollment.create({
       data: {
         classroomId: classroom.id,
-        studentId: session.user.id,
+        studentId: userId,
       },
     });
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { ensureUser } from "@/lib/ensure-user";
 
 export async function GET(
   request: NextRequest,
@@ -9,8 +10,9 @@ export async function GET(
   try {
     const { id } = await params;
     const session = await auth();
+    const userId = await ensureUser(session as any);
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }
@@ -22,7 +24,7 @@ export async function GET(
       where: {
         classroomId_studentId: {
           classroomId: id,
-          studentId: session.user.id,
+          studentId: userId,
         },
       },
     });
@@ -77,7 +79,7 @@ export async function GET(
     // Get student's submissions
     const submissions = await db.submission.findMany({
       where: {
-        studentId: session.user.id,
+        studentId: userId,
         assignment: {
           classroomId: id,
         },

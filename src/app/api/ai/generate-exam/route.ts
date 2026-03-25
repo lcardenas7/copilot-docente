@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { generateExam } from "@/lib/ai/service";
 import { db } from "@/lib/db";
+import { ensureUser } from "@/lib/ensure-user";
 
 export const maxDuration = 60; // Allow up to 60 seconds for AI generation
 
@@ -10,9 +11,10 @@ export async function POST(request: NextRequest) {
   
   try {
     const session = await auth();
-    console.log("Session check:", session?.user?.id ? "authenticated" : "not authenticated");
+    const userId = await ensureUser(session as any);
+    console.log("Session check:", userId ? "authenticated" : "not authenticated");
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }
@@ -79,7 +81,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.log("Calling generateExam service...");
-    const result = await generateExam(session.user.id, {
+    const result = await generateExam(userId, {
       subject,
       grade,
       topic,

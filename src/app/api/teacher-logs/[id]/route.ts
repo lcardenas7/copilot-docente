@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { ensureUser } from "@/lib/ensure-user";
 
 // DELETE: Delete a teacher log
 export async function DELETE(
@@ -10,8 +11,9 @@ export async function DELETE(
   try {
     const { id } = await params;
     const session = await auth();
+    const userId = await ensureUser(session as any);
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }
@@ -22,7 +24,7 @@ export async function DELETE(
     const log = await db.teacherLog.findUnique({
       where: {
         id,
-        teacherId: session.user.id,
+        teacherId: userId,
       },
     });
 
@@ -57,8 +59,9 @@ export async function PATCH(
   try {
     const { id } = await params;
     const session = await auth();
+    const userId = await ensureUser(session as any);
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }
@@ -69,7 +72,7 @@ export async function PATCH(
     const existingLog = await db.teacherLog.findUnique({
       where: {
         id,
-        teacherId: session.user.id,
+        teacherId: userId,
       },
     });
 

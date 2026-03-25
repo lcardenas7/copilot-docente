@@ -9,19 +9,22 @@ const FALLBACK_MODEL = "llama-3.1-8b-instant";
 
 export async function generateWithGroq(
   systemPrompt: string,
-  userPrompt: string
+  userPrompt: string,
+  options?: { maxTokens?: number }
 ): Promise<string> {
   if (!process.env.GROQ_API_KEY) {
     console.error("GROQ_API_KEY is not configured");
     throw new Error("AI service not configured");
   }
 
+  const maxTokens = options?.maxTokens || 8000;
+
   // Try primary model first, fallback on rate limit
   const modelsToTry = [AI_MODEL, FALLBACK_MODEL];
 
   for (const model of modelsToTry) {
     try {
-      console.log(`Starting Groq API call with model: ${model}...`);
+      console.log(`Starting Groq API call with model: ${model}, maxTokens: ${maxTokens}...`);
       const completion = await groq.chat.completions.create({
         messages: [
           { role: "system", content: systemPrompt },
@@ -29,7 +32,7 @@ export async function generateWithGroq(
         ],
         model,
         temperature: 0.7,
-        max_tokens: 8000,
+        max_tokens: maxTokens,
         response_format: { type: "json_object" },
       });
 

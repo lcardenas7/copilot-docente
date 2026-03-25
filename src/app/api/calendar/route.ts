@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { ensureUser } from "@/lib/ensure-user";
 
 // GET: Fetch calendar events for a month
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
+    const userId = await ensureUser(session as any);
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }
@@ -24,7 +26,7 @@ export async function GET(request: NextRequest) {
 
     const events = await db.calendarEvent.findMany({
       where: {
-        teacherId: session.user.id,
+        teacherId: userId,
         date: {
           gte: startDate,
           lte: endDate,
@@ -65,8 +67,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
+    const userId = await ensureUser(session as any);
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }
@@ -85,7 +88,7 @@ export async function POST(request: NextRequest) {
 
     const event = await db.calendarEvent.create({
       data: {
-        teacherId: session.user.id,
+        teacherId: userId,
         title,
         date: new Date(date),
         endDate: endDate ? new Date(endDate) : null,

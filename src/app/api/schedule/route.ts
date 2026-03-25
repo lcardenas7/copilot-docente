@@ -1,21 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { ensureUser } from "@/lib/ensure-user";
 
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user?.id) {
+    const userId = await ensureUser(session as any);
+    if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    // Get schedule items from classroom schedules
-    // For now, we'll create schedule items from active classrooms
-    // In a real implementation, you'd have a dedicated Schedule model
-    
     const classrooms = await db.classroom.findMany({
       where: {
-        teacherId: session.user.id,
+        teacherId: userId,
       },
       select: {
         id: true,
@@ -66,7 +64,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
-    if (!session?.user?.id) {
+    const userId = await ensureUser(session as any);
+    if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
@@ -90,7 +89,7 @@ export async function POST(request: NextRequest) {
     const classroom = await db.classroom.findFirst({
       where: {
         id: classroomId,
-        teacherId: session.user.id,
+        teacherId: userId,
       },
     });
 

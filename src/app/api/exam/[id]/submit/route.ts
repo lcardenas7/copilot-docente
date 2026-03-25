@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { ensureUser } from "@/lib/ensure-user";
 
 interface QuestionAnswer {
   questionId: string;
@@ -14,8 +15,9 @@ export async function POST(
   try {
     const { id } = await params;
     const session = await auth();
+    const userId = await ensureUser(session as any);
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }
@@ -31,7 +33,7 @@ export async function POST(
         classroom: {
           include: {
             enrollments: {
-              where: { studentId: session.user.id },
+              where: { studentId: userId },
             },
           },
         },
@@ -180,7 +182,7 @@ export async function POST(
       where: {
         assignmentId_studentId: {
           assignmentId: assignment.id,
-          studentId: session.user.id,
+          studentId: userId,
         },
       },
     });
@@ -199,7 +201,7 @@ export async function POST(
       await db.submission.create({
         data: {
           assignmentId: assignment.id,
-          studentId: session.user.id,
+          studentId: userId,
           answers,
           score: totalScore,
           submittedAt: new Date(),
@@ -213,7 +215,7 @@ export async function POST(
       const existingGrade = await db.gradeBook.findFirst({
         where: {
           classroomId: exam.classroomId,
-          studentId: session.user.id,
+          studentId: userId,
           examId: exam.id,
         },
       });
@@ -229,7 +231,7 @@ export async function POST(
         await db.gradeBook.create({
           data: {
             classroomId: exam.classroomId,
-            studentId: session.user.id,
+            studentId: userId,
             examId: exam.id,
             score: gradeValue,
             maxScore: 5.0,

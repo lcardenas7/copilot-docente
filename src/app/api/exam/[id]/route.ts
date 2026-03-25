@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { ensureUser } from "@/lib/ensure-user";
 
 export async function GET(
   request: NextRequest,
@@ -9,8 +10,9 @@ export async function GET(
   try {
     const { id } = await params;
     const session = await auth();
+    const userId = await ensureUser(session as any);
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }
@@ -23,7 +25,7 @@ export async function GET(
         classroom: {
           include: {
             enrollments: {
-              where: { studentId: session.user.id },
+              where: { studentId: userId },
             },
           },
         },
@@ -38,7 +40,7 @@ export async function GET(
     }
 
     // Check if user is teacher or enrolled student
-    const isTeacher = exam.teacherId === session.user.id;
+    const isTeacher = exam.teacherId === userId;
     const isEnrolled = (exam.classroom?.enrollments?.length ?? 0) > 0;
 
     if (!isTeacher && !isEnrolled) {

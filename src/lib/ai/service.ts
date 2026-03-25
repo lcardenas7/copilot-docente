@@ -198,21 +198,51 @@ export async function generateGuide(
       ...params,
       pedagogicalContext: pedagogicalContext || undefined,
     });
-    const content = await generateWithGroq(GUIDE_SYSTEM_PROMPT, prompt);
+    const content = await generateWithGroq(GUIDE_SYSTEM_PROMPT, prompt, { maxTokens: 16000 });
 
     if (!content) {
       return { success: false, error: "No response from AI", cached: false };
     }
 
-    // Parse and validate with Zod
+    // Parse and validate with Zod (flexible - fallback to raw if validation fails)
     let parsed;
     try {
       const rawParsed = JSON.parse(content);
-      parsed = GuideSchema.parse(rawParsed);
-    } catch (error) {
-      console.error("JSON parsing or validation error:", error);
-      console.error("Raw content:", content);
-      return { success: false, error: "Invalid AI response format", cached: false };
+      
+      // Normalize duration fields: convert string durations to numbers
+      if (rawParsed.activities && Array.isArray(rawParsed.activities)) {
+        rawParsed.activities.forEach((a: any) => {
+          if (typeof a.duration === "string") {
+            a.duration = parseInt(a.duration) || 15;
+          }
+        });
+      }
+      // Normalize materials type field
+      if (rawParsed.materials && Array.isArray(rawParsed.materials)) {
+        rawParsed.materials.forEach((m: any) => {
+          if (m.type && !["physical", "digital"].includes(m.type)) {
+            m.type = "physical";
+          }
+        });
+      }
+      
+      const validation = GuideSchema.safeParse(rawParsed);
+      if (validation.success) {
+        parsed = validation.data;
+      } else {
+        console.error("Zod guide validation errors:", JSON.stringify(validation.error.issues.slice(0, 5), null, 2));
+        // Fallback: use raw parsed if basic structure is present
+        if (rawParsed.title && rawParsed.activities && Array.isArray(rawParsed.activities)) {
+          console.log("Using raw parsed guide data despite validation errors");
+          parsed = rawParsed;
+        } else {
+          throw new Error("Invalid guide structure: " + validation.error.issues[0]?.message);
+        }
+      }
+    } catch (error: any) {
+      console.error("Guide JSON parsing error:", error?.message);
+      console.error("Raw content (first 500):", content?.substring(0, 500));
+      return { success: false, error: "Error al procesar la respuesta de IA. Intenta de nuevo.", cached: false };
     }
 
     // Save to cache

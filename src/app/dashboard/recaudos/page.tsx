@@ -109,8 +109,8 @@ export default function RecaudosPage() {
         classroomsRes.json(),
       ]);
 
-      setRecaudos(recaudosData);
-      setClassrooms(classroomsData);
+      setRecaudos(Array.isArray(recaudosData) ? recaudosData : []);
+      setClassrooms(classroomsData?.classrooms || classroomsData || []);
     } catch (error) {
       console.error(error);
       toast.error("Error al cargar datos");

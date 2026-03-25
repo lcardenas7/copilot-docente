@@ -5,12 +5,16 @@ import { buildCopilotSystemPrompt, buildCopilotPrompt } from "@/lib/ai/prompts/c
 import { CopilotResponseSchema } from "@/lib/ai/schemas";
 import { getAIContext } from "@/lib/ai/context";
 import { db } from "@/lib/db";
+import { ensureUser } from "@/lib/ensure-user";
+
+export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
+    const userId = await ensureUser(session as any);
 
-    if (!session?.user?.id) {
+    if (!userId) {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
         { status: 401 }
@@ -34,7 +38,7 @@ export async function POST(request: NextRequest) {
         topicId,
         classroomId,
         unitId,
-        teacherId: session.user.id,
+        teacherId: userId,
       });
     }
 
@@ -74,7 +78,7 @@ export async function POST(request: NextRequest) {
     // Track generation
     await db.aIGeneration.create({
       data: {
-        userId: session.user.id,
+        userId: userId,
         type: "COPILOT",
         prompt: message.substring(0, 5000),
         result: parsed,

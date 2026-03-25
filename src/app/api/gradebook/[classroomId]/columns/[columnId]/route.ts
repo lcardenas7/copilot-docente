@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { ensureUser } from "@/lib/ensure-user";
 
 export async function DELETE(
   request: NextRequest,
@@ -8,7 +9,8 @@ export async function DELETE(
 ) {
   try {
     const session = await auth();
-    if (!session?.user?.id) {
+    const userId = await ensureUser(session as any);
+    if (!userId) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
@@ -18,7 +20,7 @@ export async function DELETE(
     const classroom = await db.classroom.findFirst({
       where: {
         id: classroomId,
-        teacherId: session.user.id,
+        teacherId: userId,
       },
     });
 
