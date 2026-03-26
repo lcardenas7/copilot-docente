@@ -52,15 +52,15 @@ export async function getAIContext(params: {
 
     const classroom = topic.unit.classroom;
     const allTopics = topic.unit.topics;
-    const currentIndex = allTopics.findIndex((t) => t.id === topicId);
+    const currentIndex = allTopics.findIndex((t: any) => t.id === topicId);
 
     // Get previous and upcoming topics
     const previousTopics = allTopics
       .slice(0, currentIndex)
-      .map((t) => t.name);
+      .map((t: any) => t.name);
     const upcomingTopics = allTopics
       .slice(currentIndex + 1)
-      .map((t) => t.name);
+      .map((t: any) => t.name);
 
     return {
       course: classroom.subject,
@@ -103,7 +103,7 @@ export async function getAIContext(params: {
       grade: unit.classroom.grade,
       group: unit.classroom.group || undefined,
       unit: unit.name,
-      previousTopics: unit.topics.map((t) => t.name),
+      previousTopics: unit.topics.map((t: any) => t.name),
       studentsCount: unit.classroom._count.enrollments,
       country: "Colombia",
     };
@@ -134,8 +134,8 @@ export async function getAIContext(params: {
     }
 
     // Flatten all topics from all units
-    const allTopics = classroom.units.flatMap((u) =>
-      u.topics.map((t) => t.name)
+    const allTopics = classroom.units.flatMap((u: any) =>
+      u.topics.map((t: any) => t.name)
     );
 
     return {

@@ -1,40 +1,32 @@
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
+import { PrismaClient } from "@prisma/client/edge";
+import { withAccelerate } from "@prisma/extension-accelerate";
 
 const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
+  prisma: any | undefined;
 };
 
 function createPrismaClient() {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) {
-    throw new Error("DATABASE_URL is not set");
-  }
-
-  // Create pg Pool explicitly for better control and error handling
-  const pool = new Pool({
-    connectionString,
-    max: 2,
-    idleTimeoutMillis: 5000,
-    connectionTimeoutMillis: 10000,
-    // Always use SSL for Supabase (required even in preview deploys)
-    ssl: { rejectUnauthorized: false },
-  });
-
-  // Log pool errors instead of crashing the process
-  pool.on("error", (err) => {
-    console.error("PG Pool unexpected error:", err.message);
-  });
-
-  const adapter = new PrismaPg(pool);
-
   return new PrismaClient({
-    adapter,
-    log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
-  });
+    accelerateUrl: process.env.PRISMA_ACCELERATE_URL,
+  }).$extends(withAccelerate());
 }
 
-export const db = globalForPrisma.prisma ?? createPrismaClient();
+function getDb() {
+  if (!globalForPrisma.prisma) {
+    globalForPrisma.prisma = createPrismaClient();
+  }
+  return globalForPrisma.prisma;
+}
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = db;
+// Lazy proxy: PrismaClient is only created on first property access (not at import time)
+// This prevents build errors when PRISMA_ACCELERATE_URL is not yet set
+export const db: any = new Proxy(
+  {},
+  {
+    get(_target, prop) {
+      // Skip Symbol properties (used by JS internals / Next.js build inspection)
+      if (typeof prop === "symbol") return undefined;
+      return getDb()[prop];
+    },
+  }
+);

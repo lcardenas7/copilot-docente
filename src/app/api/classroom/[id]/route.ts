@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { ensureUser } from "@/lib/ensure-user";
 
+export const runtime = "edge";
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -98,20 +100,20 @@ export async function GET(
     // Build pending and completed exams
     const completedExamIds = new Set(
       submissions
-        .filter((s) => s.submittedAt)
-        .map((s) => s.assignment.examId)
+        .filter((s: any) => s.submittedAt)
+        .map((s: any) => s.assignment.examId)
         .filter(Boolean)
     );
 
-    const allPublishedExams = classroom.units.flatMap((u) =>
-      u.topics.flatMap((t) =>
-        t.exams.filter((e) => e.isPublished)
+    const allPublishedExams = classroom.units.flatMap((u: any) =>
+      u.topics.flatMap((t: any) =>
+        t.exams.filter((e: any) => e.isPublished)
       )
     );
 
     const pendingExams = allPublishedExams
-      .filter((e) => !completedExamIds.has(e.id))
-      .map((e) => ({
+      .filter((e: any) => !completedExamIds.has(e.id))
+      .map((e: any) => ({
         id: e.id,
         title: e.title,
         deadline: e.deadline?.toISOString(),
@@ -119,8 +121,8 @@ export async function GET(
       }));
 
     const completedExams = submissions
-      .filter((s) => s.submittedAt && s.assignment.exam)
-      .map((s) => ({
+      .filter((s: any) => s.submittedAt && s.assignment.exam)
+      .map((s: any) => ({
         id: s.assignment.examId!,
         title: s.assignment.exam!.title,
         score: s.score || 0,

@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { ensureUser } from "@/lib/ensure-user";
 
+export const runtime = "edge";
+
 // GET: Fetch teacher logs
 export async function GET(request: NextRequest) {
   try {
@@ -33,7 +35,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      logs: logs.map((log) => ({
+      logs: logs.map((log: any) => ({
         id: log.id,
         title: log.title,
         content: log.content,

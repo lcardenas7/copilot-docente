@@ -4,6 +4,9 @@ import { db } from "@/lib/db";
 import { ensureUser } from "@/lib/ensure-user";
 import ExcelJS from "exceljs";
 
+// ExcelJS requires Node.js runtime (not Edge-compatible)
+export const runtime = "nodejs";
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ classroomId: string }> }
@@ -51,7 +54,7 @@ export async function GET(
       },
     });
 
-    const students = enrollments.map((e) => ({
+    const students = enrollments.map((e: any) => ({
       id: e.student.id,
       name: e.student.name || "Sin nombre",
       email: e.student.email || "",
@@ -129,7 +132,7 @@ export async function GET(
     header.font = { bold: true, color: { argb: "FFFFFFFF" } };
 
     // Data rows
-    students.forEach((student, index) => {
+    students.forEach((student: any, index: number) => {
       const row: (string | number | null)[] = [index + 1, student.name, student.email];
       
       let total = 0;

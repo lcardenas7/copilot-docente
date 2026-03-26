@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { ensureUser } from "@/lib/ensure-user";
 
+export const runtime = "edge";
+
 interface PlanTopic {
   name: string;
   hours: number;
@@ -68,7 +70,7 @@ export async function POST(
     }
 
     // Create units and topics in a transaction
-    await db.$transaction(async (tx) => {
+    await db.$transaction(async (tx: any) => {
       // Delete existing units and topics for this classroom
       await tx.topic.deleteMany({
         where: {

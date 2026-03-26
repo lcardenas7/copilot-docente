@@ -4,15 +4,18 @@ import { buildExamPrompt, EXAM_SYSTEM_PROMPT } from "./prompts/exam";
 import { ExamSchema, GuideSchema } from "./schemas";
 import { AIContext, getAIContext } from "./context";
 import { db } from "@/lib/db";
-import crypto from "crypto";
+// Use Web Crypto API (Edge-compatible) instead of Node.js crypto
 
 // Type for AI generation types (matches Prisma enum)
 type AIGenerationType = "GUIDE" | "EXAM" | "RUBRIC" | "ACTIVITY" | "COPILOT";
 
-// Generate cache key from parameters
-function generateCacheKey(type: string, params: Record<string, any>): string {
+// Generate cache key from parameters (Edge-compatible using Web Crypto API)
+async function generateCacheKey(type: string, params: Record<string, any>): Promise<string> {
   const sortedParams = JSON.stringify(params, Object.keys(params).sort());
-  return crypto.createHash("sha256").update(`${type}:${sortedParams}`).digest("hex");
+  const data = new TextEncoder().encode(`${type}:${sortedParams}`);
+  const hashBuffer = await globalThis.crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 // Check cache for existing result
@@ -184,7 +187,7 @@ export async function generateGuide(
       });
     }
 
-    const cacheKey = generateCacheKey("guide", params);
+    const cacheKey = await generateCacheKey("guide", params);
 
     // Check cache first
     const cachedResult = await checkCache(cacheKey);
@@ -285,7 +288,7 @@ export async function generateExam(
       });
     }
 
-    const cacheKey = generateCacheKey("exam", params);
+    const cacheKey = await generateCacheKey("exam", params);
 
     // Check cache first
     const cachedResult = await checkCache(cacheKey);

@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { ensureUser } from "@/lib/ensure-user";
 
+export const runtime = "edge";
+
 // GET: Get classroom info by code
 export async function GET(
   request: NextRequest,

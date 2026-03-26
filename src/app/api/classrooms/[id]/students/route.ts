@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { ensureUser } from "@/lib/ensure-user";
 
+export const runtime = "edge";
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -48,7 +50,7 @@ export async function GET(
       );
     }
 
-    const students = classroom.enrollments.map((enrollment) => ({
+    const students = classroom.enrollments.map((enrollment: any) => ({
       id: enrollment.student.id,
       name: enrollment.student.name || "Sin nombre",
       email: enrollment.student.email || "",

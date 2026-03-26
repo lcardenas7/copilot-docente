@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { ensureUser } from "@/lib/ensure-user";
 
+export const runtime = "edge";
+
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
@@ -38,7 +40,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Transform data to include student count and basic info
-    const transformedClassrooms = classrooms.map((classroom) => ({
+    const transformedClassrooms = classrooms.map((classroom: any) => ({
       id: classroom.id,
       name: classroom.name,
       subject: classroom.subject,
@@ -51,7 +53,7 @@ export async function GET(request: NextRequest) {
       isActive: classroom.isActive,
       createdAt: classroom.createdAt,
       studentCount: classroom._count.enrollments,
-      students: classroom.enrollments.map((enrollment) => ({
+      students: classroom.enrollments.map((enrollment: any) => ({
         id: enrollment.student.id,
         name: enrollment.student.name,
         email: enrollment.student.email,
