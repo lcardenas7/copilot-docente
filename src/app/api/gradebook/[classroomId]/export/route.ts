@@ -4,9 +4,6 @@ import { db } from "@/lib/db";
 import { ensureUser } from "@/lib/ensure-user";
 import ExcelJS from "exceljs";
 
-// ExcelJS requires Node.js runtime (not Edge-compatible)
-export const runtime = "nodejs";
-
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ classroomId: string }> }

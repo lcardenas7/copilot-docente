@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client/edge";
+import { PrismaClient } from "@prisma/client";
 import { withAccelerate } from "@prisma/extension-accelerate";
 
 const globalForPrisma = globalThis as unknown as {
@@ -6,6 +6,7 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient() {
+  // Use Prisma Accelerate (HTTP-based) — no TCP sockets, no pg pool hangs
   return new PrismaClient({
     accelerateUrl: process.env.PRISMA_ACCELERATE_URL,
   }).$extends(withAccelerate());
@@ -24,7 +25,6 @@ export const db: any = new Proxy(
   {},
   {
     get(_target, prop) {
-      // Skip Symbol properties (used by JS internals / Next.js build inspection)
       if (typeof prop === "symbol") return undefined;
       return getDb()[prop];
     },

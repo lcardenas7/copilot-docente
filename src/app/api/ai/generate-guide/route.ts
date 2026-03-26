@@ -3,8 +3,6 @@ import { auth } from "@/lib/auth";
 import { generateGuide } from "@/lib/ai/service";
 import { ensureUser } from "@/lib/ensure-user";
 
-export const runtime = "edge";
-
 export const maxDuration = 60; // Allow up to 60 seconds for AI generation
 
 export async function POST(request: NextRequest) {

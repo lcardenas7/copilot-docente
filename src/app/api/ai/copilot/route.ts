@@ -7,8 +7,6 @@ import { getAIContext } from "@/lib/ai/context";
 import { db } from "@/lib/db";
 import { ensureUser } from "@/lib/ensure-user";
 
-export const runtime = "edge";
-
 export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
